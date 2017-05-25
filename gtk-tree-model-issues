@@ -1,0 +1,8 @@
+When adding/deleting rows, GtkTreeModel implementations should emit
+the signal "row-inserted" / "row-deleted" - this does not scale if
+a large number of rows are added/deleted.  We cannot afford to emit
+10^7 signals.
+
+There is no signal corresponding to addition/deletion of columns.
+
+

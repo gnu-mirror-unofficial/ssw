@@ -1,0 +1,25 @@
+AC_INIT([spread-sheet-widget], [0.0])
+
+AM_INIT_AUTOMAKE([foreign check-news])
+AC_CONFIG_MACRO_DIR([aclocal-aux])
+AC_CONFIG_HEADERS([config.h])
+
+AC_PROG_CC
+LT_INIT
+
+m4_pattern_forbid([PKG_CHECK_MODULES])
+
+gtk_dependency="gtk+-3.0 >= 3.14.5"
+glib_dependency="glib-2.0 >= 2.44"
+
+PKG_CHECK_MODULES([GTK3], [$gtk_dependency])
+PKG_CHECK_MODULES([GLIB2], [$glib_dependency])
+
+AC_CONFIG_FILES([
+  Makefile
+])
+
+AC_SUBST([gtk_dependency])
+AC_SUBST([glib_dependency])
+
+AC_OUTPUT
