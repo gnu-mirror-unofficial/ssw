@@ -18,11 +18,13 @@ libspread_sheet_widget_la_SOURCES = \
 	src/ssw-constraint.c \
 	src/ssw-virtual-model.c \
 	src/ssw-cell.c \
+	src/ssw-xpaned.c \
 	src/ssw-sheet-body.h \
 	src/ssw-sheet-single.h \
 	src/ssw-constraint.h \
 	src/ssw-virtual-model.h \
-	src/ssw-cell.h
+	src/ssw-cell.h \
+	src/ssw-xpaned.h
 
 
 include_HEADERS = \

@@ -24,6 +24,7 @@
 #include "ssw-axis-model.h"
 #include "ssw-sheet-body.h"
 #include "ssw-marshaller.h"
+#include "ssw-xpaned.h"
 
 #define P_(X) (X)
 
@@ -211,7 +212,7 @@ __set_property (GObject *object,
 	GType t = g_value_get_gtype (value);
 
 	if (t == GTK_TYPE_CONTAINER)
-	  t = GTK_TYPE_GRID;
+	  t = SSW_TYPE_XPANED;
 
 	GtkWidget *grid = g_object_new (t, NULL);
 
