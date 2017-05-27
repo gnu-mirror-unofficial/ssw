@@ -21,7 +21,7 @@ libspread_sheet_widget_la_SOURCES = src/ssw-axis-model.c \
 
 # FIXME: Most of the following need not be installed?
 # Move to libspread-sheet-widget_la_SOURCES
-include_HEADERS = config.h \
+include_HEADERS = \
 	src/ssw-axis-model.h \
 	src/ssw-sheet-axis.h \
 	src/ssw-sheet-body.h \
