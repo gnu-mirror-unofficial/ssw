@@ -32,7 +32,7 @@ include_HEADERS = config.h \
 	src/ssw-virtual-model.h \
 	src/ssw-cell.h
 
-bin_PROGRAMS = demo/demo
+noinst_PROGRAMS = demo/demo
 demo_demo_LDADD = $(GTK3_LIBS) $(GLIB2_LIBS) -lm -lspread-sheet-widget
 demo_demo_SOURCES = demo/main.c
 
