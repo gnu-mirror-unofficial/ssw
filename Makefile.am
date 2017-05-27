@@ -60,12 +60,10 @@ spread-sheet-widget.pc: spread-sheet-widget.pc.in configure.ac
 	 $< > $@,tmp
 	mv $@,tmp $@
 
-#dist_data_DATA = spread-sheet-widget.pc
-#pkglib_LIBRARIES = spread-sheet-widget.pc
-
 CLEANFILES = spread-sheet-widget.pc
 
 install-exec-local: spread-sheet-widget.pc
+	$(MKDIR_P) $(DESTDIR)$(libdir)
 	chmod u+w $(DESTDIR)$(libdir)
 	$(INSTALL) -D $< $(DESTDIR)$(libdir)/pkgconfig/spread-sheet-widget.pc
 
