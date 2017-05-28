@@ -33,7 +33,7 @@ include_HEADERS = \
 	src/ssw-cell.h
 
 noinst_PROGRAMS = demo/demo
-demo_demo_LDADD = $(GTK3_LIBS) $(GLIB2_LIBS) -lm -lspread-sheet-widget
+demo_demo_LDADD = $(GTK3_LIBS) $(GLIB2_LIBS) -lm libspread-sheet-widget.la
 demo_demo_SOURCES = demo/main.c
 
 BUILT_SOURCES = \
