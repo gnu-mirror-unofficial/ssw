@@ -8,7 +8,8 @@ demo_demo_CFLAGS = $(GTK3_CFLAGS) $(GLIB2_CFLAGS)  -I ${top_srcdir}/src
 
 lib_LTLIBRARIES = libspread-sheet-widget.la
 libspread_sheet_widget_la_CFLAGS = $(GTK3_CFLAGS) $(GLIB2_CFLAGS) -I ${top_builddir}/src
-libspread_sheet_widget_la_SOURCES = src/ssw-axis-model.c \
+libspread_sheet_widget_la_SOURCES = \
+	src/ssw-axis-model.c \
 	src/ssw-sheet-axis.c \
 	src/ssw-sheet-body.c \
 	src/ssw-sheet-single.c \
@@ -16,21 +17,20 @@ libspread_sheet_widget_la_SOURCES = src/ssw-axis-model.c \
 	src/ssw-datum.c \
 	src/ssw-constraint.c \
 	src/ssw-virtual-model.c \
-	src/ssw-cell.c
-
-
-# FIXME: Most of the following need not be installed?
-# Move to libspread-sheet-widget_la_SOURCES
-include_HEADERS = \
-	src/ssw-axis-model.h \
-	src/ssw-sheet-axis.h \
+	src/ssw-cell.c \
 	src/ssw-sheet-body.h \
 	src/ssw-sheet-single.h \
-	src/ssw-sheet.h \
-	src/ssw-datum.h \
 	src/ssw-constraint.h \
 	src/ssw-virtual-model.h \
 	src/ssw-cell.h
+
+
+include_HEADERS = \
+	src/ssw-datum.h \
+	src/ssw-sheet.h \
+	src/ssw-sheet-axis.h \
+	src/ssw-axis-model.h
+
 
 noinst_PROGRAMS = demo/demo
 demo_demo_LDADD = $(GTK3_LIBS) $(GLIB2_LIBS) -lm libspread-sheet-widget.la
