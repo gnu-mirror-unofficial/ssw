@@ -1,4 +1,5 @@
 libtoolize --copy
 aclocal
+autoheader
 automake --add-missing --copy
 autoconf
