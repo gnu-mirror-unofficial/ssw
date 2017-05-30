@@ -1125,6 +1125,8 @@ __finalize (GObject *obj)
   g_hash_table_destroy (priv->size_override);
   g_ptr_array_free (priv->pool, TRUE);
   g_ptr_array_free (priv->widgets, TRUE);
+  gtk_target_list_unref (priv->drag_target_list);
+
 
   if (axis->cell_limits)
     g_ptr_array_free (axis->cell_limits, TRUE);

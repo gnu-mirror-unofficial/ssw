@@ -233,12 +233,30 @@ draw_selection (SswSheetBody *body, cairo_t *cr)
   guint height = gtk_widget_get_allocated_height (w);
   PRIV_DECL (body);
 
+  GdkRGBA *color;
+  GtkStyleContext *sc = gtk_widget_get_style_context (w);
+  gtk_style_context_get (sc,
+			 GTK_STATE_FLAG_SELECTED,
+			 "background-color",
+			 &color, NULL);
+
+  GtkCssProvider *cp = gtk_css_provider_new ();
+  gchar *css = g_strdup_printf ("* {background-color: rgba(%d, %d, %d, 0.25);}",
+				(int) (100.0 * color->red),
+				(int) (100.0 * color->green),
+				(int) (100.0 * color->blue));
+
+  gtk_css_provider_load_from_data (cp, css, strlen (css), 0);
+
+  gtk_style_context_add_provider (sc, GTK_STYLE_PROVIDER (cp),
+				  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+
   /* Draw the selection */
   if ((priv->selection->start_x != priv->selection->end_x)
       ||
       (priv->selection->start_y != priv->selection->end_y))
     {
-      GdkRGBA color;
+
       SswRange mySelect;
       normalise_selection (priv->selection, &mySelect);
 
@@ -263,33 +281,17 @@ draw_selection (SswSheetBody *body, cairo_t *cr)
 					     mySelect.end_y, &ypos_end, &yextent))
 	ylimit = ypos_end + yextent;
 
-      GtkStyleContext *sc = gtk_widget_get_style_context (w);
-
-      gtk_style_context_get (sc,
-			     GTK_STATE_FLAG_SELECTED,
-			     "background-color",
-			     &color, NULL);
-
-      GtkCssProvider *cp = gtk_css_provider_new ();
-      gchar *css = g_strdup_printf ("* {background-color: rgba(%d, %d, %d, 0.25);}",
-				    (int) (100.0 * color.red),
-				    (int) (100.0 * color.green),
-				    (int) (100.0 * color.blue));
-
-      gtk_css_provider_load_from_data (cp, css, strlen (css), 0);
-
-      gtk_style_context_add_provider (sc, GTK_STYLE_PROVIDER (cp),
-				      GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
       gtk_render_background (sc, cr,
 			     xpos_start, ypos_start,
 			     xlimit - xpos_start,
 			     ylimit - ypos_start);
-
-      gtk_style_context_remove_provider (sc, GTK_STYLE_PROVIDER (cp));
-      g_free (css);
-      g_object_unref (cp);
     }
+
+  gtk_style_context_remove_provider (sc, GTK_STYLE_PROVIDER (cp));
+  g_free (css);
+  g_object_unref (cp);
+  gdk_rgba_free (color);
 }
 
 gboolean
@@ -421,7 +423,7 @@ __draw (GtkWidget *widget, cairo_t *cr)
 
 	      if (GTK_IS_CELL_RENDERER_TEXT (renderer))
 		{
-		  const char *cell_text = NULL;
+		  char *cell_text = NULL;
 
 		  if (col == active_col && row == active_row)
 		    {
@@ -468,6 +470,8 @@ __draw (GtkWidget *widget, cairo_t *cr)
 		  g_object_set (renderer,
 				"text", cell_text,
 				NULL);
+
+		  g_free (cell_text);
 		}
 
 	      g_value_unset (&value);
