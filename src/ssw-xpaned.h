@@ -19,7 +19,6 @@
 #ifndef __SSW_XPANED_H__
 #define __SSW_XPANED_H__
 
-
 #include <gtk/gtk.h>
 
 G_BEGIN_DECLS
@@ -43,7 +42,6 @@ struct _SswXpaned
 
   /*< private >*/
   gint n_children;
-  GtkWidget *kinder[4];
   GSList *childs;
   gfloat vpos;
   gfloat hpos;

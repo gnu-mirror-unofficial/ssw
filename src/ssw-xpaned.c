@@ -67,30 +67,50 @@ ssw_xpaned_get_property (GObject    *object,
     }
 }
 
+struct _SswXpanedChild
+{
+  GtkWidget *w;
+  gint left;
+  gint top;
+};
+
+typedef struct _SswXpanedChild SswXpanedChild;
+
 static void
 get_adjusted_position (SswXpaned *xpaned, gfloat *hpos, gfloat *vpos)
 {
-  gint i;
-
   *hpos = xpaned->hpos;
   *vpos = xpaned->vpos;
 
-  for (i = 0; i < 2 ; ++i)
+  gboolean visibility[4] = {FALSE};
+
+  /* If an entire row/column is not visible, then the vpos/hpos must
+     be 1.0 */
+  GSList *node;
+  for (node = xpaned->childs; node; node = node->next)
     {
-      GtkWidget *left_child = xpaned->kinder[i * 2];          // 0 2
-      GtkWidget *right_child = xpaned->kinder[i * 2 + 1];     // 1 3
+      SswXpanedChild *ssw_child = node->data;
+      GtkWidget *child = ssw_child->w;
 
-      GtkWidget *top_child = xpaned->kinder[i];               // 0 1
-      GtkWidget *bottom_child = xpaned->kinder[i + 2];        // 2 3
-
-      if (!gtk_widget_is_visible (top_child) &&
-          !gtk_widget_is_visible (bottom_child))
-        *hpos = 1.0;
-
-      if (!gtk_widget_is_visible (left_child) &&
-          !gtk_widget_is_visible (right_child))
-        *vpos = 1.0;
+      if (gtk_widget_is_visible (child))
+	{
+	  visibility [ssw_child->top * 2 + ssw_child->left] = TRUE;
+	}
     }
+
+  if (!visibility[0] && !visibility[1])
+    *vpos = 1.0;
+  if (!visibility[2] && !visibility[3])
+    *vpos = 1.0;
+
+  const gfloat end =
+    (gtk_widget_get_direction (GTK_WIDGET (xpaned)) == GTK_TEXT_DIR_RTL)
+    ? 0.0 : 1.0;
+
+  if (!visibility[0] && !visibility[2])
+    *hpos = end;
+  if (!visibility[1] && !visibility[3])
+    *hpos = end;
 }
 
 static gboolean
@@ -149,7 +169,6 @@ __draw (GtkWidget *w, cairo_t   *cr)
   return FALSE;
 }
 
-
 static void
 __size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 {
@@ -160,10 +179,13 @@ __size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 
   get_adjusted_position (xpaned, &hpos, &vpos);
 
-  for (i = 0; i < 4 ; ++i)
+  GSList *node;
+  for (node = xpaned->childs; node; node = node->next)
     {
+      SswXpanedChild *ssw_child = node->data;
+      GtkWidget *child = ssw_child->w;
+
       GtkAllocation alloc;
-      GtkWidget *child = xpaned->kinder[i];
 
       if (!gtk_widget_is_visible (child))
         continue;
@@ -173,7 +195,7 @@ __size_allocate (GtkWidget *widget, GtkAllocation *allocation)
       gtk_widget_get_preferred_width (child, &min_width, NULL);
       gtk_widget_get_preferred_height (child, &min_height, NULL);
 
-      if ((i % 2) == 0)
+      if (ssw_child->left == (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL))
         {
           alloc.x = allocation->x;
           alloc.width = allocation->width * hpos;
@@ -188,7 +210,7 @@ __size_allocate (GtkWidget *widget, GtkAllocation *allocation)
       if (hpos > 0 && hpos < 1)
         alloc.width -= HANDLE_WIDTH / 2;
 
-      if ((i / 2) == 0)
+      if (ssw_child->top == 0)
         {
           alloc.y = allocation->y;
           alloc.height = allocation->height * vpos;
@@ -224,67 +246,89 @@ __size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 }
 
 static void
-__get_preferred_width            (GtkWidget       *widget,
-				  gint            *minimum_width,
-				  gint            *natural_width)
+__get_preferred_width (GtkWidget       *widget,
+		       gint            *minimum_width,
+		       gint            *natural_width)
 {
   SswXpaned *xpaned = SSW_XPANED (widget);
 
-  gint i;
-  gint minw = HANDLE_WIDTH;
-  gint natw = HANDLE_WIDTH;
-  for (i = 0; i < 2 ; ++i)
+  gint min_width = HANDLE_WIDTH;
+  gint nat_width = HANDLE_WIDTH;
+
+  gint left_half_min = 0;
+  gint right_half_min = 0;
+  gint left_half_nat = 0;
+  gint right_half_nat = 0;
+
+  GSList *node;
+  for (node = xpaned->childs; node; node = node->next)
     {
-      GtkWidget *top_child = xpaned->kinder[i];
-      GtkWidget *bottom_child = xpaned->kinder[i + 2];
+      SswXpanedChild *ssw_child = node->data;
+      GtkWidget *child = ssw_child->w;
 
-      gint topm, topn;
-      gtk_widget_get_preferred_width (top_child, &topm, &topn);
+      gint quadm, quadn;
+      gtk_widget_get_preferred_width (child, &quadm, &quadn);
 
-      gint bottomm, bottomn;
-      gtk_widget_get_preferred_width (bottom_child, &bottomm, &bottomn);
-
-      minw += MAX (topm, bottomm);
-      natw += MAX (topn, bottomn);
+      if (ssw_child->left == 0)
+	{
+	  left_half_min = MAX (left_half_min, quadm);
+	  left_half_nat = MAX (left_half_nat, quadm);
+	}
+      else
+	{
+	  right_half_min = MAX (right_half_min, quadn);
+	  right_half_nat = MAX (right_half_nat, quadn);
+	}
     }
 
   if (minimum_width)
-    *minimum_width = minw;
+    *minimum_width = left_half_min + right_half_min;
 
   if (natural_width)
-    *natural_width = natw;
+    *natural_width = left_half_nat + right_half_nat;
 }
 
 static void
-__get_preferred_height            (GtkWidget       *widget,
-				   gint            *minimum_height,
-				   gint            *natural_height)
+__get_preferred_height (GtkWidget       *widget,
+			gint            *minimum_height,
+			gint            *natural_height)
 {
   SswXpaned *xpaned = SSW_XPANED (widget);
 
-  gint i;
-  gint minw = HANDLE_WIDTH;
-  gint natw = HANDLE_WIDTH;
-  for (i = 0; i < 2 ; ++i)
+  gint min_height = HANDLE_WIDTH;
+  gint nat_height = HANDLE_WIDTH;
+
+  gint top_half_min = 0;
+  gint bottom_half_min = 0;
+  gint top_half_nat = 0;
+  gint bottom_half_nat = 0;
+
+  GSList *node;
+  for (node = xpaned->childs; node; node = node->next)
     {
-      GtkWidget *left_child = xpaned->kinder[i * 2];
-      GtkWidget *right_child = xpaned->kinder[i * 2 + 1];
+      SswXpanedChild *ssw_child = node->data;
+      GtkWidget *child = ssw_child->w;
 
-      gint leftm, leftn;
-      gtk_widget_get_preferred_height (left_child, &leftm, &leftn);
+      gint quadm, quadn;
+      gtk_widget_get_preferred_height (child, &quadm, &quadn);
 
-      gint rightm, rightn;
-      gtk_widget_get_preferred_height (right_child, &rightm, &rightn);
-
-      minw += MAX (leftm, rightm);
-      natw += MAX (leftn, rightn);
+      if (ssw_child->top == 0)
+	{
+	  top_half_min = MAX (top_half_min, quadm);
+	  top_half_nat = MAX (top_half_nat, quadm);
+	}
+      else
+	{
+	  bottom_half_min = MAX (bottom_half_min, quadn);
+	  bottom_half_nat = MAX (bottom_half_nat, quadn);
+	}
     }
 
   if (minimum_height)
-    *minimum_height = minw;
+    *minimum_height = top_half_min + bottom_half_min;
 
   if (natural_height)
-    *natural_height = natw;
+    *natural_height = top_half_nat + bottom_half_nat;
 }
 
 
@@ -307,21 +351,11 @@ __button_event (GtkWidget *widget,
 
 
 static void
-__direction_changed ()
+__direction_changed (GtkWidget *widget, GtkTextDirection previous_direction)
 {
-  g_print ("%s:%d %s\n", __FILE__, __LINE__, __FUNCTION__);
-  g_assert_not_reached ();
+  gtk_widget_queue_resize (widget);
 }
 
-
-struct _SswXpanedChild
-{
-  GtkWidget *w;
-  gint left;
-  gint top;
-};
-
-typedef struct _SswXpanedChild SswXpanedChild;
 
 static SswXpanedChild *
 find_xpaned_child (SswXpaned *xpaned, GtkWidget *widget)
@@ -487,8 +521,6 @@ __set_child_property (GtkContainer *container,
   if (xpaned_child->left == -1 || xpaned_child->top == -1)
     return;
 
-  xpaned->kinder[xpaned_child->top * 2 + xpaned_child->left] = child;
-
   if (gtk_widget_is_visible (child) &&
       gtk_widget_is_visible (GTK_WIDGET (xpaned)))
     gtk_widget_queue_resize (child);
@@ -499,7 +531,6 @@ __motion_notify_event (GtkWidget *widget,
 		       GdkEventMotion  *e)
 {
   SswXpaned *xpaned = SSW_XPANED (widget);
-
 
   if (!xpaned->button_pressed)
     return FALSE;
@@ -519,39 +550,39 @@ __motion_notify_event (GtkWidget *widget,
   GtkAllocation allocation;
   gtk_widget_get_allocated_size (widget, &allocation, NULL);
 
-  gint i;
-  for (i = 0; i < 4; ++i)
-  {
-    int hmin;
-    int wmin;
-    gtk_widget_get_preferred_width (GTK_WIDGET (xpaned->kinder[i]), &wmin,
-				    NULL);
-    gtk_widget_get_preferred_height (GTK_WIDGET (xpaned->kinder[i]), &hmin,
-				     NULL);
+  GSList *node;
+  for (node = xpaned->childs; node; node = node->next)
+    {
+      SswXpanedChild *ssw_child = node->data;
+      GtkWidget *child = ssw_child->w;
 
+      int hmin, wmin;
+      gtk_widget_get_preferred_width (child, &wmin, NULL);
+      gtk_widget_get_preferred_height (child, &hmin, NULL);
 
-    if (i % 2 == 0)
-      {
-	if (x < wmin + allocation.x )
-	  x = wmin + allocation.x;
-      }
-    else
-      {
-	if (x > allocation.x + allocation.width - wmin)
-	  x = allocation.x + allocation.width - wmin;
-      }
+      if (ssw_child->left ==
+	  (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL))
+	{
+	  if (x < wmin + allocation.x )
+	    x = wmin + allocation.x;
+	}
+      else
+	{
+	  if (x > allocation.x + allocation.width - wmin)
+	    x = allocation.x + allocation.width - wmin;
+	}
 
-    if (i / 2 == 0)
-      {
-	if (y < hmin + allocation.y)
-	  y = hmin + allocation.y;
-      }
-    else
-      {
-	if (y > allocation.y + allocation.height - hmin)
-	  y = allocation.y + allocation.height - hmin;
-      }
-  }
+      if (ssw_child->top == 0)
+	{
+	  if (y < hmin + allocation.y)
+	    y = hmin + allocation.y;
+	}
+      else
+	{
+	  if (y > allocation.y + allocation.height - hmin)
+	    y = allocation.y + allocation.height - hmin;
+	}
+    }
 
   xpaned->hpos = (x - allocation.x) / (gfloat) allocation.width;
   xpaned->vpos = (y - allocation.y) / (gfloat) allocation.height;
@@ -681,8 +712,6 @@ ssw_xpaned_init (SswXpaned *xpaned)
 {
   gint i;
   GtkWidget *widget = GTK_WIDGET (xpaned);
-  for (i = 0; i < 4; ++i)
-    xpaned->kinder[i] = NULL;
 
   gtk_widget_set_has_window (widget, FALSE);
   gtk_widget_set_can_focus (widget, TRUE);
