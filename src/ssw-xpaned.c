@@ -190,45 +190,50 @@ __size_allocate (GtkWidget *widget, GtkAllocation *allocation)
       if (!gtk_widget_is_visible (child))
         continue;
 
-      gint min_width;
-      gint min_height;
-      gtk_widget_get_preferred_width (child, &min_width, NULL);
-      gtk_widget_get_preferred_height (child, &min_height, NULL);
+      {
+	gint min_width;
+	gtk_widget_get_preferred_width (child, &min_width, NULL);
 
-      if (ssw_child->left == (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL))
-        {
-          alloc.x = allocation->x;
-          alloc.width = allocation->width * hpos;
-        }
-      else
-        {
-          alloc.x = allocation->x + allocation->width * hpos;
-          if (hpos > 0 && hpos < 1)
-            alloc.x += HANDLE_WIDTH / 2;
-          alloc.width = allocation->width * (1.0 - hpos);
-        }
-      if (hpos > 0 && hpos < 1)
-        alloc.width -= HANDLE_WIDTH / 2;
 
-      if (ssw_child->top == 0)
-        {
-          alloc.y = allocation->y;
-          alloc.height = allocation->height * vpos;
-        }
-      else
-        {
-          alloc.y = allocation->y + allocation->height * vpos;
-          if (vpos > 0 && vpos < 1)
-            alloc.y += HANDLE_WIDTH / 2;
-          alloc.height = allocation->height * (1.0 - vpos);
-        }
-      if (vpos > 0 && vpos < 1)
-        alloc.height -= HANDLE_WIDTH / 2;
+	if (ssw_child->left == (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL))
+	  {
+	    alloc.x = allocation->x;
+	    alloc.width = allocation->width * hpos;
+	  }
+	else
+	  {
+	    alloc.x = allocation->x + allocation->width * hpos;
+	    if (hpos > 0 && hpos < 1)
+	      alloc.x += HANDLE_WIDTH / 2;
+	    alloc.width = allocation->width * (1.0 - hpos);
+	  }
+	if (hpos > 0 && hpos < 1)
+	  alloc.width -= HANDLE_WIDTH / 2;
+	if (alloc.width < min_width)
+	  alloc.width = min_width;
 
-      if (alloc.width < min_width)
-        alloc.width = min_width;
-      if (alloc.height < min_height)
-        alloc.height = min_height;
+      }
+      {
+	gint min_height;
+	gtk_widget_get_preferred_height (child, &min_height, NULL);
+	if (ssw_child->top == 0)
+	  {
+	    alloc.y = allocation->y;
+	    alloc.height = allocation->height * vpos;
+	  }
+	else
+	  {
+	    alloc.y = allocation->y + allocation->height * vpos;
+	    if (vpos > 0 && vpos < 1)
+	      alloc.y += HANDLE_WIDTH / 2;
+	    alloc.height = allocation->height * (1.0 - vpos);
+	  }
+	if (vpos > 0 && vpos < 1)
+	  alloc.height -= HANDLE_WIDTH / 2;
+
+	if (alloc.height < min_height)
+	  alloc.height = min_height;
+      }
 
       gtk_widget_size_allocate (child, &alloc);
     }
