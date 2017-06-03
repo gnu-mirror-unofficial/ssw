@@ -374,6 +374,25 @@ __draw (GtkWidget *widget, cairo_t *cr)
 
   GtkStyleContext *sc = gtk_widget_get_style_context (widget);
 
+  GtkCssProvider *cp = gtk_css_provider_new ();
+  const gchar *css = "* {\n"
+    " border-width: 2px;\n"
+    " border-radius: 2px;\n"
+    " border-color: black;\n"
+    " border-style: solid;\n"
+    "}";
+
+  gtk_css_provider_load_from_data (cp, css, strlen (css), 0);
+
+  gtk_style_context_add_provider (sc, GTK_STYLE_PROVIDER (cp),
+				  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+
+  GtkBorder border;
+  gtk_style_context_get_border (sc,
+				gtk_widget_get_state_flags (widget),
+				&border);
+
+
   int row = priv->vaxis->last_cell;
   gint y;
   for (y = priv->vaxis->cell_limits->len - 1;
@@ -427,34 +446,12 @@ __draw (GtkWidget *widget, cairo_t *cr)
 
 		  if (col == active_col && row == active_row)
 		    {
-		      GtkCssProvider *cp = gtk_css_provider_new ();
-		      const gchar *css = "* {\n"
-			" border-width: 2px;\n"
-			" border-radius: 2px;\n"
-			" border-color: black;\n"
-			" border-style: solid;\n"
-			"}";
-
-		      gtk_css_provider_load_from_data (cp, css, strlen (css), 0);
-
-		      gtk_style_context_add_provider (sc, GTK_STYLE_PROVIDER (cp),
-						      GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-
-		      GtkBorder border;
-		      gtk_style_context_get_border (sc,
-						    gtk_widget_get_state_flags (widget),
-						    &border);
-
 		      /* Draw frame */
 		      gtk_render_frame (sc, cr,
 					rect.x - border.left,
 					rect.y - border.top,
 					rect.width + border.left + border.right + 1,
 					rect.height + border.top + border.bottom + 1);
-
-		      gtk_style_context_remove_provider (sc, GTK_STYLE_PROVIDER (cp));
-
-		      g_object_unref (cp);
 		    }
 
 		  if (col != active_col || row != active_row ||
@@ -511,6 +508,10 @@ __draw (GtkWidget *widget, cairo_t *cr)
     }
 
   draw_selection (body, cr);
+
+  gtk_style_context_remove_provider (sc, GTK_STYLE_PROVIDER (cp));
+
+  g_object_unref (cp);
 
   return GTK_WIDGET_CLASS (ssw_sheet_body_parent_class)->draw (widget, cr);
 }
