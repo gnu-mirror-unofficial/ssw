@@ -824,7 +824,8 @@ ensure_visible_widgets (SswSheetAxis *axis, gboolean force_reload)
 static void
 value_changed_cb (GtkAdjustment *adjustment, gpointer user_data)
 {
-  ensure_visible_widgets (user_data, FALSE);
+  SswSheetAxis *axis = SSW_SHEET_AXIS (user_data);
+  ensure_visible_widgets (axis, FALSE);
 }
 
 static void
@@ -832,7 +833,7 @@ items_changed_cb (GListModel *model,
                   guint position,
                   guint removed, guint added, gpointer user_data)
 {
-  SswSheetAxis *axis = user_data;
+  SswSheetAxis *axis = SSW_SHEET_AXIS (user_data);
   gint i;
   PRIV_DECL (user_data);
 
@@ -1161,22 +1162,18 @@ ssw_sheet_axis_set_model (SswSheetAxis *axis, GListModel *model)
   PRIV_DECL (axis);
 
   if (priv->model != NULL)
-    {
-      g_signal_handlers_disconnect_by_func (priv->model,
-                                            G_CALLBACK (items_changed_cb),
-                                            axis);
-      g_object_unref (priv->model);
-    }
+    g_object_unref (priv->model);
 
   PRIV (axis)->model = model;
   if (model != NULL)
     {
-      g_signal_connect (G_OBJECT (model), "items-changed",
-                        G_CALLBACK (items_changed_cb), axis);
+      g_signal_connect_object (G_OBJECT (model), "items-changed",
+			       G_CALLBACK (items_changed_cb), axis, 0);
       g_object_ref (model);
     }
 
-  g_signal_connect_swapped (model, "notify", G_CALLBACK (force_update), axis);
+  g_signal_connect_object (model, "notify", G_CALLBACK (force_update),
+			   axis, G_CONNECT_SWAPPED);
   ensure_visible_widgets (axis, TRUE);
 }
 

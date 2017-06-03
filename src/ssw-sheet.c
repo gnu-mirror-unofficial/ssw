@@ -353,8 +353,8 @@ __set_property (GObject *object,
 					"size", n_rows,
 					NULL);
 
-	  g_signal_connect (sheet->data_model, "items-changed",
-			    G_CALLBACK (resize_vmodel), sheet);
+	  g_signal_connect_object (sheet->data_model, "items-changed",
+				   G_CALLBACK (resize_vmodel), sheet, 0);
 
 	  arrange (sheet);
 	}
@@ -367,8 +367,8 @@ __set_property (GObject *object,
 					"size", n_cols,
 					NULL);
 
-	  g_signal_connect (sheet->data_model, "items-changed",
-			    G_CALLBACK (resize_hmodel), sheet);
+	  g_signal_connect_object (sheet->data_model, "items-changed",
+				   G_CALLBACK (resize_hmodel), sheet, 0);
 
 	  arrange (sheet);
 	}
