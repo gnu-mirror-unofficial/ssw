@@ -434,10 +434,6 @@ __draw (GtkWidget *widget, cairo_t *cr)
 	      && row < gtk_tree_model_iter_n_children (priv->data_model, NULL)
 	      && col < gtk_tree_model_get_n_columns (priv->data_model))
 	    {
-	      GValue value = G_VALUE_INIT;
-
-	      gtk_tree_model_get_value (priv->data_model, &iter, col, &value);
-
 	      GtkCellRenderer *renderer = choose_renderer (body, col, row);
 
 	      if (GTK_IS_CELL_RENDERER_TEXT (renderer))
@@ -454,6 +450,7 @@ __draw (GtkWidget *widget, cairo_t *cr)
 					rect.height + border.top + border.bottom + 1);
 		    }
 
+
 		  if (col != active_col || row != active_row ||
 		      (priv->sheet->selected_body != GTK_WIDGET (body)))
 		    {
@@ -461,7 +458,10 @@ __draw (GtkWidget *widget, cairo_t *cr)
 			 It is already rendered by the cell_editable widget
 			 and rendering twice looks unaesthetic */
 
+		      GValue value = G_VALUE_INIT;
+		      gtk_tree_model_get_value (priv->data_model, &iter, col, &value);
 		      cell_text = priv->cf (priv->sheet, priv->data_model, col, row, &value);
+		      g_value_unset (&value);
 		    }
 
 		  g_object_set (renderer,
@@ -471,7 +471,7 @@ __draw (GtkWidget *widget, cairo_t *cr)
 		  g_free (cell_text);
 		}
 
-	      g_value_unset (&value);
+
 
 	      gtk_cell_renderer_render (renderer, cr, widget,
 					&rect, &rect, 0);
