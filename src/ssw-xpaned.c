@@ -122,33 +122,40 @@ __draw (GtkWidget *w, cairo_t   *cr)
   if (blocked)
     return TRUE;
 
+  gfloat vpos ;
+  gfloat hpos ;
+
   gint height = gtk_widget_get_allocated_height (w);
   gint width = gtk_widget_get_allocated_width (w);
 
-  GtkStyleContext *sc = gtk_widget_get_style_context (w);
-  GdkRGBA *color = NULL;
-
-  gtk_style_context_get (sc,
-			 GTK_STATE_FLAG_SELECTED,
-			 "background-color",
-			 &color, NULL);
-
-  GtkCssProvider *cp = gtk_css_provider_new ();
-  gchar *css = g_strdup_printf ("* {background-color: rgba(%d, %d, %d, 0.25);}",
-				(int) (100.0 * color->red),
-				(int) (100.0 * color->green),
-				(int) (100.0 * color->blue));
-
-  gtk_css_provider_load_from_data (cp, css, strlen (css), 0);
-  g_free (css);
-  gdk_rgba_free (color);
-
-  gtk_style_context_add_provider (sc, GTK_STYLE_PROVIDER (cp),
-				  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-
-  gfloat vpos ;
-  gfloat hpos ;
   get_adjusted_position (xpaned, &hpos, &vpos);
+
+  GtkStyleContext *sc = gtk_widget_get_style_context (w);
+  {
+    GdkRGBA *color = NULL;
+
+    GtkStateFlags flags = gtk_style_context_get_state (sc);
+
+    gtk_style_context_get (sc,
+			   flags,
+			   "background-color",
+			   &color, NULL);
+
+    GtkCssProvider *cp = gtk_css_provider_new ();
+    gchar *css = g_strdup_printf ("* {background-color: rgba(%d, %d, %d, 0.25);}",
+				  (int) (100.0 * color->red),
+				  (int) (100.0 * color->green),
+				  (int) (100.0 * color->blue));
+
+    gtk_css_provider_load_from_data (cp, css, strlen (css), 0);
+    g_free (css);
+    gdk_rgba_free (color);
+
+    gtk_style_context_add_provider (sc, GTK_STYLE_PROVIDER (cp),
+				    GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+
+    g_object_unref (cp);
+  }
 
   /* Draw the horizontal handle */
   if (vpos > 0 && vpos < 1.0)
