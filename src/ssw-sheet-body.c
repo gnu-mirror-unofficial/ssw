@@ -263,11 +263,11 @@ draw_selection (SswSheetBody *body, cairo_t *cr)
       gint xpos_start, ypos_start;
       if (0 != ssw_sheet_axis_find_boundary (priv->haxis, mySelect.start_x,
 					     &xpos_start, NULL))
-	return;
+	goto done;
 
       if (0 != ssw_sheet_axis_find_boundary (priv->vaxis, mySelect.start_y,
 					     &ypos_start, NULL))
-	return;
+	goto done;
 
       gint xlimit = width;
       gint ylimit = height;
@@ -288,6 +288,7 @@ draw_selection (SswSheetBody *body, cairo_t *cr)
 			     ylimit - ypos_start);
     }
 
+ done:
   gtk_style_context_remove_provider (sc, GTK_STYLE_PROVIDER (cp));
   g_free (css);
   g_object_unref (cp);
