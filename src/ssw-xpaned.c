@@ -257,9 +257,6 @@ __get_preferred_width (GtkWidget       *widget,
 {
   SswXpaned *xpaned = SSW_XPANED (widget);
 
-  gint min_width = HANDLE_WIDTH;
-  gint nat_width = HANDLE_WIDTH;
-
   gint left_half_min = 0;
   gint right_half_min = 0;
   gint left_half_nat = 0;
@@ -287,10 +284,18 @@ __get_preferred_width (GtkWidget       *widget,
     }
 
   if (minimum_width)
-    *minimum_width = left_half_min + right_half_min;
+    {
+      *minimum_width = left_half_min + right_half_min;
+      if (left_half_min > 0 && right_half_min > 0)
+	*minimum_width += HANDLE_WIDTH;
+    }
 
   if (natural_width)
-    *natural_width = left_half_nat + right_half_nat;
+    {
+      *natural_width = left_half_nat + right_half_nat;
+      if (left_half_nat > 0 && right_half_nat > 0)
+	*natural_width += HANDLE_WIDTH;
+    }
 }
 
 static void
@@ -299,9 +304,6 @@ __get_preferred_height (GtkWidget       *widget,
 			gint            *natural_height)
 {
   SswXpaned *xpaned = SSW_XPANED (widget);
-
-  gint min_height = HANDLE_WIDTH;
-  gint nat_height = HANDLE_WIDTH;
 
   gint top_half_min = 0;
   gint bottom_half_min = 0;
@@ -330,10 +332,18 @@ __get_preferred_height (GtkWidget       *widget,
     }
 
   if (minimum_height)
-    *minimum_height = top_half_min + bottom_half_min;
+    {
+      *minimum_height = top_half_min + bottom_half_min;
+      if (top_half_min > 0 && bottom_half_min > 0)
+	*minimum_height += HANDLE_WIDTH;
+    }
 
   if (natural_height)
-    *natural_height = top_half_nat + bottom_half_nat;
+    {
+      *natural_height = top_half_nat + bottom_half_nat;
+      if (top_half_nat > 0 && bottom_half_nat > 0)
+	*natural_height += HANDLE_WIDTH;
+    }
 }
 
 

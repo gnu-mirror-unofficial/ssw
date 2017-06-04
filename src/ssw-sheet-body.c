@@ -2179,8 +2179,12 @@ text_editing_started (GtkCellRenderer *cell,
 		"hconstraint", hsize,
 		"vconstraint", vsize,
 		NULL);
-  gtk_container_add (GTK_CONTAINER (priv->active_cell_holder), GTK_WIDGET (editable));
-  gtk_layout_move (GTK_LAYOUT (body), priv->active_cell_holder,  hlocation, vlocation);
+
+  gtk_container_add (GTK_CONTAINER (priv->active_cell_holder),
+		     GTK_WIDGET (editable));
+
+  gtk_layout_move (GTK_LAYOUT (body), priv->active_cell_holder,
+		   hlocation, vlocation);
 
   GtkTreeIter iter;
   GValue value = G_VALUE_INIT;
