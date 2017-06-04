@@ -22,7 +22,7 @@
 
 #define P_(X) (X)
 
-enum  {CHANGED,
+enum  {ITEMS_CHANGED,
        n_SIGNALS};
 
 static guint signals [n_SIGNALS];
@@ -172,6 +172,10 @@ __set_property (GObject *object,
 
 		gtk_tree_path_free (path);
 	      }
+	    gint diff = (m->rows - old_rows);
+	    g_signal_emit_by_name (object, "items-changed", old_rows,
+				   (diff > 0) ? 0 : -diff,
+				   (diff > 0) ? diff : 0);
 	  }
       }
       break;
@@ -235,8 +239,8 @@ ssw_virtual_model_class_init (SswVirtualModelClass *class)
 
   object_class->finalize = __finalize;
 
-  signals [CHANGED] =
-    g_signal_new ("changed",
+  signals [ITEMS_CHANGED] =
+    g_signal_new ("items-changed",
 		  G_TYPE_FROM_CLASS (class),
 		  G_SIGNAL_RUN_FIRST,
 		  0,
