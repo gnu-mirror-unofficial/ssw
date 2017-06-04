@@ -214,13 +214,13 @@ __set_property (GObject *object,
 	if (t == GTK_TYPE_CONTAINER)
 	  t = SSW_TYPE_XPANED;
 
-	GtkWidget *grid = g_object_new (t, NULL);
-
-	gtk_container_add (GTK_CONTAINER (sheet), grid);
+	GtkWidget *splitter = g_object_new (t, NULL);
+	gtk_container_add (GTK_CONTAINER (sheet), splitter);
 
 	for (i = 0; i < DIM * DIM ; ++i)
 	  {
-	    gtk_container_add_with_properties (GTK_CONTAINER (grid), sheet->sw[i],
+	    gtk_container_add_with_properties (GTK_CONTAINER (splitter),
+					       sheet->sw[i],
 					       "left-attach", i%DIM,
 					       "top-attach", i/DIM,
 					       NULL);
