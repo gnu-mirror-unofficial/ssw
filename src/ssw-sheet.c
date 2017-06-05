@@ -171,8 +171,11 @@ __dispose (GObject *object)
   if (sheet->dispose_has_run)
     return;
 
-  g_object_unref (sheet->vmodel);
-  g_object_unref (sheet->hmodel);
+  if (sheet->vmodel)
+    g_object_unref (sheet->vmodel);
+
+  if (sheet->hmodel)
+    g_object_unref (sheet->hmodel);
 
   sheet->dispose_has_run = TRUE;
 

@@ -537,7 +537,8 @@ __dispose (GObject *object)
   if (priv->dispose_has_run)
     return;
 
-  g_object_unref (priv->data_model);
+  if (priv->data_model)
+    g_object_unref (priv->data_model);
 
   priv->dispose_has_run = TRUE;
 
