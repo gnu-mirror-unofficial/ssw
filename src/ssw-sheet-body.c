@@ -713,12 +713,16 @@ __button_press_event (GtkWidget *w, GdkEventButton *e)
   if (trim_to_model_limits (body, &col, &row))
     return FALSE;
 
-  set_active_cell (body, col, row);
-
   if (priv->sheet->selected_body != GTK_WIDGET (body))
     {
       destroy_editor_widget (SSW_SHEET_BODY (priv->sheet->selected_body));
     }
+
+  GdkWindow *win = gtk_widget_get_window (GTK_WIDGET (body));
+
+  if (gdk_window_get_cursor (win) != priv->hc
+      && gdk_window_get_cursor (win) != priv->vc)
+    set_active_cell (body, col, row);
 
   priv->sheet->selected_body = GTK_WIDGET (body);
   gtk_widget_grab_focus (w);
@@ -1363,8 +1367,6 @@ selection_drag_begin (GtkGesture *gesture,
 
   GdkWindow *win = gtk_widget_get_window (GTK_WIDGET (body));
 
-  ssw_sheet_body_unset_selection (body);
-
   if (gdk_window_get_cursor (win) == priv->hc || gdk_window_get_cursor (win) == priv->vc)
     {
       gtk_gesture_set_state (gesture, GTK_EVENT_SEQUENCE_DENIED);
@@ -1372,6 +1374,8 @@ selection_drag_begin (GtkGesture *gesture,
     }
 
   gtk_gesture_set_state (gesture, GTK_EVENT_SEQUENCE_CLAIMED);
+
+  ssw_sheet_body_unset_selection (body);
 
   priv->selection->start_x = ssw_sheet_axis_find_cell (priv->haxis, start_x, NULL, NULL);
   priv->selection->start_y = ssw_sheet_axis_find_cell (priv->vaxis, start_y, NULL, NULL);
