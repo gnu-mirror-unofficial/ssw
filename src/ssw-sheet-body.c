@@ -2130,6 +2130,10 @@ text_editing_started (GtkCellRenderer *cell,
   SswSheetBody *body = NULL;
   gint row = -1, col = -1;
   sscanf (path, "r%*dc%*ds%p", &body);
+
+  if (body == NULL) /* There is no active cell! */
+    return;
+
   get_active_cell (body, &col, &row);
   PRIV_DECL (body);
 
