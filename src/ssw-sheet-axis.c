@@ -1896,7 +1896,7 @@ void
 ssw_sheet_axis_jump_end_with_offset (SswSheetAxis *axis, gint whereto, gint offs)
 {
   PRIV_DECL (axis);
-  g_return_if_fail (whereto < ssw_sheet_axis_get_size (axis));
+  g_return_if_fail (whereto <= ssw_sheet_axis_get_size (axis));
 
   gdouble upper = gtk_adjustment_get_upper (priv->adjustment);
   gdouble page_size = gtk_adjustment_get_page_size (priv->adjustment);

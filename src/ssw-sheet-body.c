@@ -431,6 +431,15 @@ __draw (GtkWidget *widget, cairo_t *cr)
 	  rect.height = vgeom->size;
 
 	  --col;
+	  if (col == active_col && row == active_row)
+	    {
+	      /* Draw frame */
+	      gtk_render_frame (sc, cr,
+				rect.x - border.left,
+				rect.y - border.top,
+				rect.width + border.left + border.right + 1,
+				rect.height + border.top + border.bottom + 1);
+	    }
 	  if (priv->data_model
 	      && row < gtk_tree_model_iter_n_children (priv->data_model, NULL)
 	      && col < gtk_tree_model_get_n_columns (priv->data_model))
@@ -440,17 +449,6 @@ __draw (GtkWidget *widget, cairo_t *cr)
 	      if (GTK_IS_CELL_RENDERER_TEXT (renderer))
 		{
 		  char *cell_text = NULL;
-
-		  if (col == active_col && row == active_row)
-		    {
-		      /* Draw frame */
-		      gtk_render_frame (sc, cr,
-					rect.x - border.left,
-					rect.y - border.top,
-					rect.width + border.left + border.right + 1,
-					rect.height + border.top + border.bottom + 1);
-		    }
-
 
 		  if (col != active_col || row != active_row ||
 		      (priv->sheet->selected_body != GTK_WIDGET (body)))
