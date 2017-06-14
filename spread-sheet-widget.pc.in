@@ -8,4 +8,4 @@ Description: A spreadsheet widget for Gtk+
 Version: %version%
 Requires: %glib_dependency% %gtk_dependency%
 Libs: -L${libdir} -lspread-sheet-widget -lgtk-3
-Cflags: -I${includedir}/gtk-3.0 
+Cflags: -I${includedir}
