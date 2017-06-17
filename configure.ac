@@ -1,6 +1,6 @@
 AC_INIT([spread-sheet-widget], [0.0])
 
-AM_INIT_AUTOMAKE([foreign check-news])
+AM_INIT_AUTOMAKE()
 AC_CONFIG_MACRO_DIR([aclocal-aux])
 AC_CONFIG_HEADERS([config.h])
 
