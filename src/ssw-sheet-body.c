@@ -599,7 +599,7 @@ set_selection (SswSheetBody *body, gint start_x, gint start_y, gint end_x, gint 
    model.   Returns TRUE if COL or ROW was changed.
 */
 static gboolean
-trim_to_model_limits (SswSheetBody *body, gint *col, gint *row)
+trim_to_model_limits (SswSheetBody *body, gint old_col, gint old_row, gint *col, gint *row)
 {
   gboolean clipped = FALSE;
   PRIV_DECL (body);
@@ -607,6 +607,12 @@ trim_to_model_limits (SswSheetBody *body, gint *col, gint *row)
   /* Allow editing of a new cell */
   if (priv->editable)
     {
+      if (old_row == ssw_sheet_axis_get_size (priv->vaxis) && old_col == 0)
+	return FALSE;
+
+      if (old_col == ssw_sheet_axis_get_size (priv->haxis) && old_row == 0)
+	return FALSE;
+
       if (*row == ssw_sheet_axis_get_size (priv->vaxis) && *col == 0)
 	return FALSE;
 
@@ -705,10 +711,14 @@ __button_press_event (GtkWidget *w, GdkEventButton *e)
 
   GdkEventButton *eb = (GdkEventButton *) e;
 
+  gint old_row = -1, old_col = -1;
+  get_active_cell (body, &old_col, &old_row);
+
+
   gint col  = ssw_sheet_axis_find_cell (priv->haxis, eb->x, NULL, NULL);
   gint row  = ssw_sheet_axis_find_cell (priv->vaxis, eb->y, NULL, NULL);
 
-  if (trim_to_model_limits (body, &col, &row))
+  if (trim_to_model_limits (body, old_col, old_row, &col, &row))
     return FALSE;
 
   if (priv->sheet->selected_body != GTK_WIDGET (body))
@@ -952,7 +962,7 @@ __key_press_event (GtkWidget *w, GdkEventKey *e)
       break;
     }
 
-  trim_to_model_limits (body, &col, &row);
+  trim_to_model_limits (body, old_col, old_row, &col, &row);
 
   if (col > ssw_sheet_axis_get_last (priv->haxis))
     ssw_sheet_axis_jump_end (priv->haxis, col);
