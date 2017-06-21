@@ -75,3 +75,11 @@ uninstall-local:
 EXTRA_DIST=TODO src/marshall-list spread-sheet-widget.pc.in NEWS
 
 DISTCLEANFILES=$(BUILT_SOURCES)
+
+dist-hook:
+	if test -d $(top_srcdir)/.git; then                     \
+		git -C $(top_srcdir)/.git log --date=short --pretty='%cd %an <%ae>%n%n        %s%n%n%n' > $(distdir)/cl-t || exit 1;                                        \
+		rm -f $(distdir)/ChangeLog;                           \
+		mv $(distdir)/cl-t $(distdir)/ChangeLog;              \
+        fi
+
