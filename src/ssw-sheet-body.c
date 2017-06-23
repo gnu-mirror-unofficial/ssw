@@ -1159,6 +1159,7 @@ __set_property (GObject *object,
       break;
     case PROP_CONVERT_FWD_FUNC:
       priv->cf = g_value_get_pointer (value);
+      gtk_widget_queue_draw (GTK_WIDGET (body));
       break;
     case PROP_CONVERT_REV_FUNC:
       priv->revf = g_value_get_pointer (value);
