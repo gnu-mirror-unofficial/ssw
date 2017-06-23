@@ -358,6 +358,21 @@ ssw_sheet_default_forward_conversion (SswSheet *sheet, GtkTreeModel *m,
 
 static GtkCellRenderer * choose_renderer (SswSheetBody *body, gint col, gint row);
 
+static const gchar *unfocused_border = "* {\n"
+  " border-width: 2px;\n"
+  " border-radius: 2px;\n"
+  " border-color: black;\n"
+  " border-style: dotted;\n"
+  "}";
+
+
+static const gchar *focused_border = "* {\n"
+  " border-width: 2px;\n"
+  " border-radius: 2px;\n"
+  " border-color: black;\n"
+  " border-style: solid;\n"
+  "}";
+
 static gboolean
 __draw (GtkWidget *widget, cairo_t *cr)
 {
@@ -376,14 +391,13 @@ __draw (GtkWidget *widget, cairo_t *cr)
   GtkStyleContext *sc = gtk_widget_get_style_context (widget);
 
   GtkCssProvider *cp = gtk_css_provider_new ();
-  const gchar *css = "* {\n"
-    " border-width: 2px;\n"
-    " border-radius: 2px;\n"
-    " border-color: black;\n"
-    " border-style: solid;\n"
-    "}";
 
-  gtk_css_provider_load_from_data (cp, css, strlen (css), 0);
+  if ((gtk_widget_is_focus (widget) ||
+       (priv->editor && gtk_widget_is_focus (priv->editor))))
+    gtk_css_provider_load_from_data (cp, focused_border, strlen (focused_border), 0);
+  else
+    gtk_css_provider_load_from_data (cp, unfocused_border,
+				     strlen (unfocused_border), 0);
 
   gtk_style_context_add_provider (sc, GTK_STYLE_PROVIDER (cp),
 				  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
