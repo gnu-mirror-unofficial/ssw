@@ -40,22 +40,28 @@ git (GListModel *list)
 }
 
 static gpointer
-gi (GListModel *list, guint position)
+datum_create_func (SswAxisModel *am, guint id)
 {
   SswDatum *gd = SSW_DATUM (g_object_new (SSW_TYPE_DATUM, NULL));
 
-  guint id = position + SSW_AXIS_MODEL(list)->offset;
-
   gd->text = g_strdup_printf ("%u", id);
   gd->label = g_strdup_printf ("Number %u", id);
-  if (SSW_AXIS_MODEL (list)->strike)
-    gd->strike = (position % 5) == 4;
-  gd->wide = (position % 7 ) == 6;
+  if (am->strike)
+    gd->strike = (id % 5) == 4;
+  gd->wide = (id % 7 ) == 6;
 
-  if (position == 2 && SSW_AXIS_MODEL (list)->wide2)
+  if (id == 2 && am->wide2)
     gd->wide = TRUE;
 
   return gd;
+}
+
+static gpointer
+gi (GListModel *list, guint position)
+{
+  guint id = position + SSW_AXIS_MODEL(list)->offset;
+
+  return datum_create_func (SSW_AXIS_MODEL (list), id);
 }
 
 
