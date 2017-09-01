@@ -73,17 +73,12 @@ draw_strike (GtkWidget *widget, cairo_t *cr, gpointer ud)
 GtkWidget *
 cell_fill_func (SswSheetAxis *axis,
 		gpointer   item,
-		GtkWidget *old_widget,
 		guint      item_index)
 {
   SswDatum *datum = SSW_DATUM (item);
 
-  if (old_widget)
-    g_object_unref (old_widget);
-
   GtkWidget *button = gtk_button_new_with_label (datum->text);
   gtk_widget_set_tooltip_text (GTK_WIDGET (button), datum->label);
-
 
   if (datum->strike)
     g_signal_connect_after (button, "draw", G_CALLBACK (draw_strike), NULL);

@@ -52,7 +52,6 @@ G_DECLARE_FINAL_TYPE (SswDatum, ssw_datum, SSW, DATUM, GObject)
 
 GtkWidget *cell_fill_func (SswSheetAxis *axis,
                gpointer   item,
-               GtkWidget *old_widget,
                guint      item_index);
 
 
