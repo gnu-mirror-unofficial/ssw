@@ -317,7 +317,7 @@ get_widget (SswSheetAxis *axis, guint index)
       g_object_unref (old_widget);
     }
 
-  new_widget = cell_fill_func (axis, item, index);
+  new_widget = cell_fill_func (item);
 
   g_object_set_data (G_OBJECT (new_widget), "item-id", GINT_TO_POINTER (index));
 

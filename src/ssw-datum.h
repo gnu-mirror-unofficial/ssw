@@ -20,7 +20,8 @@
 #define _SSW_DATUM_H
 
 #include <glib-object.h>
-#include "ssw-sheet-axis.h"
+#include "ssw-axis-model.h"
+#include <gtk/gtk.h>
 
 struct _SswDatum
 {
@@ -50,9 +51,8 @@ struct _SswDatumClass
 
 G_DECLARE_FINAL_TYPE (SswDatum, ssw_datum, SSW, DATUM, GObject)
 
-GtkWidget *cell_fill_func (SswSheetAxis *axis,
-               gpointer   item,
-               guint      item_index);
+GtkWidget *cell_fill_func (gpointer   item);
+gpointer datum_create_func (SswAxisModel *am, guint id);
 
 
 

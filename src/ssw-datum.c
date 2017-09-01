@@ -70,10 +70,27 @@ draw_strike (GtkWidget *widget, cairo_t *cr, gpointer ud)
   return FALSE;
 }
 
+#include "ssw-axis-model.h"
+
+gpointer
+datum_create_func (SswAxisModel *am, guint id)
+{
+  SswDatum *gd = SSW_DATUM (g_object_new (SSW_TYPE_DATUM, NULL));
+
+  gd->text = g_strdup_printf ("%u", id);
+  gd->label = g_strdup_printf ("Number %u", id);
+  if (am->strike)
+    gd->strike = (id % 5) == 4;
+  gd->wide = (id % 7 ) == 6;
+
+  if (id == 2 && am->wide2)
+    gd->wide = TRUE;
+
+  return gd;
+}
+
 GtkWidget *
-cell_fill_func (SswSheetAxis *axis,
-		gpointer   item,
-		guint      item_index)
+cell_fill_func (gpointer item)
 {
   SswDatum *datum = SSW_DATUM (item);
 
