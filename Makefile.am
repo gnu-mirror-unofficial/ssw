@@ -14,7 +14,6 @@ libspread_sheet_widget_la_SOURCES = \
 	src/ssw-sheet-body.c \
 	src/ssw-sheet-single.c \
 	src/ssw-sheet.c \
-	src/ssw-datum.c \
 	src/ssw-constraint.c \
 	src/ssw-virtual-model.c \
 	src/ssw-cell.c \
@@ -28,7 +27,6 @@ libspread_sheet_widget_la_SOURCES = \
 
 
 include_HEADERS = \
-	src/ssw-datum.h \
 	src/ssw-sheet.h \
 	src/ssw-sheet-axis.h \
 	src/ssw-axis-model.h

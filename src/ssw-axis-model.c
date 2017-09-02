@@ -20,10 +20,51 @@
 #include <gtk/gtk.h>
 
 #include "ssw-axis-model.h"
-#include "ssw-datum.h"
-
 
 #define P_(X) (X)
+
+
+
+/* Draw a diagonal line through the widget */
+static gboolean
+draw_strike (GtkWidget *widget, cairo_t *cr, gpointer ud)
+{
+  guint width = gtk_widget_get_allocated_width (widget);
+  guint height = gtk_widget_get_allocated_height (widget);
+
+  GtkStyleContext *sc = gtk_widget_get_style_context (widget);
+
+  gtk_render_line (sc, cr, 0, 0, width, height);
+
+  return FALSE;
+}
+
+static gpointer
+datum_create_func (SswAxisModel *am, guint id)
+{
+  gchar *text = g_strdup_printf ("%u", id);
+  gchar *label = g_strdup_printf ("Number %u", id);
+
+  GtkWidget *button = gtk_button_new_with_label (text);
+  gtk_widget_set_tooltip_text (GTK_WIDGET (button), label);
+  g_free (text);
+  g_free (label);
+
+  if ((id % 5) == 4 && am->strike)
+    g_signal_connect_after (button, "draw", G_CALLBACK (draw_strike), NULL);
+
+  if ((id % 7) == 6)
+    {
+      GtkRequisition req;
+      gtk_widget_show_now (GTK_WIDGET (button));
+      gtk_widget_get_preferred_size (button, NULL, &req);
+      gtk_widget_set_size_request (button, req.width * 3, -1);
+    }
+
+  gtk_widget_set_sensitive (GTK_WIDGET (button), TRUE);
+
+  return button;
+}
 
 
 
@@ -36,7 +77,7 @@ gni (GListModel *list)
 static GType
 git (GListModel *list)
 {
-  return SSW_TYPE_DATUM;
+  return G_TYPE_POINTER;
 }
 
 static gpointer

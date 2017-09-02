@@ -19,7 +19,7 @@
 #ifndef _SSW_AXIS_MODEL_H
 #define _SSW_AXIS_MODEL_H
 
-
+#include <glib-object.h>
 
 G_DECLARE_FINAL_TYPE (SswAxisModel, ssw_axis_model, SSW, AXIS_MODEL, GObject)
 

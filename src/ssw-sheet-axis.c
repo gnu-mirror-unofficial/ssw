@@ -41,7 +41,6 @@
 
 #include <config.h>
 #include "ssw-sheet-axis.h"
-#include "ssw-datum.h"
 #include "ssw-marshaller.h"
 #include <math.h>
 #include <stdlib.h>
@@ -305,19 +304,15 @@ button_released (GtkGesture *g,
 static GtkWidget *
 get_widget (SswSheetAxis *axis, guint index)
 {
-  gpointer item;
-  GtkWidget *new_widget;
   PRIV_DECL (axis);
 
-  item = g_list_model_get_item (priv->model, index);
+  GtkWidget *new_widget = g_list_model_get_item (priv->model, index);
 
   if (priv->pool->len > 0)
     {
       GtkWidget *old_widget = g_ptr_array_remove_index_fast (priv->pool, 0);
       g_object_unref (old_widget);
     }
-
-  new_widget = cell_fill_func (item);
 
   g_object_set_data (G_OBJECT (new_widget), "item-id", GINT_TO_POINTER (index));
 
