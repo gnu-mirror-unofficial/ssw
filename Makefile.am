@@ -34,7 +34,7 @@ include_HEADERS = \
 
 noinst_PROGRAMS = demo/demo
 demo_demo_LDADD = $(GTK3_LIBS) $(GLIB2_LIBS) -lm libspread-sheet-widget.la
-demo_demo_SOURCES = demo/main.c
+demo_demo_SOURCES = demo/main.c demo/custom-axis.c demo/custom-axis.h
 
 BUILT_SOURCES = \
 	src/ssw-marshaller.c \

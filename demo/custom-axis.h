@@ -1,6 +1,6 @@
 /*
     A candidate replacement for Pspp's sheet
-    Copyright (C) 2016, 2017  John Darrington
+    Copyright (C) 2016  John Darrington
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,29 +16,33 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _SSW_AXIS_MODEL_H
-#define _SSW_AXIS_MODEL_H
+#ifndef _CUSTOM_AXIS_MODEL_H
+#define _CUSTOM_AXIS_MODEL_H
 
 #include <glib-object.h>
 
-G_DECLARE_FINAL_TYPE (SswAxisModel, ssw_axis_model, SSW, AXIS_MODEL, GObject)
+G_DECLARE_FINAL_TYPE (CustomAxisModel, custom_axis_model, CUSTOM, AXIS_MODEL, GObject)
 
 
-struct _SswAxisModel
+struct _CustomAxisModel
 {
   GObject parent_instance;
 
+  gboolean wide2;
+  gboolean strike;
   guint size;
   gint offset;
 };
 
-struct _SswAxisModelClass
+struct _CustomAxisModelClass
 {
   GObjectClass parent_instance;
 };
 
 
 
-#define SSW_TYPE_AXIS_MODEL ssw_axis_model_get_type ()
+#define CUSTOM_TYPE_AXIS_MODEL custom_axis_model_get_type ()
+
+GObject *custom_axis_model_new (void);
 
 #endif

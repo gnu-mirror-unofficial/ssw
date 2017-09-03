@@ -26,6 +26,10 @@
 #include "ssw-axis-model.h"
 #include "ssw-virtual-model.h"
 #include "ssw-sheet-body.h"
+#include "custom-axis.h"
+
+static CustomAxisModel *ca;
+
 
 static void
 row_clicked (GtkWidget *w, gint i, gpointer ud)
@@ -67,7 +71,7 @@ on_combo_select (GtkComboBox *tb, gpointer d)
   SswSheet *sheet = SSW_SHEET (d);
 
   gint x = gtk_combo_box_get_active (tb);
-  g_object_set (sheet, "vmodel", NULL, NULL);
+  g_object_set (sheet, "vmodel", ca, NULL);
   g_object_set (sheet, "hmodel", NULL, NULL);
   g_object_set (sheet, "data-model", data_model[x], NULL);
 }
@@ -348,6 +352,10 @@ main (int argc, char **argv)
   GtkWidget *window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   GtkWidget *hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
   GtkWidget *sheet = ssw_sheet_new ();
+
+  ca = custom_axis_model_new ();
+  g_object_set (sheet, "vmodel", ca, NULL);
+  
   GtkWidget *cbox = create_control_box (sheet);
 
   g_signal_connect (sheet, "row-header-clicked",
