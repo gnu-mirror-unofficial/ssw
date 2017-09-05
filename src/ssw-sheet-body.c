@@ -1135,12 +1135,81 @@ select_entire_column (SswSheetBody *body, gint i, guint state, gpointer ud)
 
 
 static void
+set_editor_widget_value (SswSheetBody *body, GValue *value, GtkEditable *editable)
+{
+  PRIV_DECL (body);
+
+  if (editable == NULL)
+    return;
+
+  gint row = -1, col = -1;
+  get_active_cell (body, &col, &row);
+  
+  if (GTK_IS_SPIN_BUTTON (editable))
+    {
+      if (G_IS_VALUE (value))
+	{
+	  GValue dvalue = G_VALUE_INIT;
+	  g_value_init (&dvalue, G_TYPE_DOUBLE);
+	  if (g_value_transform (value, &dvalue))
+	    {
+	      gtk_spin_button_set_value (GTK_SPIN_BUTTON (editable), g_value_get_double (&dvalue));
+	    }
+	  g_value_unset (&dvalue);
+	}
+    }
+  else if (GTK_IS_ENTRY (editable))
+    {
+      gchar *s = NULL;
+      if (G_IS_VALUE (value))
+	s = priv->cf (priv->sheet, priv->data_model, col, row, value);
+      gtk_entry_set_text (GTK_ENTRY (editable), s ? s : "");
+      g_free (s);
+    }
+  else if (GTK_IS_COMBO_BOX (editable))
+    {
+      gint n = -1;
+      if (G_IS_VALUE (value))
+	n = g_value_get_enum (value);
+      gtk_combo_box_set_active (GTK_COMBO_BOX (editable), n);
+    }
+  else
+    {
+      gchar *x = NULL;
+      if (G_IS_VALUE (value))
+	x = g_strdup_value_contents (value);
+      g_warning ("Unhandled edit widget %s, when dealing with %s\n",
+		 G_OBJECT_TYPE_NAME (editable), x);
+      g_free (x);
+    }
+}
+
+static void
+on_data_change (GtkTreeModel *tm, guint posn, guint rm, guint add, gpointer p)
+{
+  SswSheetBody *body = SSW_SHEET_BODY (p);
+  PRIV_DECL (body);
+
+  gint row = -1, col = -1;
+  get_active_cell (body, &col, &row);
+
+  GtkTreeIter iter;
+  if (gtk_tree_model_iter_nth_child (priv->data_model, &iter, NULL, row))
+    {
+      GValue value = G_VALUE_INIT;
+      gtk_tree_model_get_value (priv->data_model, &iter, col, &value);
+      
+      set_editor_widget_value (body, &value, GTK_EDITABLE (priv->editor));
+      g_value_unset (&value);
+    }
+}
+
+static void
 __set_property (GObject *object,
                 guint prop_id, const GValue *value, GParamSpec *pspec)
 {
   SswSheetBody *body = SSW_SHEET_BODY (object);
   PRIV_DECL (body);
-
 
   switch (prop_id)
     {
@@ -1185,6 +1254,7 @@ __set_property (GObject *object,
       if (priv->data_model)
 	g_object_unref (priv->data_model);
       priv->data_model = g_value_get_object (value);
+      g_signal_connect (priv->data_model, "items-changed", G_CALLBACK (on_data_change), body);
       g_object_ref (priv->data_model);
       break;
     default:
@@ -2086,7 +2156,6 @@ on_editing_done (GtkCellEditable *e, gpointer ud)
   else if (GTK_IS_ENTRY (e))
     {
       const char *s = gtk_entry_get_text (GTK_ENTRY (e));
-
       priv->revf (priv->data_model, col, row, s, &value);
     }
   else if (GTK_IS_COMBO_BOX (e))
@@ -2241,52 +2310,24 @@ text_editing_started (GtkCellRenderer *cell,
   g_signal_connect (editable, "editing-done",
 		    G_CALLBACK (on_editing_done), body);
 
+
+  set_editor_widget_value (body, &value, GTK_EDITABLE (editable));
+  g_value_unset (&value);
+
   if (GTK_IS_SPIN_BUTTON (editable))
     {
-      if (G_IS_VALUE (&value))
-	{
-	  GValue dvalue = G_VALUE_INIT;
-	  g_value_init (&dvalue, G_TYPE_DOUBLE);
-	  if (g_value_transform (&value, &dvalue))
-	    {
-	      gtk_spin_button_set_value (GTK_SPIN_BUTTON (editable), g_value_get_double (&dvalue));
-	    }
-	  g_value_unset (&dvalue);
-	}
       g_signal_connect (editable, "value-changed", G_CALLBACK (finish_editing), NULL);
     }
   else if (GTK_IS_ENTRY (editable))
     {
       /* "activate" means when the Enter key is pressed */
-      g_signal_connect (editable, "activate",
-			G_CALLBACK (on_entry_activate), body);
-
-      gchar *s = NULL;
-      if (G_IS_VALUE (&value))
-	s = priv->cf (priv->sheet, priv->data_model, col, row, &value);
-      gtk_entry_set_text (GTK_ENTRY (editable), s ? s : "");
-      g_free (s);
+      g_signal_connect (editable, "activate", G_CALLBACK (on_entry_activate), body);
     }
   else if (GTK_IS_COMBO_BOX (editable))
     {
-      gint n = -1;
-      if (G_IS_VALUE (&value))
-	n = g_value_get_enum (&value);
-      gtk_combo_box_set_active (GTK_COMBO_BOX (editable), n);
       g_signal_connect_object (cell, "changed", G_CALLBACK (done_editing),
 			       editable, 0);
     }
-  else
-    {
-      gchar *x = NULL;
-      if (G_IS_VALUE (&value))
-	x = g_strdup_value_contents (&value);
-      g_warning ("Unhandled edit widget %s, when dealing with %s\n",
-		 G_OBJECT_TYPE_NAME (editable), x);
-      g_free (x);
-    }
-
-  g_value_unset (&value);
 
   gtk_widget_show_all (priv->active_cell_holder);
 }
