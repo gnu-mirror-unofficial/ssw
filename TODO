@@ -1,4 +1,1 @@
-SswDatum should be an interface.
-Too much interconnection between SswAxisModel and SswDatum.
 Documentation.
-
