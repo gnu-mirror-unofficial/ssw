@@ -349,32 +349,29 @@ __set_property (GObject *object,
 	g_warning ("SswSheet can interpret list models only. Child nodes will be ignored.");
 
       if (sheet->vmodel == NULL)
+	sheet->vmodel = g_object_new (SSW_TYPE_AXIS_MODEL, NULL);
+
+      if (sheet->hmodel == NULL)
+	sheet->hmodel = g_object_new (SSW_TYPE_AXIS_MODEL,  NULL);
+
 	{
 	  int n_rows = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (sheet->data_model), NULL);
 
-	  sheet->vmodel = g_object_new (SSW_TYPE_AXIS_MODEL,
-					"size", n_rows,
-					NULL);
+	  g_object_set (sheet->vmodel, "size", n_rows, NULL);
 
 	  g_signal_connect_object (sheet->data_model, "items-changed",
 				   G_CALLBACK (resize_vmodel), sheet, 0);
 
-	  arrange (sheet);
-	}
-
-      if (sheet->hmodel == NULL)
-	{
 	  int n_cols = gtk_tree_model_get_n_columns (GTK_TREE_MODEL (sheet->data_model));
 
-	  sheet->hmodel = g_object_new (SSW_TYPE_AXIS_MODEL,
-					"size", n_cols,
-					NULL);
+	  g_object_set (sheet->hmodel, "size", n_cols, NULL);
 
 	  g_signal_connect_object (sheet->data_model, "items-changed",
 				   G_CALLBACK (resize_hmodel), sheet, 0);
 
 	  arrange (sheet);
 	}
+
       for (i = 0; i < DIM * DIM; ++i)
 	{
 	  g_object_set (sheet->sheet[i], "data-model", sheet->data_model, NULL);
