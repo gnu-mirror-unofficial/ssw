@@ -848,7 +848,7 @@ ssw_sheet_body_set_active_cell (SswSheetBody *body,
 
   start_editing (body, e);
 
-  /* Do not annouce the selection if it hasn't changed.
+  /* Do not announce the selection if it hasn't changed.
      Otherwise infinite loops can occur :( */
   if (oldrow != row || oldcol != col)
     {
