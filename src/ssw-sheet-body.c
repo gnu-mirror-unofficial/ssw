@@ -972,7 +972,7 @@ __key_press_event (GtkWidget *w, GdkEventKey *e)
       }
       break;
     default:
-      return TRUE;
+      return FALSE;
       break;
     }
 
