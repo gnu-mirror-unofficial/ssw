@@ -1,6 +1,6 @@
 libtoolize --copy
 aclocal
 autoheader
-automake --add-missing --copy
 git log --date=short --pretty='%cd %an <%ae>%n%n        %s%n%n%n' >> ChangeLog
+automake --add-missing --copy
 autoconf
