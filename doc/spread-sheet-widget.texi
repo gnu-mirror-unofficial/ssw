@@ -1,0 +1,112 @@
+\input texinfo @c -*- texinfo -*-
+@c A candidate replacement for Pspp's sheet
+@c Copyright (C) 2017  John Darrington
+@c Permission is granted to copy, distribute and/or modify this document
+@c under the terms of the GNU Free Documentation License, Version 1.3
+@c or any later version published by the Free Software Foundation;
+@c with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+@c A copy of the license is included in the section entitled "GNU
+@c Free Documentation License".
+
+@c %**start of header
+@setfilename spread-sheet-widget.info
+@settitle Spread Sheet Widget
+
+@include version.texi
+
+@dircategory Development
+@direntry
+* SpreadSheetWidget: (ssw).             A Spread Sheet Widget
+@end direntry
+
+@copying
+This manual is for GNU Spread Sheet Widget version @value{VERSION},
+software for statistical analysis.
+
+Copyright @copyright{} 2017 John Darrington
+
+@quotation
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3
+or any later version published by the Free Software Foundation;
+with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license is included in the section entitled "GNU
+Free Documentation License".
+@end quotation
+@end copying
+
+@titlepage
+@title Spread Sheet Widget
+@subtitle GNU Spread Sheet Widget
+@subtitle Release @value{VERSION}
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@contents
+
+@ifnottex
+@node Top
+@top GNU Spread Sheet Widget
+@insertcopying
+@end ifnottex
+
+
+@chapter Introduction
+
+@section About this Manual
+This manual documents the capabilities and the programming interface of
+GNU Spread Sheet Widget (version @value{VERSION}).
+It assumes that the reader is already familiar with elementary computer usage,
+the C programming language and with simple programming using Gtk+ version 3.
+
+
+@section About Spread Sheet Widget
+GNU Spread Sheet Widget is a library providing a Gtk+ widget which can be
+used by applications to present numerical and alphanumerical data in a
+rectangular grid similar to that used by modern spread sheet applications.
+It also provides a user interface to facilitate the creation of new data and
+the manipulation and deletion of existing data by the application's user.
+
+Spread Sheet Widget aspires to be as fast as possible and it avoids allocating
+memory except when necessary.
+This makes it suitable for use with very large amounts of data.
+
+Spread Sheet Widget is not a spread sheet application.
+It does not provide any facilities for arithmetic or other mathematical
+operations on the data which it displays.
+
+@chapter Programming with Spread Sheet Widget.
+
+@section Installing the Spread Sheet Widget Library
+
+Clearly, before one can start programming with the library it has to be
+installed.
+
+If your operating system has already installed Spread Sheet Widget, then you
+need not bother installing it yourself.
+Note however that many popular operating systems provide separate @dfn{runtime} and
+@dfn{development}
+packages; the development package often denoted with the prefix/suffix ``-dev'' or ``-devel''.
+In order to write code using the library one needs the development version.
+
+Otherwise, you may install the library as you would with any other:
+@example
+./configure
+make
+# become root
+make install
+@end example
+@noindent
+This process is described in excruciating detail in @file{INSTALL} and will
+not be further discussed here.
+
+@section Getting Started
+
+A simple program :
+@example
+@verbatiminclude prog1.c-enum
+@end example
+
+@bye

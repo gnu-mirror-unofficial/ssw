@@ -1,10 +1,22 @@
-AUTOMAKE_OPTIONS = 1.10.1 subdir-objects
-# std-options 
-# check-news
+AUTOMAKE_OPTIONS = 1.10.1 subdir-objects check-news std-options
+
+EXTRA_DIST=
+BUILT_SOURCES=
+
+AM_MAKEINFOFLAGS=-I ${top_builddir}/doc
+TEXI2DVI=texi2dvi -I ${top_builddir}/doc
+info_TEXINFOS = doc/spread-sheet-widget.texi
+
+${top_builddir}/doc/%.c-enum: doc/%.c
+	cat -n $< > $@
+
+noinst_PROGRAMS = doc/prog1
+doc_prog1_SOURCES = doc/prog1.c
+doc_prog1_LDADD = $(GTK3_LIBS) $(GLIB2_LIBS) -lm libspread-sheet-widget.la
+doc_prog1_CFLAGS = $(GTK3_CFLAGS) $(GLIB2_CFLAGS)  -I ${top_srcdir}/src -Werror
 
 ACLOCAL_AMFLAGS = -I aclocal-aux ${ACLOCAL_FLAGS}
 
-demo_demo_CFLAGS = $(GTK3_CFLAGS) $(GLIB2_CFLAGS)  -I ${top_srcdir}/src
 
 lib_LTLIBRARIES = libspread-sheet-widget.la
 libspread_sheet_widget_la_CFLAGS = $(GTK3_CFLAGS) $(GLIB2_CFLAGS) -I ${top_builddir}/src
@@ -32,11 +44,12 @@ include_HEADERS = \
 	src/ssw-axis-model.h
 
 
-noinst_PROGRAMS = demo/demo
+noinst_PROGRAMS += demo/demo
+demo_demo_CFLAGS = $(GTK3_CFLAGS) $(GLIB2_CFLAGS)  -I ${top_srcdir}/src
 demo_demo_LDADD = $(GTK3_LIBS) $(GLIB2_LIBS) -lm libspread-sheet-widget.la
 demo_demo_SOURCES = demo/main.c demo/custom-axis.c demo/custom-axis.h
 
-BUILT_SOURCES = \
+BUILT_SOURCES += \
 	src/ssw-marshaller.c \
 	src/ssw-marshaller.h
 
@@ -70,7 +83,7 @@ install-exec-local: spread-sheet-widget.pc
 uninstall-local:
 	$(RM) $(DESTDIR)$(libdir)/pkgconfig/spread-sheet-widget.pc
 
-EXTRA_DIST=TODO src/marshall-list spread-sheet-widget.pc.in NEWS
+EXTRA_DIST+=TODO src/marshall-list spread-sheet-widget.pc.in NEWS
 
 DISTCLEANFILES=$(BUILT_SOURCES)
 
@@ -80,4 +93,13 @@ dist-hook:
 		rm -f $(distdir)/ChangeLog;                           \
 		mv $(distdir)/cl-t $(distdir)/ChangeLog;              \
         fi
+
+built_doc_files = ${top_builddir}/doc/prog1.c-enum
+DISTCLEANFILES += $(built_doc_files)
+
+$(PDFS): $(built_doc_files)
+$(PSS): $(built_doc_files)
+$(DVIS): $(built_doc_files)
+$(HTMLS): $(built_doc_files)
+
 
