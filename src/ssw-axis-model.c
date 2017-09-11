@@ -23,20 +23,6 @@
 
 #define P_(X) (X)
 
-
-
-static gpointer
-datum_create_func (SswAxisModel *am, guint id)
-{
-  gchar *text = g_strdup_printf ("%u", id);
-  GtkWidget *button = gtk_button_new_with_label (text);
-  g_free (text);
-
-  return button;
-}
-
-
-
 static guint
 gni (GListModel *list)
 {
@@ -52,9 +38,16 @@ git (GListModel *list)
 static gpointer
 gi (GListModel *list, guint position)
 {
-  guint id = position + SSW_AXIS_MODEL(list)->offset;
+  SswAxisModel *am = SSW_AXIS_MODEL (list);
+  guint id = position + am->offset;
+  
+  gchar *text = g_strdup_printf ("%u", id);
+  GtkWidget *button = gtk_button_new_with_label (text);
+  if (am->button_post_create_func)
+    am->button_post_create_func (button, position, am->button_post_create_func_data);
+  g_free (text);
 
-  return datum_create_func (SSW_AXIS_MODEL (list), id);
+  return button;
 }
 
 
@@ -73,13 +66,17 @@ G_DEFINE_TYPE_WITH_CODE (SswAxisModel, ssw_axis_model,
 static void
 ssw_axis_model_init (SswAxisModel *d)
 {
+  d->button_post_create_func = NULL;
+  d->button_post_create_func_data = NULL;
 }
 
 enum
   {
     PROP_0,
     PROP_SIZE,
-    PROP_OFFSET
+    PROP_OFFSET,
+    PROP_POST_CREATE_FUNC,
+    PROP_POST_CREATE_FUNC_DATA
   };
 
 /* GObject vfuncs {{{ */
@@ -94,6 +91,12 @@ __set_property (GObject *object,
       break;
     case PROP_OFFSET:
       SSW_AXIS_MODEL (object)->offset = g_value_get_int (value);
+      break;
+    case PROP_POST_CREATE_FUNC:
+      SSW_AXIS_MODEL (object)->button_post_create_func = g_value_get_pointer (value);
+      break;
+    case PROP_POST_CREATE_FUNC_DATA:
+      SSW_AXIS_MODEL (object)->button_post_create_func_data = g_value_get_pointer (value);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -114,6 +117,12 @@ __get_property (GObject * object,
     case PROP_OFFSET:
       g_value_set_int (value, m->offset);
       break;
+    case PROP_POST_CREATE_FUNC:
+      g_value_set_pointer (value, m->button_post_create_func);
+      break;
+    case PROP_POST_CREATE_FUNC_DATA:
+      g_value_set_pointer (value, m->button_post_create_func_data);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -129,6 +138,18 @@ ssw_axis_model_class_init (SswAxisModelClass *dc)
   object_class->set_property = __set_property;
   object_class->get_property = __get_property;
 
+  GParamSpec *post_create_func_spec =
+    g_param_spec_pointer ("post-button-create-func",
+			  P_("Post button creation function"),
+			  P_("A function of the form void f (GtkWidget *, uint i, gpointer user_data) which will be passed to each button after creation"),
+			  G_PARAM_READWRITE);
+
+  GParamSpec *post_create_func_data_spec =
+    g_param_spec_pointer ("post-button-create-func-data",
+			  P_("Post button creation data"),
+			  P_("A pointer which will be passed to the function set by the post-button-create-func property"),
+			  G_PARAM_READWRITE);
+  
   GParamSpec *size_spec =
     g_param_spec_uint ("size",
 		      P_("Size"),
@@ -143,6 +164,14 @@ ssw_axis_model_class_init (SswAxisModelClass *dc)
 		      -INT_MAX, INT_MAX, 1,
 		      G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
+  g_object_class_install_property (object_class,
+                                   PROP_POST_CREATE_FUNC,
+                                   post_create_func_spec);
+
+  g_object_class_install_property (object_class,
+                                   PROP_POST_CREATE_FUNC_DATA,
+                                   post_create_func_data_spec);
+  
   g_object_class_install_property (object_class,
                                    PROP_SIZE,
                                    size_spec);

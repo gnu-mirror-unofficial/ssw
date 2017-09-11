@@ -30,6 +30,8 @@ struct _SswAxisModel
 
   guint size;
   gint offset;
+  void (*button_post_create_func) (GtkWidget *, guint, gpointer);
+  gpointer button_post_create_func_data;
 };
 
 struct _SswAxisModelClass
