@@ -736,6 +736,9 @@ on_drag_n_drop (SswSheet *sheet, gint from, gint to, GtkOrientable *axis)
 static void
 ssw_sheet_init (SswSheet *sheet)
 {
+  sheet->vmodel = g_object_new (SSW_TYPE_AXIS_MODEL, NULL);
+  sheet->hmodel = g_object_new (SSW_TYPE_AXIS_MODEL, NULL);
+
   gint i;
   for (i = 0; i < DIM; ++i)
     {
@@ -812,10 +815,10 @@ ssw_sheet_init (SswSheet *sheet)
     }
 
   sheet->renderer_func_datum = NULL;
-  sheet->vmodel = NULL;
-  sheet->hmodel = NULL;
   sheet->dispose_has_run = FALSE;
   sheet->selected_body = SSW_SHEET_SINGLE (sheet->sheet[0])->body;
+
+  arrange (sheet);
 }
 
 void
