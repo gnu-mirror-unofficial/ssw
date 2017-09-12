@@ -350,7 +350,7 @@ ssw_sheet_single_init (SswSheetSingle *sheet)
   sheet->vertical_axis = NULL;
   sheet->dispose_has_run = FALSE;
 
-  sheet->button = gtk_button_new ();
+  sheet->button = gtk_button_new_with_label ("");
   gtk_grid_attach (GTK_GRID (sheet), sheet->button, 0, 0, 1, 1);
 
   sheet->body = ssw_sheet_body_new (NULL);
