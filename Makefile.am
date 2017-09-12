@@ -10,10 +10,16 @@ info_TEXINFOS = doc/spread-sheet-widget.texi
 ${top_builddir}/doc/%.c-enum: doc/%.c
 	cat -n $< > $@
 
-noinst_PROGRAMS = doc/prog1
+noinst_PROGRAMS = doc/prog1 doc/prog2
+
 doc_prog1_SOURCES = doc/prog1.c
 doc_prog1_LDADD = $(GTK3_LIBS) $(GLIB2_LIBS) -lm libspread-sheet-widget.la
-doc_prog1_CFLAGS = $(GTK3_CFLAGS) $(GLIB2_CFLAGS)  -I ${top_srcdir}/src -Werror
+doc_prog1_CFLAGS = $(GTK3_CFLAGS) $(GLIB2_CFLAGS)  -I ${top_srcdir}/src
+
+
+doc_prog2_SOURCES = doc/prog2.c
+doc_prog2_LDADD = $(GTK3_LIBS) $(GLIB2_LIBS) -lm libspread-sheet-widget.la
+doc_prog2_CFLAGS = $(GTK3_CFLAGS) $(GLIB2_CFLAGS)  -I ${top_srcdir}/src
 
 ACLOCAL_AMFLAGS = -I aclocal-aux ${ACLOCAL_FLAGS}
 
@@ -94,7 +100,7 @@ dist-hook:
 		mv $(distdir)/cl-t $(distdir)/ChangeLog;              \
         fi
 
-built_doc_files = ${top_builddir}/doc/prog1.c-enum
+built_doc_files = ${top_builddir}/doc/prog1.c-enum ${top_builddir}/doc/prog2.c-enum
 DISTCLEANFILES += $(built_doc_files)
 
 $(PDFS): $(built_doc_files)

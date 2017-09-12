@@ -104,9 +104,49 @@ not be further discussed here.
 
 @section Getting Started
 
-A simple program :
+A simple program using Spread Sheet Widget is as follows:
 @example
 @verbatiminclude prog1.c-enum
 @end example
+@noindent
+On a standard GNU/Linux system you can compile this program with a command
+such as @samp{gcc $(pkg-config --libs --cflags spread-sheet-widget) prog1.c}.
+
+Except for lines 2 and 13, all code in this program are standard Gtk+.
+Line 2 includes the header file @file{ssw-sheet.h} which is necessary in
+order to call @code{ssw_sheet_new} at line 13.
+The function @code{ssw_sheet_new} creates a new widget which is a Spread
+Sheet Widget to be displayed.
+Subsequent lines add the widget to the window and display it.
+
+
+
+If you compile and run the program you will see an empty sheet without
+any data in its cells.
+As written, this program cannot display any data because there is no
+@dfn{data model} associated with the @code{SswSheet}.
+The data model is a @code{GObject} which implements the @code{GtkTreeModel}
+interface.
+One simple implementation of @code{GtkTreeModel} is the @code{GtkListStore} object
+and the following example creates such an object and sets it as the
+data model for our sheet:
+@example
+@verbatiminclude prog2.c-enum
+@end example
+In this example, the function @code{create_data_model} creates a model with
+3 columns and 4 rows.
+@code{GtkListStore} is designed to store all its data in memory.
+This is fine for small data models, but would not be suitable
+if there are a very large number of rows or columns.
+In that case you would be well advised not to use @code{GtkListStore} but
+to create your own @code{GObject} implementing @code{GtkTreeModel} and storing
+its data in secondary memory.
+
+You inform the sheet about the data model to use, by way of
+the @code{data-model} property of @code{SswSheet}.  This is done in line 34 of the
+above example.
+
+
+
 
 @bye
