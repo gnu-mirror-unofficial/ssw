@@ -832,10 +832,13 @@ items_changed_cb (GListModel *model,
 {
   SswSheetAxis *axis = SSW_SHEET_AXIS (user_data);
   gint i;
-  PRIV_DECL (user_data);
+  PRIV_DECL (axis);
 
+  if (! gtk_widget_get_realized (GTK_WIDGET (axis)))
+    return;
+  
   /* If the change is out of our visible range anyway,
-   *we don't care. */
+     then we don't care. */
   if (position > priv->model_to && bin_window_full (axis))
     {
       configure_adjustment (axis);

@@ -146,6 +146,9 @@ get_active_cell (SswSheetBody *body, gint *col, gint *row)
   *col = priv->selection->start_x;
   *row = priv->selection->start_y;
 
+  if (*col < 0 || *row < 0)
+    return FALSE;
+
   return TRUE;
 }
 
@@ -1187,11 +1190,13 @@ set_editor_widget_value (SswSheetBody *body, GValue *value, GtkEditable *editabl
 static void
 on_data_change (GtkTreeModel *tm, guint posn, guint rm, guint add, gpointer p)
 {
+  /* Set the "editor widget" (typically a GtkEntry) to reflect the new value */
   SswSheetBody *body = SSW_SHEET_BODY (p);
   PRIV_DECL (body);
 
   gint row = -1, col = -1;
-  get_active_cell (body, &col, &row);
+  if (! get_active_cell (body, &col, &row))
+    return;
 
   GtkTreeIter iter;
   if (gtk_tree_model_iter_nth_child (priv->data_model, &iter, NULL, row))
