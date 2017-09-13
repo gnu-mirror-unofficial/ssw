@@ -20,23 +20,22 @@
 #define _CUSTOM_AXIS_MODEL_H
 
 #include <glib-object.h>
+#include "ssw-axis-model.h"
 
-G_DECLARE_FINAL_TYPE (CustomAxisModel, custom_axis_model, CUSTOM, AXIS_MODEL, GObject)
+G_DECLARE_FINAL_TYPE (CustomAxisModel, custom_axis_model, CUSTOM, AXIS_MODEL, SswAxisModel)
 
 
 struct _CustomAxisModel
 {
-  GObject parent_instance;
+  SswAxisModel parent_instance;
 
   gboolean wide2;
   gboolean strike;
-  guint size;
-  gint offset;
 };
 
 struct _CustomAxisModelClass
 {
-  GObjectClass parent_instance;
+  SswAxisModelClass parent_instance;
 };
 
 

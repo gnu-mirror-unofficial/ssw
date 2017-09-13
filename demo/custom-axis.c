@@ -71,7 +71,7 @@ datum_create_func (CustomAxisModel *am, guint id)
 static guint
 gni (GListModel *list)
 {
-  return CUSTOM_AXIS_MODEL(list)->size;
+  return SSW_AXIS_MODEL(list)->size;
 }
 
 static GType
@@ -83,7 +83,7 @@ git (GListModel *list)
 static gpointer
 gi (GListModel *list, guint position)
 {
-  guint id = position + CUSTOM_AXIS_MODEL(list)->offset;
+  guint id = position + SSW_AXIS_MODEL(list)->offset;
 
   return datum_create_func (CUSTOM_AXIS_MODEL (list), id);
 }
@@ -99,7 +99,7 @@ custom_init_iface (GListModelInterface *iface)
 
 
 G_DEFINE_TYPE_WITH_CODE (CustomAxisModel, custom_axis_model,
-                         G_TYPE_OBJECT,
+                         SSW_TYPE_AXIS_MODEL,
                          G_IMPLEMENT_INTERFACE (G_TYPE_LIST_MODEL, custom_init_iface));
 
 static void
@@ -111,8 +111,6 @@ custom_axis_model_init (CustomAxisModel *d)
 enum
   {
     PROP_0,
-    PROP_SIZE,
-    PROP_OFFSET,
     PROP_STRIKE
   };
 
@@ -123,12 +121,6 @@ __set_property (GObject *object,
 {
   switch (prop_id)
     {
-    case PROP_SIZE:
-      CUSTOM_AXIS_MODEL (object)->size = g_value_get_uint (value);
-      break;
-    case PROP_OFFSET:
-      CUSTOM_AXIS_MODEL (object)->offset = g_value_get_int (value);
-      break;
     case PROP_STRIKE:
       CUSTOM_AXIS_MODEL (object)->strike = g_value_get_boolean (value);
       break;
@@ -145,18 +137,11 @@ __get_property (GObject * object,
   CustomAxisModel *m = CUSTOM_AXIS_MODEL (object);
   switch (prop_id)
     {
-    case PROP_SIZE:
-      g_value_set_uint (value, m->size);
-      break;
-    case PROP_OFFSET:
-      g_value_set_int (value, m->offset);
-      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
     }
 }
-
 
 static void
 custom_axis_model_class_init (CustomAxisModelClass *dc)
@@ -166,22 +151,6 @@ custom_axis_model_class_init (CustomAxisModelClass *dc)
   object_class->set_property = __set_property;
   object_class->get_property = __get_property;
 
-  GParamSpec *size_spec =
-    g_param_spec_uint ("size",
-		      P_("Size"),
-		      P_("The number of items in the model"),
-		      0, UINT_MAX, 10000,
-		      G_PARAM_READWRITE);
-
-
-  GParamSpec *offset_spec =
-    g_param_spec_int ("offset",
-		      P_("Offset"),
-		      P_("The enumeration of the first item in the model"),
-		      -INT_MAX, INT_MAX, 1,
-		      G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-
-
   GParamSpec *strike_spec =
     g_param_spec_boolean ("strike",
 			  P_("Strike"),
@@ -190,21 +159,9 @@ custom_axis_model_class_init (CustomAxisModelClass *dc)
 			  G_PARAM_READWRITE);
 
   g_object_class_install_property (object_class,
-                                   PROP_SIZE,
-                                   size_spec);
-
-
-  g_object_class_install_property (object_class,
-                                   PROP_OFFSET,
-                                   offset_spec);
-
-
-  g_object_class_install_property (object_class,
                                    PROP_STRIKE,
                                    strike_spec);
 }
-
-
 
 GObject *
 custom_axis_model_new (void)
