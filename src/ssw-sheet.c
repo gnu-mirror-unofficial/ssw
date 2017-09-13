@@ -354,23 +354,23 @@ __set_property (GObject *object,
       if (sheet->hmodel == NULL)
 	sheet->hmodel = g_object_new (SSW_TYPE_AXIS_MODEL,  NULL);
 
+      if (SSW_IS_AXIS_MODEL (sheet->vmodel))
 	{
 	  int n_rows = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (sheet->data_model), NULL);
-
 	  g_object_set (sheet->vmodel, "size", n_rows, NULL);
-
 	  g_signal_connect_object (sheet->data_model, "items-changed",
 				   G_CALLBACK (resize_vmodel), sheet, 0);
+	}
 
+      if (SSW_IS_AXIS_MODEL (sheet->hmodel))
+	{
 	  int n_cols = gtk_tree_model_get_n_columns (GTK_TREE_MODEL (sheet->data_model));
-
 	  g_object_set (sheet->hmodel, "size", n_cols, NULL);
-
 	  g_signal_connect_object (sheet->data_model, "items-changed",
 				   G_CALLBACK (resize_hmodel), sheet, 0);
-
-	  arrange (sheet);
 	}
+
+      arrange (sheet);
 
       for (i = 0; i < DIM * DIM; ++i)
 	{
