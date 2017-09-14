@@ -146,6 +146,29 @@ the @code{data-model} property of @code{SswSheet}.  This is done in line 34 of t
 above example.
 
 
+If you run the above example, you should see a sheet with 3 columns of data
+and 4 rows.
+Each datum is in a @dfn{cell}.
+Using the computer's arrow keys you can select any  cell.
+To indicate that a cell is selected, its border is highlighted.
+However you will not be able to edit any data, nor add any new data.
+If you try to type anything your keystrokes will be ignored.
+
+This is because the sheet's @samp{editable} property defaults to false.
+In order to allow the user to add, delete or mutate data which the
+sheet is displaying, you must set the @samp{editable} property to true.
+The typical way of doing this is
+@code{g_object_set (sheet, "editable", TRUE, NULL);}.
+If you do this, and rerun the program, then you will be able to type
+characters into a selected cell.
+When you hit the @key{Enter}, --- @emph{What?} the cell returns to its
+previous value!!   What went wrong?
+
+This is because the spread sheet widget is designed to be independent
+of how the data is stored.  It does not and cannot know how to update
+data.  It is the programmer's responsibility to do this.
+
+
 
 
 @bye

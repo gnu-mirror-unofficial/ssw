@@ -22,6 +22,12 @@ create_data_model (void)
   return GTK_TREE_MODEL (model);
 }
 
+void
+xxx (GObject *o, gint col, gint row, gpointer p, gpointer ud)
+{
+  g_print ("%s:%d %d %d %p\n", __FILE__, __LINE__, col, row, p);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -32,6 +38,9 @@ main (int argc, char **argv)
   
   GtkTreeModel *data = create_data_model ();
   g_object_set (sheet, "data-model", data, NULL);
+  g_object_set (sheet, "editable", TRUE, NULL);
+
+  g_signal_connect (sheet, "value-changed", G_CALLBACK (xxx), NULL);
 
   gtk_container_add (GTK_CONTAINER (window), sheet);
   gtk_window_maximize (GTK_WINDOW (window));
