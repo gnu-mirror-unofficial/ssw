@@ -483,7 +483,7 @@ ssw_sheet_class_init (SswSheetClass *class)
     g_param_spec_boolean ("editable",
 			  P_("Editable"),
 			  P_("True if the sheet is editable"),
-			  TRUE,
+			  FALSE,
 			  G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
   GParamSpec *renderer_func_spec =

@@ -691,6 +691,7 @@ static void
 start_editing (SswSheetBody *body, GdkEvent *e)
 {
   PRIV_DECL (body);
+
   gint row = -1, col = -1;
   get_active_cell (body, &col, &row);
 
@@ -870,7 +871,8 @@ __key_press_event (GtkWidget *w, GdkEventKey *e)
 
   if (is_printable_key (e->keyval))
     {
-      if (priv->editor && (priv->sheet->selected_body == GTK_WIDGET (body)))
+      if (priv->editor && priv->editable &&
+	  (priv->sheet->selected_body == GTK_WIDGET (body)))
 	{
 	  gtk_widget_grab_focus (priv->editor);
 	  if (GTK_IS_ENTRY (priv->editor))
@@ -1147,6 +1149,9 @@ set_editor_widget_value (SswSheetBody *body, GValue *value, GtkEditable *editabl
 
   gint row = -1, col = -1;
   get_active_cell (body, &col, &row);
+
+  /* Allow the datum to be changed only if the "editable" property is set */
+  gtk_editable_set_editable (editable, priv->editable);
   
   if (GTK_IS_SPIN_BUTTON (editable))
     {
