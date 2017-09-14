@@ -1,5 +1,5 @@
 /*
-  A candidate replacement for Pspp's sheet
+  A widget to display and manipulate tabular data
   Copyright (C) 2017  John Darrington
 
   This program is free software: you can redistribute it and/or modify
