@@ -1335,7 +1335,7 @@ on_motion_notify (SswSheetAxis *axis, GdkEventMotion *e, gpointer ud)
   gint boundary =
     (fabs (pos - posn) < fabs (pos + size - posn)) ? pos : pos + size;
 
-  gint diff = abs (boundary - posn);
+  gdouble diff = fabs (boundary - posn);
 
   GdkWindow *win = gtk_widget_get_window (GTK_WIDGET (axis));
 
