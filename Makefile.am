@@ -82,9 +82,9 @@ spread-sheet-widget.pc: spread-sheet-widget.pc.in configure.ac
 CLEANFILES = spread-sheet-widget.pc
 
 install-exec-local: spread-sheet-widget.pc
-	$(MKDIR_P) $(DESTDIR)$(libdir)
-	chmod u+w $(DESTDIR)$(libdir)
-	$(INSTALL) -D $< $(DESTDIR)$(libdir)/pkgconfig/spread-sheet-widget.pc
+	$(MKDIR_P) $(DESTDIR)$(libdir)/pkgconfig
+	chmod -R u+w $(DESTDIR)$(libdir)
+	$(INSTALL) $< $(DESTDIR)$(libdir)/pkgconfig/spread-sheet-widget.pc
 
 uninstall-local:
 	$(RM) $(DESTDIR)$(libdir)/pkgconfig/spread-sheet-widget.pc
