@@ -73,6 +73,8 @@ enum
     PROP_SPLIT,
     PROP_GRIDLINES,
     PROP_EDITABLE,
+    PROP_HORIZONTAL_DRAGGABLE,
+    PROP_VERTICAL_DRAGGABLE,
     PROP_RENDERER_FUNC,
     PROP_RENDERER_FUNC_DATUM,
     PROP_CONVERT_FWD_FUNC,
@@ -252,6 +254,18 @@ __set_property (GObject *object,
 	sheet->editable = editable;
       }
       break;
+
+    case PROP_HORIZONTAL_DRAGGABLE:
+	for (i = 0; i < DIM; ++i)
+	  g_object_set (SSW_SHEET_AXIS (sheet->horizontal_axis[i]),
+			"draggable",  g_value_get_boolean (value), NULL);
+	break;
+
+    case PROP_VERTICAL_DRAGGABLE:
+	for (i = 0; i < DIM; ++i)
+	  g_object_set (SSW_SHEET_AXIS (sheet->vertical_axis[i]),
+			"draggable",  g_value_get_boolean (value), NULL);
+	break;
 
     case PROP_CONVERT_FWD_FUNC:
       {
@@ -462,8 +476,6 @@ ssw_sheet_class_init (SswSheetClass *class)
 			 GTK_TYPE_TREE_MODEL,
 			 G_PARAM_READWRITE);
 
-
-
   GParamSpec *split_spec =
     g_param_spec_boolean ("split",
 			  P_("Split View"),
@@ -471,6 +483,19 @@ ssw_sheet_class_init (SswSheetClass *class)
 			  FALSE,
 			  G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
+  GParamSpec *horizontal_draggable_spec =
+    g_param_spec_boolean ("horizontal-draggable",
+			  P_("Horizontal_Draggable"),
+			  P_("If TRUE, items in the horizontal axis can be dragged."),
+			  FALSE,
+			  G_PARAM_WRITABLE | G_PARAM_CONSTRUCT);
+
+  GParamSpec *vertical_draggable_spec =
+    g_param_spec_boolean ("vertical-draggable",
+			  P_("Vertical_Draggable"),
+			  P_("If TRUE, items in the vertical axis can be dragged."),
+			  FALSE,
+			  G_PARAM_WRITABLE | G_PARAM_CONSTRUCT);
 
   GParamSpec *gridlines_spec =
     g_param_spec_boolean ("gridlines",
@@ -547,6 +572,13 @@ ssw_sheet_class_init (SswSheetClass *class)
                                    PROP_EDITABLE,
                                    editable_spec);
 
+  g_object_class_install_property (object_class,
+                                   PROP_HORIZONTAL_DRAGGABLE,
+                                   horizontal_draggable_spec);
+
+  g_object_class_install_property (object_class,
+                                   PROP_VERTICAL_DRAGGABLE,
+                                   vertical_draggable_spec);
 
   signals [ROW_HEADER_CLICKED] =
     g_signal_new ("row-header-clicked",
