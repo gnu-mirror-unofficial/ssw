@@ -95,6 +95,7 @@ struct _SswSheetAxisPrivate
   gint new_size;
 
   GtkGesture *drag_gest;
+  gulong drag_handler_id;
   GtkTargetList *drag_target_list;
 };
 
@@ -182,7 +183,8 @@ enum
   {
     PROP_0,
     PROP_ADJUSTMENT,
-    PROP_ORIENTATION
+    PROP_ORIENTATION,
+    PROP_DRAGGABLE
   };
 
 
@@ -1068,6 +1070,94 @@ __set_orientation (GObject *object)
     }
 }
 
+static gboolean
+on_drag_drop (GtkWidget      *widget,
+	      GdkDragContext *context,
+	      gint            x_,
+	      gint            y_,
+	      guint           time,
+	      gpointer        user_data)
+{
+  /* For reasons I don't understand, the x_ and y_ parameters of this
+     function are wrong when the target is beyond the size of the axis.
+     So we don't use them.  Instead we get the pointer position
+     explicitly. */
+  gint xx, yy;
+  GdkWindow *win = gtk_widget_get_window (widget);
+  GdkDevice *device = gdk_drag_context_get_device (context);
+  gdk_window_get_device_position (win, device, &xx, &yy, NULL);
+
+  gint posn;
+  switch (gtk_orientable_get_orientation (GTK_ORIENTABLE (widget)))
+    {
+    case GTK_ORIENTATION_HORIZONTAL:
+      posn = xx;
+      break;
+    case GTK_ORIENTATION_VERTICAL:
+      posn = yy;
+      break;
+    default:
+      g_assert_not_reached ();
+      break;
+    }
+
+  gint to = ssw_sheet_axis_find_cell (SSW_SHEET_AXIS (widget),  posn,
+					 NULL, NULL);
+
+  gint from = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (widget),
+						  "from"));
+
+  if (to >= ssw_sheet_axis_get_size (SSW_SHEET_AXIS (widget)))
+    to = ssw_sheet_axis_get_size (SSW_SHEET_AXIS (widget));
+
+  g_signal_emit (widget, signals [DRAG_N_DROP], 0, from, to);
+  gtk_drag_finish (context, TRUE, TRUE, time);
+
+  return TRUE;
+}
+
+static void
+setup_drag_operation (GtkGesture *g, gdouble x_, gdouble y_, gpointer ud)
+{
+  SswSheetAxis *axis = SSW_SHEET_AXIS (ud);
+  PRIV_DECL (axis);
+
+  GdkEventSequence *seq =
+    gtk_gesture_single_get_current_sequence (GTK_GESTURE_SINGLE (g));
+
+  gdouble x, y;
+  gtk_gesture_get_point (g, seq, &x, &y);
+
+  gint posn;
+  switch (gtk_orientable_get_orientation (GTK_ORIENTABLE (axis)))
+    {
+    case GTK_ORIENTATION_HORIZONTAL:
+      posn = x;
+      break;
+    case GTK_ORIENTATION_VERTICAL:
+      posn = y;
+      break;
+    default:
+      g_assert_not_reached ();
+      break;
+    }
+
+  gint which = ssw_sheet_axis_find_cell (axis,  posn, NULL, NULL);
+
+  if (which < ssw_sheet_axis_get_size (axis))
+    {
+      gtk_gesture_set_sequence_state (g, seq, GTK_EVENT_SEQUENCE_CLAIMED);
+      const GdkEvent *ev = gtk_gesture_get_last_event (g, seq);
+      GdkEvent *e =  gdk_event_copy (ev);
+      gtk_drag_begin_with_coordinates (GTK_WIDGET (axis),
+					 priv->drag_target_list,
+					 GDK_ACTION_MOVE, 1,
+					 e, x, y);
+      g_object_set_data (G_OBJECT (axis), "from", GINT_TO_POINTER (which));
+      gdk_event_free (e);
+    }
+}
+
 static void
 __set_pq_adjustments (GObject *object)
 {
@@ -1093,6 +1183,26 @@ __set_property (GObject *object,
       __set_orientation (object);
       __set_pq_adjustments (object);
       break;
+    case PROP_DRAGGABLE:
+      if (g_value_get_boolean (value))
+	{
+	  GtkTargetEntry te = {"move-axis-item", GTK_TARGET_SAME_APP, 0};
+	  gtk_drag_dest_set (GTK_WIDGET (object), GTK_DEST_DEFAULT_ALL, &te,
+			     1, GDK_ACTION_MOVE);
+	  PRIV (object)->drag_target_list = gtk_target_list_new (&te, 1);
+	  PRIV (object)->drag_handler_id =
+	    g_signal_connect (PRIV (object)->drag_gest, "pressed",
+			      G_CALLBACK (setup_drag_operation), object);
+	}
+      else
+	{
+	  PRIV (object)->drag_target_list = NULL;
+	  if (PRIV (object)->drag_handler_id > 0)
+	    g_signal_handler_disconnect (PRIV (object)->drag_gest,
+					 PRIV (object)->drag_handler_id);
+	  PRIV (object)->drag_handler_id = 0;
+	}
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -1110,6 +1220,9 @@ __get_property (GObject *object,
       break;
     case PROP_ORIENTATION:
       g_value_set_enum (value, PRIV (object)->orientation);
+      break;
+    case PROP_DRAGGABLE:
+      g_value_set_boolean (value, PRIV (object)->drag_target_list != NULL);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -1216,7 +1329,13 @@ ssw_sheet_axis_class_init (SswSheetAxisClass *class)
 			 P_("The Adjustment"),
 			 GTK_TYPE_ADJUSTMENT,
 			 G_PARAM_READWRITE);
-
+  
+  GParamSpec *draggable_spec =
+    g_param_spec_boolean ("draggable",
+			  P_("Draggable"),
+			  P_("Whether items in the axis can be reordered using drag and drop"),
+			  FALSE,
+			  G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
   object_class->set_property = __set_property;
   object_class->get_property = __get_property;
@@ -1314,6 +1433,10 @@ ssw_sheet_axis_class_init (SswSheetAxisClass *class)
                                    PROP_ADJUSTMENT,
                                    adjust_spec);
 
+  g_object_class_install_property (object_class,
+                                   PROP_DRAGGABLE,
+                                   draggable_spec);
+  
   g_object_class_override_property (object_class, PROP_ORIENTATION,
                                     "orientation");
 }
@@ -1403,52 +1526,6 @@ on_resize_begin (GtkGesture *g, GdkEventSequence *seq, gpointer ud)
     gtk_gesture_set_sequence_state (g, seq, GTK_EVENT_SEQUENCE_CLAIMED);
 }
 
-static gboolean
-on_drag_drop (GtkWidget      *widget,
-	      GdkDragContext *context,
-	      gint            x_,
-	      gint            y_,
-	      guint           time,
-	      gpointer        user_data)
-{
-  /* For reasons I don't understand, the x_ and y_ parameters of this
-     function are wrong when the target is beyond the size of the axis.
-     So we don't use them.  Instead we get the pointer position
-     explicitly. */
-  gint xx, yy;
-  GdkWindow *win = gtk_widget_get_window (widget);
-  GdkDevice *device = gdk_drag_context_get_device (context);
-  gdk_window_get_device_position (win, device, &xx, &yy, NULL);
-
-  gint posn;
-  switch (gtk_orientable_get_orientation (GTK_ORIENTABLE (widget)))
-    {
-    case GTK_ORIENTATION_HORIZONTAL:
-      posn = xx;
-      break;
-    case GTK_ORIENTATION_VERTICAL:
-      posn = yy;
-      break;
-    default:
-      g_assert_not_reached ();
-      break;
-    }
-
-  gint to = ssw_sheet_axis_find_cell (SSW_SHEET_AXIS (widget),  posn,
-					 NULL, NULL);
-
-  gint from = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (widget),
-						  "from"));
-
-  if (to >= ssw_sheet_axis_get_size (SSW_SHEET_AXIS (widget)))
-    to = ssw_sheet_axis_get_size (SSW_SHEET_AXIS (widget));
-
-  g_signal_emit (widget, signals [DRAG_N_DROP], 0, from, to);
-  gtk_drag_finish (context, TRUE, TRUE, time);
-
-  return TRUE;
-}
-
 static void
 on_multi_press_begin (GtkGesture *g, GdkEventSequence *seq, gpointer ud)
 {
@@ -1475,48 +1552,6 @@ update_pointer (GtkWidget      *widget,
   gint x, y;
   gdk_device_get_position (device, &screen, &x, &y);
   gdk_device_warp (device, screen, x, y);
-}
-
-static void
-setup_drag_operation (GtkGesture *g, gdouble x_, gdouble y_, gpointer ud)
-{
-  SswSheetAxis *axis = SSW_SHEET_AXIS (ud);
-  PRIV_DECL (axis);
-
-  GdkEventSequence *seq =
-    gtk_gesture_single_get_current_sequence (GTK_GESTURE_SINGLE (g));
-
-  gdouble x, y;
-  gtk_gesture_get_point (g, seq, &x, &y);
-
-  gint posn;
-  switch (gtk_orientable_get_orientation (GTK_ORIENTABLE (axis)))
-    {
-    case GTK_ORIENTATION_HORIZONTAL:
-      posn = x;
-      break;
-    case GTK_ORIENTATION_VERTICAL:
-      posn = y;
-      break;
-    default:
-      g_assert_not_reached ();
-      break;
-    }
-
-  gint which = ssw_sheet_axis_find_cell (axis,  posn, NULL, NULL);
-
-  if (which < ssw_sheet_axis_get_size (axis))
-    {
-      gtk_gesture_set_sequence_state (g, seq, GTK_EVENT_SEQUENCE_CLAIMED);
-      const GdkEvent *ev = gtk_gesture_get_last_event (g, seq);
-      GdkEvent *e =  gdk_event_copy (ev);
-      gtk_drag_begin_with_coordinates (GTK_WIDGET (axis),
-					 priv->drag_target_list,
-					 GDK_ACTION_MOVE, 1,
-					 e, x, y);
-      g_object_set_data (G_OBJECT (axis), "from", GINT_TO_POINTER (which));
-      gdk_event_free (e);
-    }
 }
 
 static void
@@ -1547,9 +1582,6 @@ ssw_sheet_axis_init (SswSheetAxis *axis)
 
   g_signal_connect (axis, "drag-begin", G_CALLBACK (update_pointer),  axis);
 
-  g_signal_connect (priv->drag_gest, "pressed", G_CALLBACK (setup_drag_operation),
-		    axis);
-
   /* Listen on all buttons */
   gtk_gesture_single_set_button (GTK_GESTURE_SINGLE (priv->button_gest), 0);
 
@@ -1573,13 +1605,9 @@ ssw_sheet_axis_init (SswSheetAxis *axis)
 
   g_signal_connect (priv->resize_gest, "drag-end", G_CALLBACK (on_resize_end), axis);
 
-
-  GtkTargetEntry te = {"move-axis-item", GTK_TARGET_SAME_APP, 0};
-  gtk_drag_dest_set (GTK_WIDGET (axis), GTK_DEST_DEFAULT_ALL, &te, 1, GDK_ACTION_MOVE);
-  priv->drag_target_list = gtk_target_list_new (&te, 1);
-
-  g_signal_connect (axis, "drag-drop", G_CALLBACK (on_drag_drop),
-		    NULL);
+  priv->drag_handler_id = 0;
+  priv->drag_target_list = NULL;
+  g_signal_connect (axis, "drag-drop", G_CALLBACK (on_drag_drop), NULL);
 }
 
 static void ssw_sheet_axis_jump_start_with_offset (SswSheetAxis *axis, gint whereto, gint offs);
