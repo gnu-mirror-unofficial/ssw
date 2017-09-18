@@ -261,35 +261,31 @@ draw_selection (SswSheetBody *body, cairo_t *cr)
     {
       SswRange mySelect;
       normalise_selection (priv->selection, &mySelect);
-
-      gint xpos_start, ypos_start;
+      gint xpos_start = 0;
+      gint ypos_start = 0;
       ssw_sheet_axis_find_boundary (priv->haxis, mySelect.start_x, &xpos_start,
 				    NULL);
       ssw_sheet_axis_find_boundary (priv->vaxis, mySelect.start_y, &ypos_start,
 				    NULL);
 
       gint xpos_end, ypos_end, yextent, xextent;
-      if (0 != ssw_sheet_axis_find_boundary (priv->haxis,
+      gint xsize = width;
+      if (0 == ssw_sheet_axis_find_boundary (priv->haxis,
 					     mySelect.end_x, &xpos_end,
 					     &xextent))
-	goto done;
+	 xsize = xpos_end - xpos_start + xextent;
 
-      gint xlimit = xpos_end + xextent;
-
-      if (0 != ssw_sheet_axis_find_boundary (priv->vaxis,
+      gint ysize = height;
+      if (0 == ssw_sheet_axis_find_boundary (priv->vaxis,
 					     mySelect.end_y, &ypos_end,
 					     &yextent))
-	goto done;
-
-      gint ylimit = ypos_end + yextent;
+	ysize = ypos_end - ypos_start + yextent;
 
       gtk_render_background (sc, cr,
 			     xpos_start, ypos_start,
-			     xlimit - xpos_start,
-			     ylimit - ypos_start);
+			     xsize, ysize);
     }
 
- done:
   gtk_style_context_remove_provider (sc, GTK_STYLE_PROVIDER (cp));
   g_free (css);
   g_object_unref (cp);
@@ -605,7 +601,6 @@ set_selection (SswSheetBody *body, gint start_x, gint start_y, gint end_x, gint 
 
   priv->selection->end_x = end_x;
   priv->selection->end_y = end_y;
-
 
   announce_selection (body);
 }
@@ -1123,7 +1118,6 @@ static void
 select_entire_column (SswSheetBody *body, gint i, guint state, gpointer ud)
 {
   PRIV_DECL (body);
-
   GdkDisplay *disp = gtk_widget_get_display (GTK_WIDGET (body));
   GdkKeymap *km = gdk_keymap_get_for_display (disp);
   GdkModifierType extend_mask =
