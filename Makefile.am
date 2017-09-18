@@ -13,12 +13,12 @@ ${top_builddir}/doc/%.c-enum: doc/%.c
 noinst_PROGRAMS = doc/prog1 doc/prog2
 
 doc_prog1_SOURCES = doc/prog1.c
-doc_prog1_LDADD = $(GTK3_LIBS) $(GLIB2_LIBS) -lm libspread-sheet-widget.la
+doc_prog1_LDADD = libspread-sheet-widget.la $(GTK3_LIBS) $(GLIB2_LIBS) -lm
 doc_prog1_CFLAGS = $(GTK3_CFLAGS) $(GLIB2_CFLAGS)  -I ${top_srcdir}/src
 
 
 doc_prog2_SOURCES = doc/prog2.c
-doc_prog2_LDADD = $(GTK3_LIBS) $(GLIB2_LIBS) -lm libspread-sheet-widget.la
+doc_prog2_LDADD = libspread-sheet-widget.la $(GTK3_LIBS) $(GLIB2_LIBS) -lm
 doc_prog2_CFLAGS = $(GTK3_CFLAGS) $(GLIB2_CFLAGS)  -I ${top_srcdir}/src
 
 ACLOCAL_AMFLAGS = -I aclocal-aux ${ACLOCAL_FLAGS}
@@ -52,7 +52,7 @@ include_HEADERS = \
 
 noinst_PROGRAMS += demo/demo
 demo_demo_CFLAGS = $(GTK3_CFLAGS) $(GLIB2_CFLAGS)  -I ${top_srcdir}/src
-demo_demo_LDADD = $(GTK3_LIBS) $(GLIB2_LIBS) -lm libspread-sheet-widget.la
+demo_demo_LDADD = libspread-sheet-widget.la $(GTK3_LIBS) $(GLIB2_LIBS) -lm
 demo_demo_SOURCES = demo/main.c demo/custom-axis.c demo/custom-axis.h
 
 BUILT_SOURCES += \
