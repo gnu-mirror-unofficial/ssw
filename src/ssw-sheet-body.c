@@ -259,31 +259,29 @@ draw_selection (SswSheetBody *body, cairo_t *cr)
       ||
       (priv->selection->start_y != priv->selection->end_y))
     {
-
       SswRange mySelect;
       normalise_selection (priv->selection, &mySelect);
 
       gint xpos_start, ypos_start;
-      if (0 != ssw_sheet_axis_find_boundary (priv->haxis, mySelect.start_x,
-					     &xpos_start, NULL))
-	goto done;
+      ssw_sheet_axis_find_boundary (priv->haxis, mySelect.start_x, &xpos_start,
+				    NULL);
+      ssw_sheet_axis_find_boundary (priv->vaxis, mySelect.start_y, &ypos_start,
+				    NULL);
 
-      if (0 != ssw_sheet_axis_find_boundary (priv->vaxis, mySelect.start_y,
-					     &ypos_start, NULL))
-	goto done;
-
-      gint xlimit = width;
-      gint ylimit = height;
       gint xpos_end, ypos_end, yextent, xextent;
-      if (0 == ssw_sheet_axis_find_boundary (priv->haxis,
-					     mySelect.end_x, &xpos_end, &xextent))
-	xlimit = xpos_end + xextent;
+      if (0 != ssw_sheet_axis_find_boundary (priv->haxis,
+					     mySelect.end_x, &xpos_end,
+					     &xextent))
+	goto done;
 
+      gint xlimit = xpos_end + xextent;
 
-      if (0 == ssw_sheet_axis_find_boundary (priv->vaxis,
-					     mySelect.end_y, &ypos_end, &yextent))
-	ylimit = ypos_end + yextent;
+      if (0 != ssw_sheet_axis_find_boundary (priv->vaxis,
+					     mySelect.end_y, &ypos_end,
+					     &yextent))
+	goto done;
 
+      gint ylimit = ypos_end + yextent;
 
       gtk_render_background (sc, cr,
 			     xpos_start, ypos_start,
