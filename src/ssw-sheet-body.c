@@ -1759,7 +1759,7 @@ clipit_utf8 (SswSheetBody *body, GString *output)
 	      append_value_to_string (body, &iter, col, row, output);
 
 	      if (col < mySelection.end_x)
-		g_string_insert_unichar (output, -1, 0x2502);
+		g_string_append_c (output, '\t');
 	    }
 	}
       g_string_append (output, "\n");
