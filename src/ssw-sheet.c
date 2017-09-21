@@ -25,6 +25,7 @@
 #include "ssw-sheet-body.h"
 #include "ssw-marshaller.h"
 #include "ssw-xpaned.h"
+#include "ssw-paste.h"
 
 #define P_(X) (X)
 
@@ -893,18 +894,8 @@ ssw_sheet_get_active_cell (SswSheet *sheet,
 
 
 
-struct paste_state
-{
-  gint col0;
-  gint row0;
-  gint col;
-  gint row;
-  SswSheet *sheet;
-  ssw_sheet_set_cell set_cell;
-};
-
-static void
-paste_datum (const gchar *x, size_t len, struct paste_state *t)
+void
+paste_insert_datum (const gchar *x, size_t len, const struct paste_state *t)
 {
   SswSheet *sheet = t->sheet;
 
@@ -922,7 +913,12 @@ paste_datum (const gchar *x, size_t len, struct paste_state *t)
   if (rcf (sheet->data_model, col, row, x, &value))
     t->set_cell (sheet->data_model, col, row, &value);
   g_value_unset (&value);
+}
 
+static void
+paste_datum (const gchar *x, size_t len, struct paste_state *t)
+{
+  paste_insert_datum (x, len, t);
   t->col ++;
 }
 
@@ -979,7 +975,7 @@ utf8_tab_delimited_parse (GtkClipboard *clip, GtkSelectionData *sd,
 {
   struct paste_state *ps = user_data;
   SswSheet *sheet = SSW_SHEET (ps->sheet);
-  const gchar *data = gtk_selection_data_get_data (sd);
+  const guchar *data = gtk_selection_data_get_data (sd);
   gint len = gtk_selection_data_get_length (sd);
 
   if (len < 0)
@@ -1010,11 +1006,14 @@ target_marshaller (GtkClipboard *clip, GdkAtom *atoms, gint n_atoms,
 
   for (i = 0; i < n_atoms; ++i)
     {
-      /* Right now this is the only target we support */
-      if (atoms[i] == gdk_atom_intern ("UTF8_STRING", TRUE))
+      if (atoms[i] == gdk_atom_intern ("text/html", TRUE))
 	{
-	  gtk_clipboard_request_contents (clip, atoms[i], utf8_tab_delimited_parse,
-					  ps);
+	  gtk_clipboard_request_contents (clip, atoms[i], html_parse, ps);
+	  break;
+	}
+      else if (atoms[i] == gdk_atom_intern ("UTF8_STRING", TRUE))
+	{
+	  gtk_clipboard_request_contents (clip, atoms[i], utf8_tab_delimited_parse, ps);
 	  break;
 	}
     }
