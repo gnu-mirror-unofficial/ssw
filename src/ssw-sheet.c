@@ -860,6 +860,12 @@ ssw_sheet_set_clip (SswSheet *sheet, GtkClipboard *clip)
   if (!sheet->data_model)
     return;
 
+  SswRange *source_range = g_object_get_data (G_OBJECT (clip), "source-range");
+  g_free (source_range);
+  source_range = g_malloc (sizeof (*source_range));
+  g_object_set_data (G_OBJECT (clip), "source-range", source_range);
+  normalise_selection (sheet->selection, source_range);
+  
   ssw_sheet_body_set_clip (SSW_SHEET_BODY (sheet->selected_body), clip);
 }
 

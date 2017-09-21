@@ -104,7 +104,7 @@ limit_selection (SswSheetBody *body)
 }
 
 
-static void
+void
 normalise_selection (const SswRange *in, SswRange *out)
 {
   if (in->start_y < in->end_y)
@@ -1676,7 +1676,7 @@ append_value_to_string (SswSheetBody *body,
 
 
 static void
-clipit_html (SswSheetBody *body, GString *output)
+clipit_html (SswSheetBody *body, GString *output, SswRange *source_range)
 {
   PRIV_DECL (body);
   if (!priv->haxis || !priv->vaxis || !priv->data_model)
@@ -1687,14 +1687,12 @@ clipit_html (SswSheetBody *body, GString *output)
 
   gint row;
   gint col;
-  SswRange mySelection;
-  normalise_selection (priv->selection, &mySelection);
-  for (row = mySelection.start_y ; row <= mySelection.end_y; ++row)
+  for (row = source_range->start_y ; row <= source_range->end_y; ++row)
     {
       GtkTreeIter iter;
       gtk_tree_model_iter_nth_child (priv->data_model, &iter, NULL, row);
       g_string_append (output, "<tr>\n");
-      for (col = mySelection.start_x; col <= mySelection.end_x; ++col)
+      for (col = source_range->start_x; col <= source_range->end_x; ++col)
 	{
 	  if (row < gtk_tree_model_iter_n_children (priv->data_model, NULL)
 	      && col < gtk_tree_model_get_n_columns (priv->data_model))
@@ -1713,7 +1711,7 @@ clipit_html (SswSheetBody *body, GString *output)
 
 
 static void
-clipit_ascii (SswSheetBody *body, GString *output)
+clipit_ascii (SswSheetBody *body, GString *output, SswRange *source_range)
 {
   PRIV_DECL (body);
   if (!priv->haxis || !priv->vaxis || !priv->data_model)
@@ -1721,14 +1719,12 @@ clipit_ascii (SswSheetBody *body, GString *output)
 
   gint row;
   gint col;
-  SswRange mySelection;
-  normalise_selection (priv->selection, &mySelection);
-  for (row = mySelection.start_y ; row <= mySelection.end_y; ++row)
+  for (row = source_range->start_y ; row <= source_range->end_y; ++row)
     {
       GtkTreeIter iter;
       gtk_tree_model_iter_nth_child (priv->data_model, &iter, NULL, row);
 
-      for (col = mySelection.start_x; col <= mySelection.end_x; ++col)
+      for (col = source_range->start_x; col <= source_range->end_x; ++col)
 	{
 	  if (priv->data_model
 	      && row < gtk_tree_model_iter_n_children (priv->data_model, NULL)
@@ -1736,7 +1732,7 @@ clipit_ascii (SswSheetBody *body, GString *output)
 	    {
 	      append_value_to_string (body, &iter, col, row, output);
 
-	      if (col < mySelection.end_x)
+	      if (col < source_range->end_x)
 		g_string_append (output, "\t");
 	    }
 	}
@@ -1745,7 +1741,7 @@ clipit_ascii (SswSheetBody *body, GString *output)
 }
 
 static void
-clipit_utf8 (SswSheetBody *body, GString *output)
+clipit_utf8 (SswSheetBody *body, GString *output, SswRange *source_range)
 {
   PRIV_DECL (body);
   if (!priv->haxis || !priv->vaxis || !priv->data_model)
@@ -1753,21 +1749,19 @@ clipit_utf8 (SswSheetBody *body, GString *output)
 
   gint row;
   gint col;
-  SswRange mySelection;
-  normalise_selection (priv->selection, &mySelection);
-  for (row = mySelection.start_y ; row <= mySelection.end_y; ++row)
+  for (row = source_range->start_y ; row <= source_range->end_y; ++row)
     {
       GtkTreeIter iter;
       gtk_tree_model_iter_nth_child (priv->data_model, &iter, NULL, row);
 
-      for (col = mySelection.start_x; col <= mySelection.end_x; ++col)
+      for (col = source_range->start_x; col <= source_range->end_x; ++col)
 	{
 	  if (row < gtk_tree_model_iter_n_children (priv->data_model, NULL)
 	      && col < gtk_tree_model_get_n_columns (priv->data_model))
 	    {
 	      append_value_to_string (body, &iter, col, row, output);
 
-	      if (col < mySelection.end_x)
+	      if (col < source_range->end_x)
 		g_string_append_c (output, '\t');
 	    }
 	}
@@ -1790,17 +1784,19 @@ get_func (GtkClipboard *clipboard,
       return;
     }
 
+  SswRange *source_range = g_object_get_data (G_OBJECT (clipboard), "source-range");
+
   GString *stuff = g_string_new ("");
   switch (info)
     {
     case TARGET_STRING:
-      clipit_ascii (body, stuff);
+      clipit_ascii (body, stuff, source_range);
       break;
     case TARGET_UTF8_STRING:
-      clipit_utf8 (body, stuff);
+      clipit_utf8 (body, stuff, source_range);
       break;
     case TARGET_HTML:
-      clipit_html (body, stuff);
+      clipit_html (body, stuff, source_range);
       break;
     default:
       g_print ("Request for unknown target %d\n", info);
