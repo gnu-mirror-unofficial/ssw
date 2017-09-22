@@ -187,19 +187,19 @@ __dispose (GObject *object)
 
 
 static void
-resize_vmodel (GtkTreeModel *tm, guint posn, guint rm, guint add, SswSheet *sheet)
+resize_vmodel (GtkTreeModel *tm, guint posn, guint rm, guint add, GListModel *vmodel)
 {
   gint rows = gtk_tree_model_iter_n_children (tm, NULL);
 
-  g_object_set (sheet->vmodel, "size", rows, NULL);
+  g_object_set (vmodel, "size", rows, NULL);
 }
 
 static void
-resize_hmodel (GtkTreeModel *tm, guint posn, guint rm, guint add, SswSheet *sheet)
+resize_hmodel (GtkTreeModel *tm, guint posn, guint rm, guint add, GListModel *hmodel)
 {
   gint cols = gtk_tree_model_get_n_columns (tm);
 
-  g_object_set (sheet->hmodel, "size", cols, NULL);
+  g_object_set (hmodel, "size", cols, NULL);
 }
 
 
@@ -374,7 +374,7 @@ __set_property (GObject *object,
 	  int n_rows = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (sheet->data_model), NULL);
 	  g_object_set (sheet->vmodel, "size", n_rows, NULL);
 	  g_signal_connect_object (sheet->data_model, "items-changed",
-				   G_CALLBACK (resize_vmodel), sheet, 0);
+				   G_CALLBACK (resize_vmodel), sheet->vmodel, 0);
 	}
 
       if (SSW_IS_AXIS_MODEL (sheet->hmodel))
@@ -382,7 +382,7 @@ __set_property (GObject *object,
 	  int n_cols = gtk_tree_model_get_n_columns (GTK_TREE_MODEL (sheet->data_model));
 	  g_object_set (sheet->hmodel, "size", n_cols, NULL);
 	  g_signal_connect_object (sheet->data_model, "items-changed",
-				   G_CALLBACK (resize_hmodel), sheet, 0);
+				   G_CALLBACK (resize_hmodel), sheet->hmodel, 0);
 	}
 
       arrange (sheet);
