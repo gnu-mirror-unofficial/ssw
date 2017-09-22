@@ -1121,6 +1121,7 @@ select_entire_row (SswSheetBody *body, gint i, guint state, gpointer ud)
   set_selection (body,
 		 0, start_y,
 		 ssw_sheet_axis_get_size (priv->haxis) - 1, i);
+  start_editing (body, NULL);
 }
 
 static void
@@ -1137,6 +1138,7 @@ select_entire_column (SswSheetBody *body, gint i, guint state, gpointer ud)
   set_selection (body,
 		 start_x, 0,
 		 i, ssw_sheet_axis_get_size (priv->vaxis) - 1);
+  start_editing (body, NULL);
 }
 
 
