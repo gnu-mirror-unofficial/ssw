@@ -2212,8 +2212,6 @@ on_remove_widget (GtkCellEditable *e, gpointer ud)
   SswSheetBody *body = ud;
   PRIV_DECL (body);
 
-  g_signal_handlers_disconnect_by_func (e, on_remove_widget, ud);
-
   gtk_widget_destroy (GTK_WIDGET (e));
   priv->editor = NULL;
   gtk_widget_hide (priv->active_cell_holder);
@@ -2223,6 +2221,15 @@ static void
 on_changed (GtkEditable *editable, gpointer user_data)
 {
   g_object_set (editable, "editing-canceled", FALSE, NULL);
+}
+
+static gboolean
+on_focus_out (GtkWidget *w, GdkEvent *e, gpointer ud)
+{
+  /* It seems that GtkEntry by default emits the "widget-remove" signal,
+     in response to focus-out.  We don't want that to happen, so disable
+     it here. */
+  return TRUE;
 }
 
 static void
@@ -2309,6 +2316,7 @@ text_editing_started (GtkCellRenderer *cell,
 
   if (GTK_IS_ENTRY (editable))
     {
+      g_signal_connect (editable, "focus-out-event", G_CALLBACK (on_focus_out), NULL);
       gtk_entry_set_text (GTK_ENTRY (editable), "");
       g_signal_connect (editable, "changed", G_CALLBACK (on_changed), NULL);
     }
