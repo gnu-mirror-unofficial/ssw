@@ -102,12 +102,7 @@ dist-hook:
 		mv $(distdir)/cl-t $(distdir)/ChangeLog;              \
         fi
 
-built_doc_files = ${top_builddir}/doc/prog1.c-enum ${top_builddir}/doc/prog2.c-enum
 DISTCLEANFILES += $(built_doc_files)
-
-$(PDFS): $(built_doc_files)
-$(PSS): $(built_doc_files)
-$(DVIS): $(built_doc_files)
-$(HTMLS): $(built_doc_files)
-
+built_doc_files = ${top_builddir}/doc/prog1.c-enum ${top_builddir}/doc/prog2.c-enum
+doc_spread_sheet_widget_TEXINFOS = ${built_doc_files}
 
