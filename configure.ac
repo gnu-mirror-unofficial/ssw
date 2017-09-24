@@ -4,7 +4,7 @@ AM_INIT_AUTOMAKE()
 AC_CONFIG_MACRO_DIR([aclocal-aux])
 AC_CONFIG_HEADERS([config.h])
 
-AC_PROG_CC
+AC_PROG_CC_STDC
 LT_INIT
 
 m4_pattern_forbid([PKG_CHECK_MODULES])
