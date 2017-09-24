@@ -1623,13 +1623,21 @@ ssw_sheet_axis_override_size (SswSheetAxis *axis, gint pos, gint size)
 {
   PRIV_DECL (axis);
 
+  GListModel *model = ssw_sheet_axis_get_model (axis);
+  GType t = G_OBJECT_TYPE (model);
+  gboolean done_resize = FALSE;
+  guint sig = g_signal_lookup ("resize-item", t);
+  if (sig != 0)
+    g_signal_emit (model, sig, 0, pos, size, &done_resize);
+
+  if (done_resize)
+    return;
+  
   g_hash_table_insert (priv->size_override,
 		       GINT_TO_POINTER (pos),
 		       GINT_TO_POINTER (size));
 
-
   guint width = gtk_widget_get_allocated_width (GTK_WIDGET (axis));
-
 
   gint loc;
   gint start_cell =
