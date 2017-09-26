@@ -85,6 +85,8 @@ G_DEFINE_TYPE_WITH_CODE (SswSheetBody, ssw_sheet_body,
 #define PRIV(l) ((SswSheetBodyPrivate *)ssw_sheet_body_get_instance_private ((SswSheetBody *)l))
 
 
+static void start_editing (SswSheetBody *body, GdkEvent *e);
+
 static void
 limit_selection (SswSheetBody *body)
 {
@@ -398,6 +400,12 @@ __draw (GtkWidget *widget, cairo_t *cr)
 
   GtkCssProvider *cp = gtk_css_provider_new ();
 
+  gint yy = ssw_sheet_axis_find_boundary (priv->vaxis, active_row, NULL, NULL);
+  gint xx = ssw_sheet_axis_find_boundary (priv->haxis, active_col, NULL, NULL);
+
+  if (yy == 0 && xx == 0 && priv->editor == NULL)
+    start_editing (body, NULL);
+  
   if ((gtk_widget_is_focus (widget) ||
        (priv->editor && gtk_widget_is_focus (priv->editor))))
     gtk_css_provider_load_from_data (cp, focused_border, strlen (focused_border), 0);
@@ -2257,14 +2265,6 @@ text_editing_started (GtkCellRenderer *cell,
   if (! gtk_widget_is_visible (GTK_WIDGET (body)))
     return;
 
-  gint vlocation, vsize;
-  gint hlocation, hsize;
-  if (0 != ssw_sheet_axis_find_boundary (priv->vaxis, row, &vlocation, &vsize))
-    return;
-
-  if (0 != ssw_sheet_axis_find_boundary (priv->haxis, col, &hlocation, &hsize))
-    return;
-
   if (priv->editor)
     {
       gtk_cell_renderer_stop_editing (GTK_CELL_RENDERER (cell),
@@ -2280,6 +2280,15 @@ text_editing_started (GtkCellRenderer *cell,
 					&color);
 #endif
 
+  priv->editor = NULL;
+
+  gint vlocation, vsize;
+  gint hlocation, hsize;
+  if (0 != ssw_sheet_axis_find_boundary (priv->vaxis, row, &vlocation, &vsize))
+    return;
+
+  if (0 != ssw_sheet_axis_find_boundary (priv->haxis, col, &hlocation, &hsize))
+    return;
 
   priv->editor = GTK_WIDGET (editable);
   g_signal_connect (editable, "remove-widget",
