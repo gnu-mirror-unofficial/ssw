@@ -7,7 +7,7 @@ AM_MAKEINFOFLAGS=-I ${top_builddir}/doc
 TEXI2DVI=texi2dvi -I ${top_builddir}/doc
 info_TEXINFOS = doc/spread-sheet-widget.texi
 
-${top_builddir}/doc/%.c-enum: doc/%.c
+doc/%.c-enum: doc/%.c
 	cat -n $< > $@
 
 noinst_PROGRAMS = doc/prog1 doc/prog2
