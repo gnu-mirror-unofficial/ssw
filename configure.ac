@@ -1,4 +1,4 @@
-AC_INIT([spread-sheet-widget], [0.2])
+AC_INIT([spread-sheet-widget], [0.3])
 
 AM_INIT_AUTOMAKE()
 AC_CONFIG_MACRO_DIR([aclocal-aux])
