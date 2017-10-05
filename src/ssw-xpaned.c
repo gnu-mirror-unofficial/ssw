@@ -570,7 +570,7 @@ __motion_notify_event (GtkWidget *widget,
 			       &x, &y);
 
   GtkAllocation allocation;
-  gtk_widget_get_allocated_size (widget, &allocation, NULL);
+  gtk_widget_get_allocation (widget, &allocation);
 
   GSList *node;
   for (node = xpaned->childs; node; node = node->next)
@@ -725,7 +725,9 @@ ssw_xpaned_class_init (SswXpanedClass *class)
 						child_properties);
 
   gtk_widget_class_set_accessible_role (widget_class, ATK_ROLE_FILLER);
+#if GTK_CHECK_VERSION (3,20,0)
   gtk_widget_class_set_css_name (widget_class, "xpaned");
+#endif
 }
 
 

@@ -9,7 +9,7 @@ LT_INIT
 
 m4_pattern_forbid([PKG_CHECK_MODULES])
 
-gtk_dependency="gtk+-3.0 >= 3.20.0"
+gtk_dependency="gtk+-3.0 >= 3.18.0"
 glib_dependency="glib-2.0 >= 2.44"
 
 PKG_CHECK_MODULES([GTK3], [$gtk_dependency])
