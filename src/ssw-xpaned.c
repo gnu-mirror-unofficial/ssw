@@ -41,8 +41,6 @@ ssw_xpaned_set_property (GObject      *object,
 			 const GValue *value,
 			 GParamSpec   *pspec)
 {
-  SswXpaned *box = SSW_XPANED (object);
-
   switch (prop_id)
     {
     default:
@@ -57,8 +55,6 @@ ssw_xpaned_get_property (GObject    *object,
 			 GValue     *value,
 			 GParamSpec *pspec)
 {
-  SswXpaned *box = SSW_XPANED (object);
-
   switch (prop_id)
     {
     default:
@@ -180,7 +176,6 @@ static void
 __size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 {
   SswXpaned *xpaned = SSW_XPANED (widget);
-  gint i;
   gfloat vpos ;
   gfloat hpos ;
 
@@ -560,8 +555,6 @@ __motion_notify_event (GtkWidget *widget,
   gdouble x = e->x;
   gdouble y = e->y;
 
-  GdkWindow *window = gdk_window_get_parent (xpaned->handle);
-
   if (e->window != xpaned->handle)
     return FALSE;
 
@@ -734,7 +727,6 @@ ssw_xpaned_class_init (SswXpanedClass *class)
 static void
 ssw_xpaned_init (SswXpaned *xpaned)
 {
-  gint i;
   GtkWidget *widget = GTK_WIDGET (xpaned);
 
   gtk_widget_set_has_window (widget, FALSE);
