@@ -105,35 +105,6 @@ limit_selection (SswSheetBody *body)
     priv->selection->end_y = ssw_sheet_axis_get_size (priv->vaxis) - 1;
 }
 
-
-void
-normalise_selection (const SswRange *in, SswRange *out)
-{
-  if (in->start_y < in->end_y)
-    {
-      out->end_y = in->end_y;
-      out->start_y = in->start_y;
-    }
-  else
-    {
-      out->start_y = in->end_y;
-      out->end_y = in->start_y;
-    }
-
-  if (in->start_x < in->end_x)
-    {
-      out->end_x = in->end_x;
-      out->start_x = in->start_x;
-    }
-  else
-    {
-      out->start_x = in->end_x;
-      out->end_x = in->start_x;
-    }
-}
-
-
-
 enum  {SELECTION_CHANGED,
        VALUE_CHANGED,
        n_SIGNALS};
@@ -229,6 +200,32 @@ scroll_horizontally (SswSheetBody *body)
 
 
 
+
+static void
+normalise_selection (const SswRange *in, SswRange *out)
+{
+  if (in->start_y < in->end_y)
+    {
+      out->end_y = in->end_y;
+      out->start_y = in->start_y;
+    }
+  else
+    {
+      out->start_y = in->end_y;
+      out->end_y = in->start_y;
+    }
+
+  if (in->start_x < in->end_x)
+    {
+      out->end_x = in->end_x;
+      out->start_x = in->start_x;
+    }
+  else
+    {
+      out->start_x = in->end_x;
+      out->end_x = in->start_x;
+    }
+}
 
 static void
 draw_selection (SswSheetBody *body, cairo_t *cr)
@@ -1756,7 +1753,7 @@ clipit_utf8 (SswSheetBody *body, GString *output, SswRange *source_range)
   PRIV_DECL (body);
   if (!priv->haxis || !priv->vaxis || !priv->data_model)
     return;
-
+  
   gint row;
   gint col;
   for (row = source_range->start_y ; row <= source_range->end_y; ++row)
@@ -1795,6 +1792,7 @@ get_func (GtkClipboard *clipboard,
     }
 
   SswRange *source_range = g_object_get_data (G_OBJECT (clipboard), "source-range");
+  g_return_if_fail (source_range);
 
   GString *stuff = g_string_new ("");
   switch (info)
@@ -1832,8 +1830,15 @@ clear_func (GtkClipboard *clipboard,
 void
 ssw_sheet_body_set_clip (SswSheetBody *body, GtkClipboard *clip)
 {
+  PRIV_DECL (body);
   if (body == NULL)
     return;
+
+  SswRange *source_range = g_object_get_data (G_OBJECT (clip), "source-range");
+  g_free (source_range);
+  source_range = g_malloc (sizeof (*source_range));
+  g_object_set_data (G_OBJECT (clip), "source-range", source_range);
+  normalise_selection (priv->selection, source_range);
 
   if (!gtk_clipboard_set_with_owner (clip, targets, N_TARGETS,
 				     get_func, clear_func, G_OBJECT (body)))
