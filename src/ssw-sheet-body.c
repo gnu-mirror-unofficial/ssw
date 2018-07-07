@@ -265,7 +265,7 @@ draw_selection (SswSheetBody *body, cairo_t *cr)
       if (0 < ssw_sheet_axis_find_boundary (priv->haxis, mySelect.start_x,
 					    &xpos_start,  NULL))
 	goto done;
-      
+
       if (0 < ssw_sheet_axis_find_boundary (priv->vaxis, mySelect.start_y,
 					    &ypos_start,  NULL))
 	goto done;
@@ -276,16 +276,16 @@ draw_selection (SswSheetBody *body, cairo_t *cr)
 					       &xextent);
       if (xrel < 0)
 	goto done;
-      
+
       gint xsize = (xrel == 0) ? xpos_end - xpos_start + xextent : width;
-      
+
 
       gint yrel = ssw_sheet_axis_find_boundary (priv->vaxis,
 						mySelect.end_y, &ypos_end,
 						&yextent);
       if (yrel < 0)
 	goto done;
-      
+
       gint ysize = (yrel == 0) ? ypos_end - ypos_start + yextent : height;
 
       gtk_render_background (sc, cr,
@@ -402,7 +402,7 @@ __draw (GtkWidget *widget, cairo_t *cr)
 
   if (yy == 0 && xx == 0 && priv->editor == NULL)
     start_editing (body, NULL);
-  
+
   if ((gtk_widget_is_focus (widget) ||
        (priv->editor && gtk_widget_is_focus (priv->editor))))
     gtk_css_provider_load_from_data (cp, focused_border, strlen (focused_border), 0);
@@ -1160,7 +1160,7 @@ set_editor_widget_value (SswSheetBody *body, GValue *value, GtkEditable *editabl
 
   /* Allow the datum to be changed only if the "editable" property is set */
   gtk_editable_set_editable (editable, priv->editable);
-  
+
   if (GTK_IS_SPIN_BUTTON (editable))
     {
       if (G_IS_VALUE (value))
@@ -1216,7 +1216,7 @@ on_data_change (GtkTreeModel *tm, guint posn, guint rm, guint add, gpointer p)
     {
       GValue value = G_VALUE_INIT;
       gtk_tree_model_get_value (priv->data_model, &iter, col, &value);
-      
+
       set_editor_widget_value (body, &value, GTK_EDITABLE (priv->editor));
       g_value_unset (&value);
     }
@@ -1753,7 +1753,7 @@ clipit_utf8 (SswSheetBody *body, GString *output, SswRange *source_range)
   PRIV_DECL (body);
   if (!priv->haxis || !priv->vaxis || !priv->data_model)
     return;
-  
+
   gint row;
   gint col;
   for (row = source_range->start_y ; row <= source_range->end_y; ++row)
