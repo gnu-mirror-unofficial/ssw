@@ -1,4 +1,8 @@
-libtoolize --copy
+if [ -x "$(command -v libtoolize)" ]; then
+  libtoolize --copy
+else
+  glibtoolize --copy
+fi
 aclocal
 autoheader
 git log --date=short --pretty='%cd %an <%ae>%n%n        %s%n%n%n' >> ChangeLog
