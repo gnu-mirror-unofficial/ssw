@@ -116,8 +116,15 @@ get_active_cell (SswSheetBody *body, gint *col, gint *row)
 {
   PRIV_DECL (body);
 
-  *col = priv->selection->start_x;
-  *row = priv->selection->start_y;
+  SswSheetBody *active_body = NULL;
+
+  sscanf (priv->path, "r%dc%ds%p", row, col, &active_body);
+
+  if (active_body == NULL) /* There is no active cell! */
+    return FALSE;
+
+  if (active_body != body) /* This body is not active */
+    return FALSE;
 
   if (*col < 0 || *row < 0)
     return FALSE;
