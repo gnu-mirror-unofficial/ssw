@@ -8,3 +8,9 @@ fast even for very large data.
 
 Features commonly found in graphical user interfaces such as cut and paste,
 drag and drop and row/column labelling are also included.
+
+To find out the version number of this release, run "grep AC_INIT configure.ac"
+
+For installation instructions, see the file named INSTALL.
+
+For conditions on copying this library, see the file named COPYING.
