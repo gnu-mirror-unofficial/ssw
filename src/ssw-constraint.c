@@ -119,7 +119,7 @@ ssw_constraint_class_init (SswConstraintClass *class)
   GParamSpec *vcons_spec =
     g_param_spec_int ("vconstraint",
 		      P_("Vertical Constraint"),
-		      P_("The upper limit on the childs vertical size"),
+		      P_("The upper limit on the child's vertical size"),
 		      0, INT_MAX, INT_MAX,
 		      G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
@@ -127,7 +127,7 @@ ssw_constraint_class_init (SswConstraintClass *class)
   GParamSpec *hcons_spec =
     g_param_spec_int ("hconstraint",
 		      P_("Horizontal Constraint"),
-		      P_("The upper limit on the childs horizontal size"),
+		      P_("The upper limit on the child's horizontal size"),
 		      0, INT_MAX, INT_MAX,
 		      G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
