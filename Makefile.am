@@ -73,16 +73,6 @@ src/ssw-marshaller.h: src/marshall-list
 	glib-genmarshal --header --prefix=ssw_cclosure_marshal $< > $@,tmp
 	mv $@,tmp $@
 
-spread-sheet-widget.pc: spread-sheet-widget.pc.in configure.ac
-	$(SED) -e 's|%version%|$(PACKAGE_VERSION)|' \
-	 -e 's|%prefix%|$(prefix)|' \
-	 -e 's|%glib_dependency%|'"$(glib_dependency)"'|' \
-	 -e 's|%gtk_dependency%|'"$(gtk_dependency)"'|' \
-	 $< > $@,tmp
-	mv $@,tmp $@
-
-CLEANFILES = spread-sheet-widget.pc
-
 install-exec-local: spread-sheet-widget.pc
 	$(MKDIR_P) $(DESTDIR)$(libdir)/pkgconfig
 	chmod -R u+w $(DESTDIR)$(libdir)

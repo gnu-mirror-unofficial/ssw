@@ -15,7 +15,7 @@ glib_dependency="glib-2.0 >= 2.44"
 PKG_CHECK_MODULES([GTK3], [$gtk_dependency])
 PKG_CHECK_MODULES([GLIB2], [$glib_dependency])
 
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile spread-sheet-widget.pc])
 
 AC_SUBST([gtk_dependency])
 AC_SUBST([glib_dependency])
