@@ -101,6 +101,17 @@ struct _SswSheetAxisPrivate
 
 typedef struct _SswSheetAxisPrivate SswSheetAxisPrivate;
 
+static void
+axis_debug (const char *fmt, ...)
+{
+#if 0
+  va_list args;
+  va_start (args, fmt);
+  g_logv (G_LOG_DOMAIN, G_LOG_LEVEL_MESSAGE, fmt, args);
+  va_end (args);
+#endif
+}
+
 enum  {CHANGED,
        HEADER_CLICKED,
        HEADER_DOUBLE_CLICKED,
@@ -606,7 +617,7 @@ configure_adjustment (SswSheetAxis *axis)
 
   if ((gint) cur_upper != MAX (list_size, widget_size))
     {
-      /*g_message ("New upper: %d (%d, %d)", MAX (list_size, widget_size), list_size, widget_size); */
+      axis_debug ("%p New upper: %d (%d, %d)", priv, MAX (list_size, widget_size), list_size, widget_size);
       gtk_adjustment_set_upper (priv->adjustment,
                                 MAX (list_size, widget_size));
     }
@@ -655,8 +666,6 @@ ensure_visible_widgets (SswSheetAxis *axis, gboolean force_reload)
       guint start_widget_index;
       gint i;
 
-      /* g_message ("OUT OF SIGHT"); */
-
       for (i = priv->widgets->len - 1; i >= 0; i--)
         remove_child_ginternal (axis, g_ptr_array_index (priv->widgets, i));
       bin_size = 0;             /* The window is empty now, obviously */
@@ -704,7 +713,7 @@ ensure_visible_widgets (SswSheetAxis *axis, gboolean force_reload)
         gint w_size = item_size (axis, w);
         if (bin_start (axis) + item_start (axis, i) + w_size < 0)
           {
-            /* g_message ("Removing start widget %d", i); */
+            axis_debug ("%p Removing start widget %d", priv, i);
             priv->bin_start_diff += w_size;
             bin_size -= w_size;
             remove_child_ginternal (axis, w);
@@ -730,7 +739,7 @@ ensure_visible_widgets (SswSheetAxis *axis, gboolean force_reload)
         priv->bin_start_diff -= min;
         bin_size += min;
         start_added = TRUE;
-        /* g_message ("Adding start widget for index %d", priv->model_from); */
+        axis_debug ("%p Adding start widget for index %d", priv, priv->model_from);
       }
   }
 
@@ -743,10 +752,10 @@ ensure_visible_widgets (SswSheetAxis *axis, gboolean force_reload)
         GtkWidget *w = g_ptr_array_index (priv->widgets, i);
         gint y = bin_start (axis) + item_start (axis, i);
 
-        /*g_message ("%d: %d + %d > %d", i, bin_start (axis), item_start (axis, i), widget_size); */
+        axis_debug ("%p %d: %d + %d > %d", priv, i, bin_start (axis), item_start (axis, i), widget_size);
         if (y > widget_size)
           {
-            /*g_message ("Removing widget %d", i); */
+            axis_debug ("%p Removing widget %d", priv, i);
             gint w_size = item_size (axis, w);
             remove_child_ginternal (axis, w);
             bin_size -= w_size;
@@ -761,14 +770,14 @@ ensure_visible_widgets (SswSheetAxis *axis, gboolean force_reload)
   /* Insert end widgets */
   {
     end_added = FALSE;
-    /*g_message ("%d + %d <= %d", bin_start (axis), bin_size, widget_size); */
+    axis_debug ("%p %d + %d <= %d", priv, bin_start (axis), bin_size, widget_size);
     while (bin_start (axis) + bin_size <= widget_size &&
            priv->model_to < ssw_sheet_axis_get_extent (axis))
       {
         GtkWidget *new_widget;
         gint min;
 
-        /* g_message ("Inserting end widget for position %u at %u", priv->model_to, priv->widgets->len); */
+        axis_debug ("%p Inserting end widget for position %u at %u", priv, priv->model_to, priv->widgets->len);
         new_widget = get_widget (axis, priv->model_to);
         insert_child_ginternal (axis, new_widget, priv->widgets->len);
         min = item_size (axis, new_widget);
@@ -795,18 +804,18 @@ ensure_visible_widgets (SswSheetAxis *axis, gboolean force_reload)
 
     configure_adjustment (axis);
 
-    /*g_message ("Setting value to %f - %d", priv->bin_start_diff, bin_window_y); */
+    axis_debug ("%p Setting value to %f - %d", priv, priv->bin_start_diff, bin_window_y);
     __axis_set_value (axis,
                               priv->bin_start_diff - bin_window_y);
     if (__axis_get_value (axis) < priv->bin_start_diff)
       {
         __axis_set_value (axis, priv->bin_start_diff);
-        /*g_message ("Case 1"); */
+        axis_debug ("%p Case 1", priv);
       }
 
     if (bin_start (axis) > 0)
       {
-        /*g_message ("CRAP"); */
+        axis_debug ("%p CRAP", priv);
         priv->bin_start_diff = __axis_get_value (axis);
       }
   }
@@ -838,7 +847,7 @@ items_changed_cb (GListModel *model,
 
   if (! gtk_widget_get_realized (GTK_WIDGET (axis)))
     return;
-  
+
   /* If the change is out of our visible range anyway,
      then we don't care. */
   if (position > priv->model_to && bin_window_full (axis))
@@ -1330,7 +1339,7 @@ ssw_sheet_axis_class_init (SswSheetAxisClass *class)
 			 P_("The Adjustment"),
 			 GTK_TYPE_ADJUSTMENT,
 			 G_PARAM_READWRITE);
-  
+
   GParamSpec *draggable_spec =
     g_param_spec_boolean ("draggable",
 			  P_("Draggable"),
@@ -1437,7 +1446,7 @@ ssw_sheet_axis_class_init (SswSheetAxisClass *class)
   g_object_class_install_property (object_class,
                                    PROP_DRAGGABLE,
                                    draggable_spec);
-  
+
   g_object_class_override_property (object_class, PROP_ORIENTATION,
                                     "orientation");
 }
@@ -1632,7 +1641,7 @@ ssw_sheet_axis_override_size (SswSheetAxis *axis, gint pos, gint size)
 
   if (done_resize)
     return;
-  
+
   g_hash_table_insert (priv->size_override,
 		       GINT_TO_POINTER (pos),
 		       GINT_TO_POINTER (size));
@@ -2001,4 +2010,3 @@ ssw_sheet_axis_jump_end (SswSheetAxis *axis, gint whereto)
 {
   ssw_sheet_axis_jump_end_with_offset (axis, whereto, 0);
 }
-
