@@ -480,10 +480,10 @@ item_start (SswSheetAxis *axis, guint index)
   return y;
 }
 
-static gint
+static gdouble
 estimated_widget_size (SswSheetAxis *axis)
 {
-  gint avg_widget_size = 0;
+  gdouble avg_widget_size = 0;
   PRIV_DECL (axis);
 
   Foreach_Item avg_widget_size += item_size (axis, item);
@@ -524,7 +524,7 @@ static gint
 estimated_list_size (SswSheetAxis *axis,
                      guint *start_part, guint *end_part)
 {
-  gint avg_size;
+  gdouble avg_size;
   gint start_widgets;
   gint end_widgets;
   gint exact_size = 0;
@@ -658,7 +658,7 @@ ensure_visible_widgets (SswSheetAxis *axis, gboolean force_reload)
    */
   if (bin_start (axis) + bin_size < 0 || bin_start (axis) >= widget_size || force_reload)
     {
-      gint avg_widget_size = estimated_widget_size (axis);
+      gdouble avg_widget_size = estimated_widget_size (axis);
       gdouble percentage;
       gdouble value = __axis_get_value (axis);
       gdouble upper = gtk_adjustment_get_upper (priv->adjustment);
@@ -1764,7 +1764,7 @@ ssw_sheet_axis_get_extent (SswSheetAxis *axis)
 {
   PRIV_DECL (axis);
 
-  gint avg_widget_size = estimated_widget_size (axis);
+  gdouble avg_widget_size = estimated_widget_size (axis);
   if (avg_widget_size == 0)
     avg_widget_size = 28;
 
