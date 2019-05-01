@@ -1,11 +1,11 @@
-prefix=%prefix%
+prefix=@prefix@
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
 
 Name: spread-sheet-widget
 Description: A spreadsheet widget for Gtk+
-Version: %version%
-Requires: %glib_dependency% %gtk_dependency%
+Version: @VERSION@
+Requires: @glib_dependency@ @gtk_dependency@
 Libs: -L${libdir} -lspread-sheet-widget -lgtk-3
 Cflags: -I${includedir}
