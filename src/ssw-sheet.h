@@ -68,6 +68,9 @@ struct _SswSheet
   GtkWidget *selected_body;
 
   gpointer renderer_func_datum;
+
+  GSList *cursor_stack;
+  GdkCursor *wait_cursor;
 };
 
 struct _SswSheetClass
@@ -85,6 +88,8 @@ GtkWidget *ssw_sheet_get_button (SswSheet *s);
 /* Prime CLIP such that a paste request will act upon this SHEET */
 void ssw_sheet_set_clip (SswSheet *sheet, GtkClipboard *clip);
 
+void ssw_sheet_wait_push (SswSheet *sheet);
+void ssw_sheet_wait_pop (SswSheet *sheet);
 
 typedef void (*ssw_sheet_set_cell) (GtkTreeModel *store, gint col, gint row,
 				    const GValue *value);

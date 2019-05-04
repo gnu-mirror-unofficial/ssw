@@ -63,6 +63,23 @@ ssw_sheet_get_button (SswSheet *s)
   return SSW_SHEET_SINGLE (s->sheet[0])->button;
 }
 
+static void
+__realize (GtkWidget *w)
+{
+  SswSheet *sheet = SSW_SHEET (w);
+  GTK_WIDGET_CLASS (ssw_sheet_parent_class)->realize (w);
+  GdkWindow *win = gtk_widget_get_window (GTK_WIDGET (w));
+  GdkDisplay *display = gdk_window_get_display (win);
+  sheet->wait_cursor = gdk_cursor_new_for_display (display, GDK_WATCH);
+}
+
+static void
+__unrealize (GtkWidget *w)
+{
+  SswSheet *sheet = SSW_SHEET (w);
+  g_object_unref (sheet->wait_cursor);
+  GTK_WIDGET_CLASS (ssw_sheet_parent_class)->unrealize (w);
+}
 
 enum
   {
@@ -436,6 +453,7 @@ static void
 ssw_sheet_class_init (SswSheetClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
+  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
 
   GParamSpec *convert_fwd_spec =
     g_param_spec_pointer ("forward-conversion",
@@ -528,6 +546,8 @@ ssw_sheet_class_init (SswSheetClass *class)
   object_class->get_property = __get_property;
   object_class->dispose = __dispose;
   object_class->finalize = __finalize;
+  widget_class->realize = __realize;
+  widget_class->unrealize = __unrealize;
 
   g_object_class_install_property (object_class,
                                    PROP_CONVERT_FWD_FUNC,
@@ -852,6 +872,8 @@ ssw_sheet_init (SswSheet *sheet)
   sheet->selected_body = SSW_SHEET_SINGLE (sheet->sheet[0])->body;
 
   arrange (sheet);
+
+  sheet->cursor_stack = NULL;
 }
 
 void
@@ -1037,4 +1059,32 @@ ssw_sheet_paste (SswSheet *sheet, GtkClipboard *clip, ssw_sheet_set_cell sc)
 
       gtk_clipboard_request_targets (clip, target_marshaller, ps);
     }
+}
+
+
+
+
+void
+ssw_sheet_wait_push (SswSheet *sheet)
+{
+  GdkWindow *win = gtk_widget_get_window (GTK_WIDGET (sheet));
+  if (win == NULL)
+    return;
+
+  GdkCursor *cursor = gdk_window_get_cursor (win);
+  sheet->cursor_stack = g_slist_prepend (sheet->cursor_stack, cursor);
+  gdk_window_set_cursor (win, sheet->wait_cursor);
+}
+
+
+void
+ssw_sheet_wait_pop (SswSheet *sheet)
+{
+  GdkWindow *win = gtk_widget_get_window (GTK_WIDGET (sheet));
+  if (win == NULL)
+    return;
+
+  GSList *cursor = sheet->cursor_stack;
+  gdk_window_set_cursor (win, cursor->data);
+  sheet->cursor_stack = sheet->cursor_stack->next;
 }
