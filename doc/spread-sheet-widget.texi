@@ -63,7 +63,7 @@ the C programming language and with simple programming using Gtk+ version 3.
 
 @section About Spread Sheet Widget
 GNU Spread Sheet Widget is a library providing a Gtk+ widget which can be
-used by applications to present numerical and alphanumerical data in a
+used by applications to present numerical and alpha-numerical data in a
 rectangular grid similar to that used by modern spread sheet applications.
 It also provides a user interface to facilitate the creation of new data and
 the manipulation and deletion of existing data by the application's user.
