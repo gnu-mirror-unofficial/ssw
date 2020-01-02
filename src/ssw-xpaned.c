@@ -1,6 +1,6 @@
 /*
   A widget to display and manipulate tabular data
-  Copyright (C) 2017  John Darrington
+  Copyright (C) 2017, 2020  John Darrington
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by

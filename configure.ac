@@ -1,5 +1,5 @@
 dnl A widget to display and manipulate tabular data
-dnl Copyright (C) 2019  John Darrington
+dnl Copyright (C) 2019, 2020  John Darrington
 
 dnl This program is free software: you can redistribute it and/or modify
 dnl it under the terms of the GNU General Public License as published by
