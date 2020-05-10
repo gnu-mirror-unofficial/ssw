@@ -655,8 +655,10 @@ ensure_visible_widgets (SswSheetAxis *axis, gboolean force_reload)
 
   /* This "out of sight" case happens when the new value is so different from the old one
    * that we rather just remove all widgets and adjust the model_from/model_to values
+   * This mode only works when some widgets are already there to estimate the widget size
    */
-  if (bin_start (axis) + bin_size < 0 || bin_start (axis) >= widget_size || force_reload)
+  if (priv->widgets->len > 0 && bin_size > 0 &&
+      (bin_start (axis) + bin_size < 0 || bin_start (axis) >= widget_size || force_reload))
     {
       gdouble avg_widget_size = estimated_widget_size (axis);
       gdouble percentage;
@@ -914,6 +916,7 @@ __size_allocate (GtkWidget *widget, GtkAllocation *allocation)
                               allocation->width, allocation->height);
 
       update_bin_window ((SswSheetAxis *) widget);
+      ensure_visible_widgets ((SswSheetAxis *) widget, FALSE);
     }
 
 
