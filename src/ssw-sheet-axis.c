@@ -1275,13 +1275,6 @@ ssw_sheet_axis_new (GtkOrientation orientation)
 				   NULL));
 }
 
-static void
-force_update (SswSheetAxis *axis)
-{
-  ensure_visible_widgets (axis, TRUE);
-  gtk_widget_queue_draw (GTK_WIDGET (axis));
-}
-
 void
 ssw_sheet_axis_set_model (SswSheetAxis *axis, GListModel *model)
 {
@@ -1298,8 +1291,6 @@ ssw_sheet_axis_set_model (SswSheetAxis *axis, GListModel *model)
       g_object_ref (model);
     }
 
-  g_signal_connect_object (model, "notify", G_CALLBACK (force_update),
-			   axis, G_CONNECT_SWAPPED);
   ensure_visible_widgets (axis, TRUE);
 }
 
