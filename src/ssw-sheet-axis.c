@@ -97,6 +97,8 @@ struct _SswSheetAxisPrivate
   GtkGesture *drag_gest;
   gulong drag_handler_id;
   GtkTargetList *drag_target_list;
+
+  gboolean dispose_has_run;
 };
 
 typedef struct _SswSheetAxisPrivate SswSheetAxisPrivate;
@@ -1187,7 +1189,9 @@ __set_property (GObject *object,
   switch (prop_id)
     {
     case PROP_ADJUSTMENT:
-      PRIV (object)->adjustment = g_value_get_object (value);
+      if (PRIV (object)->adjustment)
+        g_object_unref (PRIV (object)->adjustment);
+      PRIV (object)->adjustment = g_value_dup_object (value);
       __set_pq_adjustments (object);
       break;
     case PROP_ORIENTATION:
@@ -1243,6 +1247,28 @@ __get_property (GObject *object,
 }
 
 static void
+__dispose (GObject *obj)
+{
+  SswSheetAxis *axis = SSW_SHEET_AXIS (obj);
+  PRIV_DECL (obj);
+
+  if (priv->dispose_has_run)
+    return;
+
+  priv->dispose_has_run = TRUE;
+
+  g_object_unref (priv->button_gest);
+  g_object_unref (priv->resize_gest);
+  g_object_unref (priv->drag_gest);
+  g_object_unref (priv->adjustment);
+
+  if (priv->drag_target_list)
+    gtk_target_list_unref (priv->drag_target_list);
+
+  G_OBJECT_CLASS (ssw_sheet_axis_parent_class)->dispose (obj);
+}
+
+static void
 __finalize (GObject *obj)
 {
   SswSheetAxis *axis = SSW_SHEET_AXIS (obj);
@@ -1252,15 +1278,8 @@ __finalize (GObject *obj)
   g_ptr_array_free (priv->pool, TRUE);
   g_ptr_array_free (priv->widgets, TRUE);
 
-  if (priv->drag_target_list)
-    gtk_target_list_unref (priv->drag_target_list);
-
   if (axis->cell_limits)
     g_ptr_array_free (axis->cell_limits, TRUE);
-
-  g_object_unref (priv->button_gest);
-  g_object_unref (priv->resize_gest);
-  g_object_unref (priv->drag_gest);
 
   G_OBJECT_CLASS (ssw_sheet_axis_parent_class)->finalize (obj);
 }
@@ -1343,6 +1362,7 @@ ssw_sheet_axis_class_init (SswSheetAxisClass *class)
 
   object_class->set_property = __set_property;
   object_class->get_property = __get_property;
+  object_class->dispose = __dispose;
   object_class->finalize = __finalize;
 
   widget_class->draw = __draw;
@@ -1564,11 +1584,13 @@ ssw_sheet_axis_init (SswSheetAxis *axis)
   PRIV_DECL (axis);
   GtkStyleContext *context = gtk_widget_get_style_context (GTK_WIDGET (axis));
 
+  priv->adjustment = NULL;
   priv->widgets = g_ptr_array_new ();
   priv->pool = g_ptr_array_new ();
   priv->model_from = 0;
   priv->model_to = 0;
   priv->bin_start_diff = 0;
+  priv->dispose_has_run = FALSE;
 
   priv->size_override = g_hash_table_new (g_direct_hash, g_direct_equal);
 
