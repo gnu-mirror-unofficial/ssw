@@ -1279,10 +1279,9 @@ __set_property (GObject *object,
     case PROP_DATA_MODEL:
       if (priv->data_model)
         g_object_unref (priv->data_model);
-      priv->data_model = g_value_get_object (value);
+      priv->data_model = g_value_dup_object (value);
       g_signal_connect_object (priv->data_model, "items-changed",
                                G_CALLBACK (on_data_change), body, 0);
-      g_object_ref (priv->data_model);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
