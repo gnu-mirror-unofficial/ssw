@@ -26,12 +26,12 @@
 
 G_DEFINE_TYPE (SswConstraint, ssw_constraint, GTK_TYPE_BIN)
 
-enum
-  {
-    PROP_0,
-    PROP_VCONSTRAINT,
-    PROP_HCONSTRAINT
-  };
+  enum
+    {
+     PROP_0,
+     PROP_VCONSTRAINT,
+     PROP_HCONSTRAINT
+    };
 
 
 static void
@@ -81,7 +81,7 @@ ssw_constraint_new (void)
 
 static void
 __size_allocate (GtkWidget    *widget,
-               GdkRectangle *allocation)
+                 GdkRectangle *allocation)
 {
   SswConstraint *c = SSW_CONSTRAINT (widget);
 
@@ -118,18 +118,18 @@ ssw_constraint_class_init (SswConstraintClass *class)
 
   GParamSpec *vcons_spec =
     g_param_spec_int ("vconstraint",
-		      P_("Vertical Constraint"),
-		      P_("The upper limit on the child's vertical size"),
-		      0, INT_MAX, INT_MAX,
-		      G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+                      P_("Vertical Constraint"),
+                      P_("The upper limit on the child's vertical size"),
+                      0, INT_MAX, INT_MAX,
+                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
 
   GParamSpec *hcons_spec =
     g_param_spec_int ("hconstraint",
-		      P_("Horizontal Constraint"),
-		      P_("The upper limit on the child's horizontal size"),
-		      0, INT_MAX, INT_MAX,
-		      G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+                      P_("Horizontal Constraint"),
+                      P_("The upper limit on the child's horizontal size"),
+                      0, INT_MAX, INT_MAX,
+                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
 
   g_object_class_install_property (object_class,

@@ -24,8 +24,8 @@
 
 static  gchar *
 __get_text (AtkText *text,
-	    gint    start_offset,
-	    gint    end_offset)
+            gint    start_offset,
+            gint    end_offset)
 {
   const gchar *s = SSW_CELL (text)->text;
   if (end_offset == -1)
@@ -45,8 +45,8 @@ __atk_text_init (AtkTextIface *iface)
 
 
 G_DEFINE_TYPE_WITH_CODE (SswCell, ssw_cell, ATK_TYPE_OBJECT,
-			 G_IMPLEMENT_INTERFACE (ATK_TYPE_TABLE_CELL, NULL)
-			 G_IMPLEMENT_INTERFACE (ATK_TYPE_TEXT, __atk_text_init));
+                         G_IMPLEMENT_INTERFACE (ATK_TYPE_TABLE_CELL, NULL)
+                         G_IMPLEMENT_INTERFACE (ATK_TYPE_TEXT, __atk_text_init));
 
 static void
 __finalize (GObject *obj)
@@ -58,8 +58,8 @@ __finalize (GObject *obj)
 
 enum
   {
-    PROP_0,
-    PROP_CONTENT
+   PROP_0,
+   PROP_CONTENT
   };
 
 static void
@@ -107,17 +107,17 @@ ssw_cell_class_init (SswCellClass *class)
 
   GParamSpec *content_spec =
     g_param_spec_pointer ("content",
-			  P_("Content"),
-			  P_("The contents of the cell in utf8"),
-			  G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+                          P_("Content"),
+                          P_("The contents of the cell in utf8"),
+                          G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
   object_class->set_property = __set_property;
   object_class->get_property = __get_property;
 
 
   g_object_class_install_property (object_class,
-				   PROP_CONTENT,
-				   content_spec);
+                                   PROP_CONTENT,
+                                   content_spec);
 }
 
 static void

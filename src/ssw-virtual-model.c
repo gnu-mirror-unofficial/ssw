@@ -29,7 +29,7 @@ static guint signals [n_SIGNALS];
 
 static  gint
 __iter_n_children (GtkTreeModel *tree_model,
-		 GtkTreeIter  *iter)
+                   GtkTreeIter  *iter)
 {
   SswVirtualModel *m = SSW_VIRTUAL_MODEL (tree_model);
   return m->rows;
@@ -46,9 +46,9 @@ __get_n_columns  (GtkTreeModel *tree_model)
 
 static gboolean
 __iter_nth_child  (GtkTreeModel *tree_model,
-		 GtkTreeIter  *iter,
-		 GtkTreeIter  *parent,
-		 gint          n)
+                   GtkTreeIter  *iter,
+                   GtkTreeIter  *parent,
+                   gint          n)
 {
   SswVirtualModel *m = SSW_VIRTUAL_MODEL (tree_model);
 
@@ -61,9 +61,9 @@ __iter_nth_child  (GtkTreeModel *tree_model,
 
 static void
 __get_value (GtkTreeModel *tree_model,
-	     GtkTreeIter  *iter,
-	     gint          column,
-	     GValue       *value)
+             GtkTreeIter  *iter,
+             gint          column,
+             GValue       *value)
 {
   SswVirtualModel *m = SSW_VIRTUAL_MODEL (tree_model);
   g_return_if_fail (iter->stamp == m->stamp);
@@ -76,7 +76,7 @@ __get_value (GtkTreeModel *tree_model,
 
 static GType
 __get_type (GtkTreeModel *tree_model,
-	    gint col)
+            gint col)
 {
   SswVirtualModel *m = SSW_VIRTUAL_MODEL (tree_model);
   return G_TYPE_STRING;
@@ -85,7 +85,7 @@ __get_type (GtkTreeModel *tree_model,
 
 static GtkTreePath *
 __get_path (GtkTreeModel *tree_model,
-	    GtkTreeIter  *iter)
+            GtkTreeIter  *iter)
 {
   SswVirtualModel *m = SSW_VIRTUAL_MODEL (tree_model);
   g_return_val_if_fail (iter->stamp == m->stamp, NULL);
@@ -124,9 +124,9 @@ __finalize (GObject *obj)
 
 enum
   {
-    PROP_0,
-    PROP_COLS,
-    PROP_ROWS
+   PROP_0,
+   PROP_COLS,
+   PROP_ROWS
   };
 
 
@@ -145,38 +145,38 @@ __set_property (GObject *object,
       break;
     case PROP_ROWS:
       {
-	gint old_rows = m->rows;
-	gint n = g_value_get_uint (value);
-	g_return_if_fail (n >= 0);
-	m->rows = n;
-	if (old_rows != -1)
-	  {
-	    /* Rows inserted */
-	    for (r = old_rows; r < m->rows; ++r)
-	      {
-		GtkTreeIter iter;
-		gtk_tree_model_iter_nth_child (GTK_TREE_MODEL (m), &iter, NULL, r);
-		GtkTreePath *path = gtk_tree_model_get_path (GTK_TREE_MODEL(m), &iter);
-		g_signal_emit_by_name (object, "row-inserted",
-				       path, &iter);
+        gint old_rows = m->rows;
+        gint n = g_value_get_uint (value);
+        g_return_if_fail (n >= 0);
+        m->rows = n;
+        if (old_rows != -1)
+          {
+            /* Rows inserted */
+            for (r = old_rows; r < m->rows; ++r)
+              {
+                GtkTreeIter iter;
+                gtk_tree_model_iter_nth_child (GTK_TREE_MODEL (m), &iter, NULL, r);
+                GtkTreePath *path = gtk_tree_model_get_path (GTK_TREE_MODEL(m), &iter);
+                g_signal_emit_by_name (object, "row-inserted",
+                                       path, &iter);
 
-		gtk_tree_path_free (path);
-	      }
-	    /* Rows deleted */
-	    for (r = m->rows; r < old_rows; ++r)
-	      {
-		GtkTreePath *path =
-		  gtk_tree_path_new_from_indices (r, -1);
+                gtk_tree_path_free (path);
+              }
+            /* Rows deleted */
+            for (r = m->rows; r < old_rows; ++r)
+              {
+                GtkTreePath *path =
+                  gtk_tree_path_new_from_indices (r, -1);
 
-		g_signal_emit_by_name (object, "row-deleted", path);
+                g_signal_emit_by_name (object, "row-deleted", path);
 
-		gtk_tree_path_free (path);
-	      }
-	    gint diff = (m->rows - old_rows);
-	    g_signal_emit_by_name (object, "items-changed", old_rows,
-				   (diff > 0) ? 0 : -diff,
-				   (diff > 0) ? diff : 0);
-	  }
+                gtk_tree_path_free (path);
+              }
+            gint diff = (m->rows - old_rows);
+            g_signal_emit_by_name (object, "items-changed", old_rows,
+                                   (diff > 0) ? 0 : -diff,
+                                   (diff > 0) ? diff : 0);
+          }
       }
       break;
     default:
@@ -216,17 +216,17 @@ ssw_virtual_model_class_init (SswVirtualModelClass *class)
 
   GParamSpec *cols_spec =
     g_param_spec_uint ("columns",
-		      P_("Columns"),
-		      P_("The number of columns in the model"),
-		      0, UINT_MAX, 10000,
-		      G_PARAM_READWRITE);
+                       P_("Columns"),
+                       P_("The number of columns in the model"),
+                       0, UINT_MAX, 10000,
+                       G_PARAM_READWRITE);
 
   GParamSpec *rows_spec =
     g_param_spec_uint ("rows",
-		      P_("Rows"),
-		      P_("The number of rows in the model"),
-		      0, UINT_MAX, 10000,
-		      G_PARAM_READWRITE);
+                       P_("Rows"),
+                       P_("The number of rows in the model"),
+                       0, UINT_MAX, 10000,
+                       G_PARAM_READWRITE);
 
 
   g_object_class_install_property (object_class,
@@ -241,16 +241,16 @@ ssw_virtual_model_class_init (SswVirtualModelClass *class)
 
   signals [ITEMS_CHANGED] =
     g_signal_new ("items-changed",
-		  G_TYPE_FROM_CLASS (class),
-		  G_SIGNAL_RUN_FIRST,
-		  0,
-		  NULL, NULL,
-		  g_cclosure_marshal_generic,
-		  G_TYPE_NONE,
-		  3,
-		  G_TYPE_UINT,
-  		  G_TYPE_UINT,
-		  G_TYPE_UINT);
+                  G_TYPE_FROM_CLASS (class),
+                  G_SIGNAL_RUN_FIRST,
+                  0,
+                  NULL, NULL,
+                  g_cclosure_marshal_generic,
+                  G_TYPE_NONE,
+                  3,
+                  G_TYPE_UINT,
+                  G_TYPE_UINT,
+                  G_TYPE_UINT);
 }
 
 static void

@@ -140,29 +140,29 @@ ssw_axis_model_class_init (SswAxisModelClass *dc)
 
   GParamSpec *post_create_func_spec =
     g_param_spec_pointer ("post-button-create-func",
-			  P_("Post button creation function"),
-			  P_("A function of the form void f (GtkWidget *, uint i, gpointer user_data) which will be passed to each button after creation"),
-			  G_PARAM_READWRITE);
+              P_("Post button creation function"),
+              P_("A function of the form void f (GtkWidget *, uint i, gpointer user_data) which will be passed to each button after creation"),
+              G_PARAM_READWRITE);
 
   GParamSpec *post_create_func_data_spec =
     g_param_spec_pointer ("post-button-create-func-data",
-			  P_("Post button creation data"),
-			  P_("A pointer which will be passed to the function set by the post-button-create-func property"),
-			  G_PARAM_READWRITE);
+              P_("Post button creation data"),
+              P_("A pointer which will be passed to the function set by the post-button-create-func property"),
+              G_PARAM_READWRITE);
   
   GParamSpec *size_spec =
     g_param_spec_uint ("size",
-		      P_("Size"),
-		      P_("The number of items in the model"),
-		      0, UINT_MAX, 10000,
-		      G_PARAM_READWRITE);
+              P_("Size"),
+              P_("The number of items in the model"),
+              0, UINT_MAX, 10000,
+              G_PARAM_READWRITE);
 
   GParamSpec *offset_spec =
     g_param_spec_int ("offset",
-		      P_("Offset"),
-		      P_("The enumeration of the first item in the model"),
-		      -INT_MAX, INT_MAX, 1,
-		      G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+              P_("Offset"),
+              P_("The enumeration of the first item in the model"),
+              -INT_MAX, INT_MAX, 1,
+              G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
   g_object_class_install_property (object_class,
                                    PROP_POST_CREATE_FUNC,

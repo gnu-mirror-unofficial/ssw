@@ -169,10 +169,10 @@ scroll_vertically (SswSheetBody *body)
       gint visible = ssw_sheet_axis_find_boundary (priv->vaxis, row, &vlocation, NULL);
 
       gtk_container_child_get (GTK_CONTAINER (body),
-			       priv->active_cell_holder, "x", &hlocation, NULL);
+                               priv->active_cell_holder, "x", &hlocation, NULL);
 
       gtk_layout_move (GTK_LAYOUT (body), priv->active_cell_holder,
-		       hlocation, vlocation + 1);
+                       hlocation, vlocation + 1);
 
       gtk_widget_set_visible (priv->active_cell_holder, (visible == 0));
     }
@@ -245,20 +245,20 @@ draw_selection (SswSheetBody *body, cairo_t *cr)
   GdkRGBA *color;
   GtkStyleContext *sc = gtk_widget_get_style_context (w);
   gtk_style_context_get (sc,
-			 GTK_STATE_FLAG_SELECTED,
-			 "background-color",
-			 &color, NULL);
+                         GTK_STATE_FLAG_SELECTED,
+                         "background-color",
+                         &color, NULL);
 
   GtkCssProvider *cp = gtk_css_provider_new ();
   gchar *css = g_strdup_printf ("* {background-color: rgba(%d, %d, %d, 0.25);}",
-				(int) (100.0 * color->red),
-				(int) (100.0 * color->green),
-				(int) (100.0 * color->blue));
+                                (int) (100.0 * color->red),
+                                (int) (100.0 * color->green),
+                                (int) (100.0 * color->blue));
 
   gtk_css_provider_load_from_data (cp, css, strlen (css), 0);
 
   gtk_style_context_add_provider (sc, GTK_STYLE_PROVIDER (cp),
-				  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+                                  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
   /* Draw the selection */
   if ((priv->selection->start_x != priv->selection->end_x)
@@ -270,34 +270,34 @@ draw_selection (SswSheetBody *body, cairo_t *cr)
       gint xpos_start = 0;
       gint ypos_start = 0;
       if (0 < ssw_sheet_axis_find_boundary (priv->haxis, mySelect.start_x,
-					    &xpos_start,  NULL))
-	goto done;
+                                            &xpos_start,  NULL))
+        goto done;
 
       if (0 < ssw_sheet_axis_find_boundary (priv->vaxis, mySelect.start_y,
-					    &ypos_start,  NULL))
-	goto done;
+                                            &ypos_start,  NULL))
+        goto done;
 
       gint xpos_end, ypos_end, yextent, xextent;
       gint xrel = ssw_sheet_axis_find_boundary (priv->haxis,
-					       mySelect.end_x, &xpos_end,
-					       &xextent);
+                                                mySelect.end_x, &xpos_end,
+                                                &xextent);
       if (xrel < 0)
-	goto done;
+        goto done;
 
       gint xsize = (xrel == 0) ? xpos_end - xpos_start + xextent : width;
 
 
       gint yrel = ssw_sheet_axis_find_boundary (priv->vaxis,
-						mySelect.end_y, &ypos_end,
-						&yextent);
+                                                mySelect.end_y, &ypos_end,
+                                                &yextent);
       if (yrel < 0)
-	goto done;
+        goto done;
 
       gint ysize = (yrel == 0) ? ypos_end - ypos_start + yextent : height;
 
       gtk_render_background (sc, cr,
-			     xpos_start, ypos_start,
-			     xsize, ysize);
+                             xpos_start, ypos_start,
+                             xsize, ysize);
     }
 
  done:
@@ -309,7 +309,7 @@ draw_selection (SswSheetBody *body, cairo_t *cr)
 
 gboolean
 ssw_sheet_default_reverse_conversion (GtkTreeModel *model, gint col, gint row,
-				      const gchar *in, GValue *out)
+                                      const gchar *in, GValue *out)
 {
   GType src_type = G_TYPE_STRING;
   GType target_type = gtk_tree_model_get_column_type (model, col);
@@ -319,8 +319,8 @@ ssw_sheet_default_reverse_conversion (GtkTreeModel *model, gint col, gint row,
   if (! g_value_type_transformable (src_type, target_type))
     {
       g_critical ("Value of type %s cannot be transformed to type %s",
-		  g_type_name (src_type),
-		  g_type_name (target_type));
+                  g_type_name (src_type),
+                  g_type_name (target_type));
       return FALSE;
     }
 
@@ -337,7 +337,7 @@ ssw_sheet_default_reverse_conversion (GtkTreeModel *model, gint col, gint row,
 
 gchar *
 ssw_sheet_default_forward_conversion (SswSheet *sheet, GtkTreeModel *m,
-				      gint col, gint row, const GValue *value)
+                                      gint col, gint row, const GValue *value)
 {
   GValue target_value = G_VALUE_INIT;
 
@@ -346,18 +346,18 @@ ssw_sheet_default_forward_conversion (SswSheet *sheet, GtkTreeModel *m,
   if (!g_value_transform (value, &target_value))
     {
       if (G_VALUE_HOLDS_VARIANT (value))
-	{
-	  GVariant *vt = g_value_get_variant (value);
-	  gchar *s = g_variant_print (vt, FALSE);
-	  g_value_unset (&target_value);
-	  return s;
-	}
+        {
+          GVariant *vt = g_value_get_variant (value);
+          gchar *s = g_variant_print (vt, FALSE);
+          g_value_unset (&target_value);
+          return s;
+        }
       else
-	{
-	  g_warning ("Failed to transform type \"%s\" to type \"%s\"\n",
-		     G_VALUE_TYPE_NAME (&value),
-		     g_type_name (G_TYPE_STRING));
-	}
+        {
+          g_warning ("Failed to transform type \"%s\" to type \"%s\"\n",
+                     G_VALUE_TYPE_NAME (&value),
+                     g_type_name (G_TYPE_STRING));
+        }
     }
 
   gchar *cell_text = g_value_dup_string (&target_value);
@@ -415,15 +415,15 @@ __draw (GtkWidget *widget, cairo_t *cr)
     gtk_css_provider_load_from_data (cp, focused_border, strlen (focused_border), 0);
   else
     gtk_css_provider_load_from_data (cp, unfocused_border,
-				     strlen (unfocused_border), 0);
+                                     strlen (unfocused_border), 0);
 
   gtk_style_context_add_provider (sc, GTK_STYLE_PROVIDER (cp),
-				  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+                                  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
   GtkBorder border;
   gtk_style_context_get_border (sc,
-				gtk_widget_get_state_flags (widget),
-				&border);
+                                gtk_widget_get_state_flags (widget),
+                                &border);
 
 
   int row = priv->vaxis->last_cell;
@@ -436,86 +436,86 @@ __draw (GtkWidget *widget, cairo_t *cr)
 
 
       if (priv->show_gridlines)
-	{
-	  gint ypos = vgeom->position;
-	  ypos += vgeom->size;
+        {
+          gint ypos = vgeom->position;
+          ypos += vgeom->size;
 
-	  /* Draw horizontal grid lines */
-	  gtk_render_line (sc, cr, 0, ypos, width, ypos);
-	}
+          /* Draw horizontal grid lines */
+          gtk_render_line (sc, cr, 0, ypos, width, ypos);
+        }
 
       --row;
       GtkTreeIter iter;
       if (priv->data_model)
-	gtk_tree_model_iter_nth_child (priv->data_model, &iter, NULL, row);
+        gtk_tree_model_iter_nth_child (priv->data_model, &iter, NULL, row);
       int col = priv->haxis->last_cell;
       gint x;
       for (x = priv->haxis->cell_limits->len - 1;
-	   x >= 0;
-	   --x)
-	{
-	  const SswGeometry *hgeom = g_ptr_array_index (priv->haxis->cell_limits, x);
+           x >= 0;
+           --x)
+        {
+          const SswGeometry *hgeom = g_ptr_array_index (priv->haxis->cell_limits, x);
 
-	  GdkRectangle rect;
-	  rect.x = hgeom->position;
-	  rect.y = vgeom->position;
-	  rect.width = hgeom->size;
-	  rect.height = vgeom->size;
+          GdkRectangle rect;
+          rect.x = hgeom->position;
+          rect.y = vgeom->position;
+          rect.width = hgeom->size;
+          rect.height = vgeom->size;
 
-	  --col;
-	  if (col == active_col && row == active_row)
-	    {
-	      /* Draw frame */
-	      gtk_render_frame (sc, cr,
-				rect.x - border.left,
-				rect.y - border.top,
-				rect.width + border.left + border.right + 1,
-				rect.height + border.top + border.bottom + 1);
-	    }
-	  if (priv->data_model
-	      && row < gtk_tree_model_iter_n_children (priv->data_model, NULL)
-	      && col < gtk_tree_model_get_n_columns (priv->data_model))
-	    {
-	      GtkCellRenderer *renderer = choose_renderer (body, col, row);
+          --col;
+          if (col == active_col && row == active_row)
+            {
+              /* Draw frame */
+              gtk_render_frame (sc, cr,
+                                rect.x - border.left,
+                                rect.y - border.top,
+                                rect.width + border.left + border.right + 1,
+                                rect.height + border.top + border.bottom + 1);
+            }
+          if (priv->data_model
+              && row < gtk_tree_model_iter_n_children (priv->data_model, NULL)
+              && col < gtk_tree_model_get_n_columns (priv->data_model))
+            {
+              GtkCellRenderer *renderer = choose_renderer (body, col, row);
 
-	      if (GTK_IS_CELL_RENDERER_TEXT (renderer))
-		{
-		  char *cell_text = NULL;
+              if (GTK_IS_CELL_RENDERER_TEXT (renderer))
+                {
+                  char *cell_text = NULL;
 
-		  if (col != active_col || row != active_row ||
-		      (priv->sheet->selected_body != GTK_WIDGET (body)))
-		    {
-		      /* Don't render the active cell.
-			 It is already rendered by the cell_editable widget
-			 and rendering twice looks unaesthetic */
+                  if (col != active_col || row != active_row ||
+                      (priv->sheet->selected_body != GTK_WIDGET (body)))
+                    {
+                      /* Don't render the active cell.
+                         It is already rendered by the cell_editable widget
+                         and rendering twice looks unaesthetic */
 
-		      GValue value = G_VALUE_INIT;
-		      gtk_tree_model_get_value (priv->data_model, &iter, col, &value);
-		      cell_text = priv->cf (priv->sheet, priv->data_model, col, row, &value);
-		      g_value_unset (&value);
-		    }
+                      GValue value = G_VALUE_INIT;
+                      gtk_tree_model_get_value (priv->data_model, &iter, col, &value);
+                      cell_text = priv->cf (priv->sheet, priv->data_model, col, row, &value);
+                      g_value_unset (&value);
+                    }
 
-		  g_object_set (renderer,
-				"text", cell_text,
-				NULL);
+                  g_object_set (renderer,
+                                "text", cell_text,
+                                NULL);
 
-		  g_free (cell_text);
-		}
+                  g_free (cell_text);
+                }
 
 
 
-	      gtk_cell_renderer_render (renderer, cr, widget,
-					&rect, &rect, 0);
-	    }
+              gtk_cell_renderer_render (renderer, cr, widget,
+                                        &rect, &rect, 0);
+            }
 
-	  if (priv->show_gridlines)
-	    {
-	      /* Draw vertical grid lines */
-	      gtk_render_line (sc, cr,
-			       rect.x + rect.width, 0,
-			       rect.x + rect.width, height);
-	    }
-	}
+          if (priv->show_gridlines)
+            {
+              /* Draw vertical grid lines */
+              gtk_render_line (sc, cr,
+                               rect.x + rect.width, 0,
+                               rect.x + rect.width, height);
+            }
+        }
     }
 
   if (gtk_gesture_is_active (priv->horizontal_resize_gesture))
@@ -555,7 +555,7 @@ __realize (GtkWidget *w)
 
   GdkWindow *win = gtk_widget_get_window (w);
   gdk_window_set_events (win, GDK_KEY_PRESS_MASK |
-			 GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK);
+                         GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK);
 }
 
 static void
@@ -607,7 +607,7 @@ announce_selection (SswSheetBody *body)
 
   GtkClipboard *primary =
     gtk_clipboard_get_for_display (gtk_widget_get_display (GTK_WIDGET (body)),
-				   GDK_SELECTION_PRIMARY);
+                                   GDK_SELECTION_PRIMARY);
 
   ssw_sheet_body_set_clip (body, primary);
 }
@@ -639,16 +639,16 @@ trim_to_model_limits (SswSheetBody *body, gint old_col, gint old_row, gint *col,
   if (priv->editable)
     {
       if (old_row == ssw_sheet_axis_get_size (priv->vaxis) && old_col == 0)
-	return FALSE;
+        return FALSE;
 
       if (old_col == ssw_sheet_axis_get_size (priv->haxis) && old_row == 0)
-	return FALSE;
+        return FALSE;
 
       if (*row == ssw_sheet_axis_get_size (priv->vaxis) && *col == 0)
-	return FALSE;
+        return FALSE;
 
       if (*col == ssw_sheet_axis_get_size (priv->haxis) && *row == 0)
-	return FALSE;
+        return FALSE;
     }
 
   if (*col >= ssw_sheet_axis_get_size (priv->haxis))
@@ -719,14 +719,14 @@ start_editing (SswSheetBody *body, GdkEvent *e)
     {
       GtkCellRenderer *renderer = choose_renderer (body, col, row);
       GtkCellEditable *ce =
-	gtk_cell_renderer_start_editing (renderer, e, GTK_WIDGET (body),
-					 priv->path, NULL, NULL,
-					 GTK_CELL_RENDERER_SELECTED);
+        gtk_cell_renderer_start_editing (renderer, e, GTK_WIDGET (body),
+                                         priv->path, NULL, NULL,
+                                         GTK_CELL_RENDERER_SELECTED);
 
       /* We use this property with a slightly different nuance:
-	 It is rather a "started" flag than a canceled flag. That is
-	 to say, it is TRUE  by default and becomes FALSE, once an
-	 edit has commenced */
+         It is rather a "started" flag than a canceled flag. That is
+         to say, it is TRUE  by default and becomes FALSE, once an
+         edit has commenced */
       g_object_set (ce, "editing-canceled", TRUE, NULL);
     }
 }
@@ -797,27 +797,27 @@ __key_press_event_shifted (GtkWidget *w, GdkEventKey *e)
     {
     case GDK_KEY_Left:
       if (e->state & GDK_CONTROL_MASK)
-	priv->selection->end_x = 0;
+        priv->selection->end_x = 0;
       else
-	priv->selection->end_x--;
+        priv->selection->end_x--;
       break;
     case GDK_KEY_Right:
       if (e->state & GDK_CONTROL_MASK)
-	priv->selection->end_x = ssw_sheet_axis_get_size (priv->haxis) - 1;
+        priv->selection->end_x = ssw_sheet_axis_get_size (priv->haxis) - 1;
       else
-	priv->selection->end_x++;
+        priv->selection->end_x++;
       break;
     case GDK_KEY_Up:
       if (e->state & GDK_CONTROL_MASK)
-	priv->selection->end_y = 0;
+        priv->selection->end_y = 0;
       else
-	priv->selection->end_y--;
+        priv->selection->end_y--;
       break;
     case GDK_KEY_Down:
       if (e->state & GDK_CONTROL_MASK)
-	priv->selection->end_y = ssw_sheet_axis_get_size (priv->vaxis) - 1;
+        priv->selection->end_y = ssw_sheet_axis_get_size (priv->vaxis) - 1;
       else
-	priv->selection->end_y++;
+        priv->selection->end_y++;
       break;
     default:
       return FALSE;
@@ -833,14 +833,14 @@ __key_press_event_shifted (GtkWidget *w, GdkEventKey *e)
 
 gboolean
 ssw_sheet_body_get_active_cell (SswSheetBody *body,
-				gint *col, gint *row)
+                                gint *col, gint *row)
 {
   return get_active_cell (body, col, row);
 }
 
 void
 ssw_sheet_body_set_active_cell (SswSheetBody *body,
-				gint col, gint row, GdkEvent *e)
+                                gint col, gint row, GdkEvent *e)
 {
   PRIV_DECL (body);
 
@@ -887,18 +887,18 @@ __key_press_event (GtkWidget *w, GdkEventKey *e)
   if (is_printable_key (e->keyval))
     {
       if (priv->editor && priv->editable &&
-	  (priv->sheet->selected_body == GTK_WIDGET (body)))
-	{
-	  gtk_widget_grab_focus (priv->editor);
-	  if (GTK_IS_ENTRY (priv->editor))
-	    {
-	      gchar out[7] = {0,0,0,0,0,0,0};
-	      guint32 code = gdk_keyval_to_unicode (e->keyval);
-	      g_unichar_to_utf8 (code, out);
-	      gtk_entry_set_text (GTK_ENTRY(priv->editor), out);
-	      gtk_editable_set_position (GTK_EDITABLE (priv->editor), -1);
-	    }
-	}
+          (priv->sheet->selected_body == GTK_WIDGET (body)))
+        {
+          gtk_widget_grab_focus (priv->editor);
+          if (GTK_IS_ENTRY (priv->editor))
+            {
+              gchar out[7] = {0,0,0,0,0,0,0};
+              guint32 code = gdk_keyval_to_unicode (e->keyval);
+              g_unichar_to_utf8 (code, out);
+              gtk_entry_set_text (GTK_ENTRY(priv->editor), out);
+              gtk_editable_set_position (GTK_EDITABLE (priv->editor), -1);
+            }
+        }
       return FALSE;
     }
 
@@ -940,15 +940,15 @@ __key_press_event (GtkWidget *w, GdkEventKey *e)
       break;
     case GDK_KEY_Left:
       if (e->state & GDK_CONTROL_MASK)
-	col = h_start_limit;
+        col = h_start_limit;
       else
-	col -= hstep;
+        col -= hstep;
       break;
     case GDK_KEY_Right:
       if (e->state & GDK_CONTROL_MASK)
-	col = h_end_limit;
+        col = h_end_limit;
       else
-	col += hstep;
+        col += hstep;
       break;
     case GDK_KEY_Page_Up:
       row -= page_length;
@@ -958,37 +958,37 @@ __key_press_event (GtkWidget *w, GdkEventKey *e)
       break;
     case GDK_KEY_Up:
       if (e->state & GDK_CONTROL_MASK)
-	row = 0;
+        row = 0;
       else
-	row--;
+        row--;
       break;
     case GDK_KEY_Down:
       if (e->state & GDK_CONTROL_MASK)
-	row = G_MAXINT;
+        row = G_MAXINT;
       else
-	row++;
+        row++;
       break;
     case GDK_KEY_Return:
       row++;
       break;
     case GDK_KEY_ISO_Left_Tab:
       {
-	col --;
-	if (col < 0 && row > 0)
-	  {
-	    col = ssw_sheet_axis_get_size (priv->haxis) - 1;
-	    row --;
-	  }
+        col --;
+        if (col < 0 && row > 0)
+          {
+            col = ssw_sheet_axis_get_size (priv->haxis) - 1;
+            row --;
+          }
       }
       break;
     case GDK_KEY_Tab:
       {
-	col ++;
-	if (col >= ssw_sheet_axis_get_size (priv->haxis)  && row < vlimit)
-	  {
-	    col = 0;
-	    row ++;
-	  }
+        col ++;
+        if (col >= ssw_sheet_axis_get_size (priv->haxis)  && row < vlimit)
+          {
+            col = 0;
+            row ++;
+          }
       }
       break;
     default:
@@ -1099,24 +1099,24 @@ GtkWidget *
 ssw_sheet_body_new (SswSheet *sheet)
 {
   return GTK_WIDGET (g_object_new (SSW_TYPE_SHEET_BODY,
-				   "sheet", sheet,
-				   NULL));
+                                   "sheet", sheet,
+                                   NULL));
 }
 
 
 enum
   {
-    PROP_0,
-    PROP_VAXIS,
-    PROP_HAXIS,
-    PROP_DATA_MODEL,
-    PROP_GRIDLINES,
-    PROP_EDITABLE,
-    PROP_SELECTION,
-    PROP_RENDERER_FUNC,
-    PROP_CONVERT_FWD_FUNC,
-    PROP_CONVERT_REV_FUNC,
-    PROP_SHEET
+   PROP_0,
+   PROP_VAXIS,
+   PROP_HAXIS,
+   PROP_DATA_MODEL,
+   PROP_GRIDLINES,
+   PROP_EDITABLE,
+   PROP_SELECTION,
+   PROP_RENDERER_FUNC,
+   PROP_CONVERT_FWD_FUNC,
+   PROP_CONVERT_REV_FUNC,
+   PROP_SHEET
   };
 
 static void
@@ -1132,8 +1132,8 @@ select_entire_row (SswSheetBody *body, gint i, guint state, gpointer ud)
   gint start_y = (extend_mask & state) ? priv->selection->start_y : i;
 
   set_selection (body,
-		 0, start_y,
-		 ssw_sheet_axis_get_size (priv->haxis) - 1, i);
+                 0, start_y,
+                 ssw_sheet_axis_get_size (priv->haxis) - 1, i);
   start_editing (body, NULL);
 }
 
@@ -1149,8 +1149,8 @@ select_entire_column (SswSheetBody *body, gint i, guint state, gpointer ud)
   gint start_x = (extend_mask & state) ? priv->selection->start_x : i;
 
   set_selection (body,
-		 start_x, 0,
-		 i, ssw_sheet_axis_get_size (priv->vaxis) - 1);
+                 start_x, 0,
+                 i, ssw_sheet_axis_get_size (priv->vaxis) - 1);
   start_editing (body, NULL);
 }
 
@@ -1172,21 +1172,21 @@ set_editor_widget_value (SswSheetBody *body, GValue *value, GtkEditable *editabl
   if (GTK_IS_SPIN_BUTTON (editable))
     {
       if (G_IS_VALUE (value))
-	{
-	  GValue dvalue = G_VALUE_INIT;
-	  g_value_init (&dvalue, G_TYPE_DOUBLE);
-	  if (g_value_transform (value, &dvalue))
-	    {
-	      gtk_spin_button_set_value (GTK_SPIN_BUTTON (editable), g_value_get_double (&dvalue));
-	    }
-	  g_value_unset (&dvalue);
-	}
+        {
+          GValue dvalue = G_VALUE_INIT;
+          g_value_init (&dvalue, G_TYPE_DOUBLE);
+          if (g_value_transform (value, &dvalue))
+            {
+              gtk_spin_button_set_value (GTK_SPIN_BUTTON (editable), g_value_get_double (&dvalue));
+            }
+          g_value_unset (&dvalue);
+        }
     }
   else if (GTK_IS_ENTRY (editable))
     {
       gchar *s = NULL;
       if (G_IS_VALUE (value))
-	s = priv->cf (priv->sheet, priv->data_model, col, row, value);
+        s = priv->cf (priv->sheet, priv->data_model, col, row, value);
       gtk_entry_set_text (GTK_ENTRY (editable), s ? s : "");
       g_free (s);
     }
@@ -1194,16 +1194,16 @@ set_editor_widget_value (SswSheetBody *body, GValue *value, GtkEditable *editabl
     {
       gint n = -1;
       if (G_IS_VALUE (value))
-	n = g_value_get_enum (value);
+        n = g_value_get_enum (value);
       gtk_combo_box_set_active (GTK_COMBO_BOX (editable), n);
     }
   else
     {
       gchar *x = NULL;
       if (G_IS_VALUE (value))
-	x = g_strdup_value_contents (value);
+        x = g_strdup_value_contents (value);
       g_warning ("Unhandled edit widget %s, when dealing with %s\n",
-		 G_OBJECT_TYPE_NAME (editable), x);
+                 G_OBJECT_TYPE_NAME (editable), x);
       g_free (x);
     }
 }
@@ -1245,16 +1245,16 @@ __set_property (GObject *object,
     case PROP_VAXIS:
       priv->vaxis = g_value_get_object (value);
       g_signal_connect_swapped (priv->vaxis, "changed",
-				G_CALLBACK (scroll_vertically), object);
+                                G_CALLBACK (scroll_vertically), object);
       g_signal_connect_swapped (priv->vaxis, "header-clicked",
-				G_CALLBACK (select_entire_row), object);
+                                G_CALLBACK (select_entire_row), object);
       break;
     case PROP_HAXIS:
       priv->haxis = g_value_get_object (value);
       g_signal_connect_swapped (priv->haxis, "changed",
-				G_CALLBACK (scroll_horizontally), object);
+                                G_CALLBACK (scroll_horizontally), object);
       g_signal_connect_swapped (priv->haxis, "header-clicked",
-				G_CALLBACK (select_entire_column), object);
+                                G_CALLBACK (select_entire_column), object);
       break;
     case PROP_GRIDLINES:
       priv->show_gridlines = g_value_get_boolean (value);
@@ -1278,10 +1278,10 @@ __set_property (GObject *object,
       break;
     case PROP_DATA_MODEL:
       if (priv->data_model)
-	g_object_unref (priv->data_model);
+        g_object_unref (priv->data_model);
       priv->data_model = g_value_get_object (value);
       g_signal_connect_object (priv->data_model, "items-changed",
-			       G_CALLBACK (on_data_change), body, 0);
+                               G_CALLBACK (on_data_change), body, 0);
       g_object_ref (priv->data_model);
       break;
     default:
@@ -1331,81 +1331,81 @@ ssw_sheet_body_class_init (SswSheetBodyClass * class)
 
   GParamSpec *sheet_spec =
     g_param_spec_object ("sheet",
-			 P_("Sheet"),
-			 P_("The SswSheet to which this body belongs"),
-			 SSW_TYPE_SHEET,
-			 G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+                         P_("Sheet"),
+                         P_("The SswSheet to which this body belongs"),
+                         SSW_TYPE_SHEET,
+                         G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
   GParamSpec *haxis_spec =
     g_param_spec_object ("horizontal-axis",
-			 P_("Horizontal Axis"),
-			 P_("The Horizontal Axis"),
-			 SSW_TYPE_SHEET_AXIS,
-			 G_PARAM_READWRITE);
+                         P_("Horizontal Axis"),
+                         P_("The Horizontal Axis"),
+                         SSW_TYPE_SHEET_AXIS,
+                         G_PARAM_READWRITE);
 
   GParamSpec *vaxis_spec =
     g_param_spec_object ("vertical-axis",
-			 P_("Vertical Axis"),
-			 P_("The Vertical Axis"),
-			 SSW_TYPE_SHEET_AXIS,
-			 G_PARAM_READWRITE);
+                         P_("Vertical Axis"),
+                         P_("The Vertical Axis"),
+                         SSW_TYPE_SHEET_AXIS,
+                         G_PARAM_READWRITE);
 
   GParamSpec *data_model_spec =
     g_param_spec_object ("data-model",
-			 P_("Data Model"),
-			 P_("The model describing the contents of the data"),
-			 GTK_TYPE_TREE_MODEL,
-			 G_PARAM_READWRITE);
+                         P_("Data Model"),
+                         P_("The model describing the contents of the data"),
+                         GTK_TYPE_TREE_MODEL,
+                         G_PARAM_READWRITE);
 
   GParamSpec *gridlines_spec =
     g_param_spec_boolean ("gridlines",
-			  P_("Show Gridlines"),
-			  P_("True if gridlines should be shown"),
-			  TRUE,
-			  G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+                          P_("Show Gridlines"),
+                          P_("True if gridlines should be shown"),
+                          TRUE,
+                          G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
   GParamSpec *editable_spec =
     g_param_spec_boolean ("editable",
-			  P_("Editable"),
-			  P_("True if the data may be edited"),
-			  TRUE,
-			  G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+                          P_("Editable"),
+                          P_("True if the data may be edited"),
+                          TRUE,
+                          G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
   GParamSpec *renderer_func_spec =
     g_param_spec_pointer ("select-renderer-func",
-			  P_("Select Renderer Function"),
-			  P_("Function returning the renderer to use for a cell"),
-			  G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+                          P_("Select Renderer Function"),
+                          P_("Function returning the renderer to use for a cell"),
+                          G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
   GParamSpec *convert_fwd_spec =
     g_param_spec_pointer ("forward-conversion",
-			  P_("Forward conversion function"),
-			  P_("A function to convert a cell datum to a string"),
-			  G_PARAM_READWRITE);
+                          P_("Forward conversion function"),
+                          P_("A function to convert a cell datum to a string"),
+                          G_PARAM_READWRITE);
 
   GParamSpec *convert_rev_spec =
     g_param_spec_pointer ("reverse-conversion",
-			  P_("Reverse conversion function"),
-			  P_("A function to convert a string to a cell datum"),
-			  G_PARAM_READWRITE);
+                          P_("Reverse conversion function"),
+                          P_("A function to convert a string to a cell datum"),
+                          G_PARAM_READWRITE);
 
   GParamSpec *selection_spec =
     g_param_spec_pointer ("selection",
-			  P_("The selection"),
-			  P_("A pointer to the current selection"),
-			  G_PARAM_READWRITE);
+                          P_("The selection"),
+                          P_("A pointer to the current selection"),
+                          G_PARAM_READWRITE);
 
   object_class->set_property = __set_property;
   object_class->get_property = __get_property;
 
 
   g_object_class_install_property (object_class,
-				   PROP_SHEET,
-				   sheet_spec);
+                                   PROP_SHEET,
+                                   sheet_spec);
 
   g_object_class_install_property (object_class,
-				   PROP_VAXIS,
-				   vaxis_spec);
+                                   PROP_VAXIS,
+                                   vaxis_spec);
 
   g_object_class_install_property (object_class,
                                    PROP_HAXIS,
@@ -1451,36 +1451,36 @@ ssw_sheet_body_class_init (SswSheetBodyClass * class)
 
   signals [SELECTION_CHANGED] =
     g_signal_new ("selection-changed",
-		  G_TYPE_FROM_CLASS (class),
-		  G_SIGNAL_RUN_FIRST,
-		  0,
-		  NULL, NULL,
-		  g_cclosure_marshal_VOID__POINTER,
-		  G_TYPE_NONE,
-		  1,
-		  G_TYPE_POINTER);
+                  G_TYPE_FROM_CLASS (class),
+                  G_SIGNAL_RUN_FIRST,
+                  0,
+                  NULL, NULL,
+                  g_cclosure_marshal_VOID__POINTER,
+                  G_TYPE_NONE,
+                  1,
+                  G_TYPE_POINTER);
 
 
   signals [VALUE_CHANGED] =
     g_signal_new ("value-changed",
-		  G_TYPE_FROM_CLASS (class),
-		  G_SIGNAL_RUN_FIRST,
-		  0,
-		  NULL, NULL,
-		  ssw_cclosure_marshal_VOID__INT_INT_POINTER,
-		  G_TYPE_NONE,
-		  3,
-		  G_TYPE_INT,
-		  G_TYPE_INT,
-		  G_TYPE_POINTER);
+                  G_TYPE_FROM_CLASS (class),
+                  G_SIGNAL_RUN_FIRST,
+                  0,
+                  NULL, NULL,
+                  ssw_cclosure_marshal_VOID__INT_INT_POINTER,
+                  G_TYPE_NONE,
+                  3,
+                  G_TYPE_INT,
+                  G_TYPE_INT,
+                  G_TYPE_POINTER);
 }
 
 
 static void
 selection_drag_begin (GtkGesture *gesture,
-		      gdouble         start_x,
-		      gdouble         start_y,
-		      gpointer        user_data)
+                      gdouble         start_x,
+                      gdouble         start_y,
+                      gpointer        user_data)
 {
   SswSheetBody *body = SSW_SHEET_BODY (user_data);
   PRIV_DECL (body);
@@ -1508,9 +1508,9 @@ selection_drag_begin (GtkGesture *gesture,
 
 static void
 selection_drag_update (GtkGestureDrag *gesture,
-		       gdouble         offset_x,
-		       gdouble         offset_y,
-		       gpointer        user_data)
+                       gdouble         offset_x,
+                       gdouble         offset_y,
+                       gpointer        user_data)
 {
   SswSheetBody *body = SSW_SHEET_BODY (user_data);
   PRIV_DECL (body);
@@ -1544,9 +1544,9 @@ selection_drag_update (GtkGestureDrag *gesture,
 
 static void
 selection_drag_end (GtkGestureDrag *gesture,
-		    gdouble         offset_x,
-		    gdouble         offset_y,
-		    gpointer        user_data)
+                    gdouble         offset_x,
+                    gdouble         offset_y,
+                    gpointer        user_data)
 {
   SswSheetBody *body = SSW_SHEET_BODY (user_data);
 
@@ -1605,47 +1605,47 @@ selection_drag_end (GtkGestureDrag *gesture,
 
 enum target_info
   {
-    TARGET_TEXT_TSV,
-    TARGET_TEXT_CSV,
-    TARGET_HTML,
-    TARGET_TEXT_PLAIN,
-    TARGET_UTF8_STRING,
-    TARGET_STRING,
-    N_TARGETS
+   TARGET_TEXT_TSV,
+   TARGET_TEXT_CSV,
+   TARGET_HTML,
+   TARGET_TEXT_PLAIN,
+   TARGET_UTF8_STRING,
+   TARGET_STRING,
+   N_TARGETS
   };
 
 static const GtkTargetEntry targets[] =
   {
-    {
-      "text/tab-separated-values",
-      GTK_TARGET_OTHER_APP,
-      TARGET_TEXT_TSV
-    },
-    {
-      "text/csv",
-      GTK_TARGET_OTHER_APP,
-      TARGET_TEXT_CSV
-    },
-    {
-      "text/html",
-      GTK_TARGET_OTHER_APP,
-      TARGET_HTML
-    },
-    {
-      "text/plain",
-      GTK_TARGET_OTHER_APP,
-      TARGET_TEXT_PLAIN
-    },
-    {
-      "UTF8_STRING",
-      GTK_TARGET_OTHER_APP,
-      TARGET_UTF8_STRING
-    },
-    {
-      "STRING",
-      GTK_TARGET_OTHER_APP,
-      TARGET_STRING
-    },
+   {
+    "text/tab-separated-values",
+    GTK_TARGET_OTHER_APP,
+    TARGET_TEXT_TSV
+   },
+   {
+    "text/csv",
+    GTK_TARGET_OTHER_APP,
+    TARGET_TEXT_CSV
+   },
+   {
+    "text/html",
+    GTK_TARGET_OTHER_APP,
+    TARGET_HTML
+   },
+   {
+    "text/plain",
+    GTK_TARGET_OTHER_APP,
+    TARGET_TEXT_PLAIN
+   },
+   {
+    "UTF8_STRING",
+    GTK_TARGET_OTHER_APP,
+    TARGET_UTF8_STRING
+   },
+   {
+    "STRING",
+    GTK_TARGET_OTHER_APP,
+    TARGET_STRING
+   },
   };
 
 
@@ -1655,8 +1655,8 @@ static const GtkTargetEntry targets[] =
 */
 static void
 append_value_to_string (SswSheetBody *body,
-			GtkTreeIter *iter, gint col, gint row,
-			GString *output)
+                        GtkTreeIter *iter, gint col, gint row,
+                        GString *output)
 {
   PRIV_DECL (body);
   GtkTreeModel *model = priv->data_model;
@@ -1678,10 +1678,10 @@ append_value_to_string (SswSheetBody *body,
   else
     {
       g_warning ("Pasting from SswSheet failed.  "
-		 "You must register a transform function for source "
-		 "type \"%s\" to dest type \"%s\"\n",
-		 G_VALUE_TYPE_NAME (&value),
-		 g_type_name (G_TYPE_STRING));
+                 "You must register a transform function for source "
+                 "type \"%s\" to dest type \"%s\"\n",
+                 G_VALUE_TYPE_NAME (&value),
+                 g_type_name (G_TYPE_STRING));
     }
 
   g_value_unset (&value);
@@ -1708,15 +1708,15 @@ clipit_html (SswSheetBody *body, GString *output, SswRange *source_range)
       gtk_tree_model_iter_nth_child (priv->data_model, &iter, NULL, row);
       g_string_append (output, "<tr>\n");
       for (col = source_range->start_x; col <= source_range->end_x; ++col)
-	{
-	  if (row < gtk_tree_model_iter_n_children (priv->data_model, NULL)
-	      && col < gtk_tree_model_get_n_columns (priv->data_model))
-	    {
-	      g_string_append (output, "<td>");
-	      append_value_to_string (body, &iter, col, row, output);
-	      g_string_append (output, "</td>\n");
-	    }
-	}
+        {
+          if (row < gtk_tree_model_iter_n_children (priv->data_model, NULL)
+              && col < gtk_tree_model_get_n_columns (priv->data_model))
+            {
+              g_string_append (output, "<td>");
+              append_value_to_string (body, &iter, col, row, output);
+              g_string_append (output, "</td>\n");
+            }
+        }
       g_string_append (output, "</tr>\n");
     }
 
@@ -1740,17 +1740,17 @@ clipit_ascii (SswSheetBody *body, GString *output, SswRange *source_range)
       gtk_tree_model_iter_nth_child (priv->data_model, &iter, NULL, row);
 
       for (col = source_range->start_x; col <= source_range->end_x; ++col)
-	{
-	  if (priv->data_model
-	      && row < gtk_tree_model_iter_n_children (priv->data_model, NULL)
-	      && col < gtk_tree_model_get_n_columns (priv->data_model))
-	    {
-	      append_value_to_string (body, &iter, col, row, output);
+        {
+          if (priv->data_model
+              && row < gtk_tree_model_iter_n_children (priv->data_model, NULL)
+              && col < gtk_tree_model_get_n_columns (priv->data_model))
+            {
+              append_value_to_string (body, &iter, col, row, output);
 
-	      if (col < source_range->end_x)
-		g_string_append (output, "\t");
-	    }
-	}
+              if (col < source_range->end_x)
+                g_string_append (output, "\t");
+            }
+        }
       g_string_append (output, "\n");
     }
 }
@@ -1770,16 +1770,16 @@ clipit_utf8 (SswSheetBody *body, GString *output, SswRange *source_range)
       gtk_tree_model_iter_nth_child (priv->data_model, &iter, NULL, row);
 
       for (col = source_range->start_x; col <= source_range->end_x; ++col)
-	{
-	  if (row < gtk_tree_model_iter_n_children (priv->data_model, NULL)
-	      && col < gtk_tree_model_get_n_columns (priv->data_model))
-	    {
-	      append_value_to_string (body, &iter, col, row, output);
+        {
+          if (row < gtk_tree_model_iter_n_children (priv->data_model, NULL)
+              && col < gtk_tree_model_get_n_columns (priv->data_model))
+            {
+              append_value_to_string (body, &iter, col, row, output);
 
-	      if (col < source_range->end_x)
-		g_string_append_c (output, '\t');
-	    }
-	}
+              if (col < source_range->end_x)
+                g_string_append_c (output, '\t');
+            }
+        }
       g_string_append (output, "\n");
     }
 }
@@ -1787,9 +1787,9 @@ clipit_utf8 (SswSheetBody *body, GString *output, SswRange *source_range)
 
 static void
 get_func (GtkClipboard *clipboard,
-	  GtkSelectionData *selection_data,
-	  guint info,
-	  gpointer owner)
+          GtkSelectionData *selection_data,
+          guint info,
+          gpointer owner)
 {
   SswSheetBody *body = SSW_SHEET_BODY (owner);
 
@@ -1821,9 +1821,9 @@ get_func (GtkClipboard *clipboard,
     }
 
   gtk_selection_data_set (selection_data,
-			  gdk_atom_intern_static_string (targets[info].target),
-			  CHAR_BIT,
-			  (gpointer) stuff->str, stuff->len);
+                          gdk_atom_intern_static_string (targets[info].target),
+                          CHAR_BIT,
+                          (gpointer) stuff->str, stuff->len);
 
   g_string_free (stuff, TRUE);
 }
@@ -1831,7 +1831,7 @@ get_func (GtkClipboard *clipboard,
 
 static void
 clear_func (GtkClipboard *clipboard,
-	    gpointer user_data_or_owner)
+            gpointer user_data_or_owner)
 {
 }
 
@@ -1849,7 +1849,7 @@ ssw_sheet_body_set_clip (SswSheetBody *body, GtkClipboard *clip)
   normalise_selection (priv->selection, source_range);
 
   if (!gtk_clipboard_set_with_owner (clip, targets, N_TARGETS,
-				     get_func, clear_func, G_OBJECT (body)))
+                                     get_func, clear_func, G_OBJECT (body)))
     {
       g_print ("Clip failed\n");
     }
@@ -1857,9 +1857,9 @@ ssw_sheet_body_set_clip (SswSheetBody *body, GtkClipboard *clip)
 
 static void
 drag_begin_resize_horizontal (GtkGesture *gesture,
-			      gdouble         start_x,
-			      gdouble         start_y,
-			      gpointer        user_data)
+                              gdouble         start_x,
+                              gdouble         start_y,
+                              gpointer        user_data)
 {
   SswSheetBody *body = SSW_SHEET_BODY (user_data);
   PRIV_DECL (body);
@@ -1877,9 +1877,9 @@ drag_begin_resize_horizontal (GtkGesture *gesture,
 
 static void
 drag_begin_resize_vertical (GtkGesture *gesture,
-			    gdouble         start_x,
-			    gdouble         start_y,
-			    gpointer        user_data)
+                            gdouble         start_x,
+                            gdouble         start_y,
+                            gpointer        user_data)
 {
   SswSheetBody *body = SSW_SHEET_BODY (user_data);
   PRIV_DECL (body);
@@ -1897,9 +1897,9 @@ drag_begin_resize_vertical (GtkGesture *gesture,
 
 static void
 drag_update_resize (GtkGestureDrag *gesture,
-		    gdouble         offset_x,
-		    gdouble         offset_y,
-		    gpointer        user_data)
+                    gdouble         offset_x,
+                    gdouble         offset_y,
+                    gpointer        user_data)
 {
   SswSheetBody *body = SSW_SHEET_BODY (user_data);
 
@@ -1910,9 +1910,9 @@ drag_update_resize (GtkGestureDrag *gesture,
 
 static void
 drag_end_resize_horizontal (GtkGestureDrag *gesture,
-			    gdouble         offset_x,
-			    gdouble         offset_y,
-			    gpointer        user_data)
+                            gdouble         offset_x,
+                            gdouble         offset_y,
+                            gpointer        user_data)
 {
   gdouble start_x, start_y;
   SswSheetBody *body = SSW_SHEET_BODY (user_data);
@@ -1934,12 +1934,12 @@ drag_end_resize_horizontal (GtkGestureDrag *gesture,
   if (ssw_sheet_axis_rtl (priv->haxis))
     {
       nearest =
-	(start_x - pos) < (pos + size - start_x) ? item: item - 1 ;
+        (start_x - pos) < (pos + size - start_x) ? item: item - 1 ;
     }
   else
     {
       nearest =
-	(start_x - pos) < (pos + size - start_x) ? item - 1: item ;
+        (start_x - pos) < (pos + size - start_x) ? item - 1: item ;
     }
 
   gint old_size;
@@ -1958,11 +1958,11 @@ drag_end_resize_horizontal (GtkGestureDrag *gesture,
 
 
       gtk_widget_set_size_request (GTK_WIDGET (priv->editor),
-				   new_size - linewidth, vsize);
+                                   new_size - linewidth, vsize);
 
       g_object_set (priv->active_cell_holder,
-		    "hconstraint", new_size - linewidth,
-		    NULL);
+                    "hconstraint", new_size - linewidth,
+                    NULL);
     }
 
   ssw_sheet_axis_override_size (priv->haxis, nearest, new_size);
@@ -1971,9 +1971,9 @@ drag_end_resize_horizontal (GtkGestureDrag *gesture,
 
 static void
 drag_end_resize_vertical (GtkGestureDrag *gesture,
-			  gdouble         offset_x,
-			  gdouble         offset_y,
-			  gpointer        user_data)
+                          gdouble         offset_x,
+                          gdouble         offset_y,
+                          gpointer        user_data)
 {
   gdouble start_x, start_y;
   SswSheetBody *body = SSW_SHEET_BODY (user_data);
@@ -2007,12 +2007,12 @@ drag_end_resize_vertical (GtkGestureDrag *gesture,
       ssw_sheet_axis_find_boundary (priv->haxis, nearest, &hsize, NULL);
 
       gtk_widget_set_size_request (GTK_WIDGET (priv->editor),
-				   hsize,
-				   new_size - linewidth);
+                                   hsize,
+                                   new_size - linewidth);
 
       g_object_set (priv->active_cell_holder,
-		    "vconstraint", new_size - linewidth,
-		    NULL);
+                    "vconstraint", new_size - linewidth,
+                    NULL);
     }
 
   ssw_sheet_axis_override_size (priv->vaxis, nearest, new_size);
@@ -2043,37 +2043,37 @@ ssw_sheet_body_init (SswSheetBody *body)
 
 
   g_signal_connect (priv->selection_gesture, "drag-begin",
-		    G_CALLBACK (selection_drag_begin), body);
+                    G_CALLBACK (selection_drag_begin), body);
 
   g_signal_connect (priv->selection_gesture, "drag-update",
-		    G_CALLBACK (selection_drag_update), body);
+                    G_CALLBACK (selection_drag_update), body);
 
   g_signal_connect (priv->selection_gesture, "drag-end",
-		    G_CALLBACK (selection_drag_end), body);
+                    G_CALLBACK (selection_drag_end), body);
 
   priv->horizontal_resize_gesture =
     gtk_gesture_drag_new (GTK_WIDGET (body));
 
   g_signal_connect (priv->horizontal_resize_gesture, "drag-begin",
-		    G_CALLBACK (drag_begin_resize_horizontal), body);
+                    G_CALLBACK (drag_begin_resize_horizontal), body);
 
   g_signal_connect (priv->horizontal_resize_gesture, "drag-update",
-		    G_CALLBACK (drag_update_resize), body);
+                    G_CALLBACK (drag_update_resize), body);
 
   g_signal_connect (priv->horizontal_resize_gesture, "drag-end",
-		    G_CALLBACK (drag_end_resize_horizontal), body);
+                    G_CALLBACK (drag_end_resize_horizontal), body);
 
   priv->vertical_resize_gesture =
     gtk_gesture_drag_new (GTK_WIDGET (body));
 
   g_signal_connect (priv->vertical_resize_gesture, "drag-begin",
-		    G_CALLBACK (drag_begin_resize_vertical), body);
+                    G_CALLBACK (drag_begin_resize_vertical), body);
 
   g_signal_connect (priv->vertical_resize_gesture, "drag-update",
-		    G_CALLBACK (drag_update_resize), body);
+                    G_CALLBACK (drag_update_resize), body);
 
   g_signal_connect (priv->vertical_resize_gesture, "drag-end",
-		    G_CALLBACK (drag_end_resize_vertical), body);
+                    G_CALLBACK (drag_end_resize_vertical), body);
 
 
   priv->data_model = NULL;
@@ -2099,7 +2099,7 @@ ssw_sheet_body_unset_selection (SswSheetBody *body)
 
 void
 ssw_sheet_body_value_to_string (SswSheetBody *body, gint col, gint row,
-				GString *output)
+                                GString *output)
 {
   GtkTreeIter iter;
   PRIV_DECL (body);
@@ -2113,9 +2113,9 @@ ssw_sheet_body_value_to_string (SswSheetBody *body, gint col, gint row,
 
 
 static void text_editing_started (GtkCellRenderer *cell,
-				  GtkCellEditable *editable,
-				  const gchar     *path,
-				  gpointer         data);
+                                  GtkCellEditable *editable,
+                                  const gchar     *path,
+                                  gpointer         data);
 
 
 static GtkCellRenderer *
@@ -2129,23 +2129,23 @@ choose_renderer (SswSheetBody *body, gint col, gint row)
     {
       GType t = gtk_tree_model_get_column_type (priv->data_model, col);
       r = priv->renderer_func (priv->sheet, col, row, t,
-			       priv->sheet->renderer_func_datum);
+                               priv->sheet->renderer_func_datum);
     }
 
   if (r == NULL)
     r = priv->default_renderer;
 
   g_object_set (r,
-               "mode", GTK_CELL_RENDERER_MODE_EDITABLE,
-               "editable", TRUE,
-               NULL);
+                "mode", GTK_CELL_RENDERER_MODE_EDITABLE,
+                "editable", TRUE,
+                NULL);
 
   if (!g_object_get_data (G_OBJECT (r), "ess"))
     {
       g_signal_connect (r,
-                       "editing-started",
-                       G_CALLBACK (text_editing_started),
-                       NULL);
+                        "editing-started",
+                        G_CALLBACK (text_editing_started),
+                        NULL);
 
       g_object_set_data (G_OBJECT (r), "ess", GINT_TO_POINTER (TRUE));
     }
@@ -2219,9 +2219,9 @@ on_entry_activate (GtkEntry *e, gpointer ud)
 
 static void
 done_editing (GtkCellRendererCombo *combo,
-	      gchar                *path_string,
-	      GtkTreeIter          *new_iter,
-	      gpointer              user_data)
+              gchar                *path_string,
+              GtkTreeIter          *new_iter,
+              gpointer              user_data)
 {
   GtkCellEditable *ce = user_data;
   g_object_set (ce, "editing-canceled", FALSE, NULL);
@@ -2259,7 +2259,7 @@ static void
 text_editing_started (GtkCellRenderer *cell,
                       GtkCellEditable *editable,
                       const gchar     *path,
-		      gpointer         data)
+                      gpointer         data)
 {
   SswSheetBody *body = NULL;
   gint row = -1, col = -1;
@@ -2283,7 +2283,7 @@ text_editing_started (GtkCellRenderer *cell,
   if (priv->editor)
     {
       gtk_cell_renderer_stop_editing (GTK_CELL_RENDERER (cell),
-				      TRUE);
+                                      TRUE);
 
       g_signal_emit_by_name (priv->editor, "remove-widget");
     }
@@ -2291,8 +2291,8 @@ text_editing_started (GtkCellRenderer *cell,
 #if DEBUGGING
   GdkRGBA color = {1.0, 0, 0, 1};
   gtk_widget_override_background_color (GTK_WIDGET (editable),
-					GTK_STATE_NORMAL,
-					&color);
+                                        GTK_STATE_NORMAL,
+                                        &color);
 #endif
 
   priv->editor = NULL;
@@ -2307,7 +2307,7 @@ text_editing_started (GtkCellRenderer *cell,
 
   priv->editor = GTK_WIDGET (editable);
   g_signal_connect (editable, "remove-widget",
-		    G_CALLBACK (on_remove_widget), body);
+                    G_CALLBACK (on_remove_widget), body);
 
 
   /* Avoid the gridlines */
@@ -2319,23 +2319,23 @@ text_editing_started (GtkCellRenderer *cell,
   gtk_widget_set_size_request (GTK_WIDGET (editable),  hsize, vsize);
 
   g_object_set (priv->active_cell_holder,
-		"hconstraint", hsize,
-		"vconstraint", vsize,
-		NULL);
+                "hconstraint", hsize,
+                "vconstraint", vsize,
+                NULL);
 
   gtk_container_add (GTK_CONTAINER (priv->active_cell_holder),
-		     GTK_WIDGET (editable));
+                     GTK_WIDGET (editable));
 
   gtk_layout_move (GTK_LAYOUT (body), priv->active_cell_holder,
-		   hlocation, vlocation);
+                   hlocation, vlocation);
 
   GtkTreeIter iter;
   GValue value = G_VALUE_INIT;
   if (gtk_tree_model_iter_nth_child (priv->data_model,
-				     &iter, NULL, row))
+                                     &iter, NULL, row))
     {
       gtk_tree_model_get_value (priv->data_model, &iter,
-				col, &value);
+                                col, &value);
     }
 
   if (GTK_IS_ENTRY (editable))
@@ -2350,7 +2350,7 @@ text_editing_started (GtkCellRenderer *cell,
     }
 
   g_signal_connect (editable, "editing-done",
-		    G_CALLBACK (on_editing_done), body);
+                    G_CALLBACK (on_editing_done), body);
 
 
   set_editor_widget_value (body, &value, GTK_EDITABLE (editable));
@@ -2368,7 +2368,7 @@ text_editing_started (GtkCellRenderer *cell,
   else if (GTK_IS_COMBO_BOX (editable))
     {
       g_signal_connect_object (cell, "changed", G_CALLBACK (done_editing),
-			       editable, 0);
+                               editable, 0);
     }
 
   gtk_widget_show_all (priv->active_cell_holder);

@@ -30,16 +30,16 @@ const gint HANDLE_LENGTH = 100;
 
 enum
   {
-    LAST_PROP
+   LAST_PROP
   };
 
 G_DEFINE_TYPE (SswXpaned, ssw_xpaned, GTK_TYPE_CONTAINER)
 
-static void
-ssw_xpaned_set_property (GObject      *object,
-			 guint         prop_id,
-			 const GValue *value,
-			 GParamSpec   *pspec)
+  static void
+  ssw_xpaned_set_property (GObject      *object,
+                           guint         prop_id,
+                           const GValue *value,
+                           GParamSpec   *pspec)
 {
   switch (prop_id)
     {
@@ -51,9 +51,9 @@ ssw_xpaned_set_property (GObject      *object,
 
 static void
 ssw_xpaned_get_property (GObject    *object,
-			 guint       prop_id,
-			 GValue     *value,
-			 GParamSpec *pspec)
+                         guint       prop_id,
+                         GValue     *value,
+                         GParamSpec *pspec)
 {
   switch (prop_id)
     {
@@ -89,9 +89,9 @@ get_adjusted_position (SswXpaned *xpaned, gfloat *hpos, gfloat *vpos)
       GtkWidget *child = ssw_child->w;
 
       if (gtk_widget_is_visible (child))
-	{
-	  visibility [ssw_child->top * 2 + ssw_child->left] = TRUE;
-	}
+        {
+          visibility [ssw_child->top * 2 + ssw_child->left] = TRUE;
+        }
     }
 
   if (!visibility[0] && !visibility[1])
@@ -133,22 +133,22 @@ __draw (GtkWidget *w, cairo_t   *cr)
     GtkStateFlags flags = gtk_style_context_get_state (sc);
 
     gtk_style_context_get (sc,
-			   flags,
-			   "background-color",
-			   &color, NULL);
+                           flags,
+                           "background-color",
+                           &color, NULL);
 
     GtkCssProvider *cp = gtk_css_provider_new ();
     gchar *css = g_strdup_printf ("* {background-color: rgba(%d, %d, %d, 0.25);}",
-				  (int) (100.0 * color->red),
-				  (int) (100.0 * color->green),
-				  (int) (100.0 * color->blue));
+                                  (int) (100.0 * color->red),
+                                  (int) (100.0 * color->green),
+                                  (int) (100.0 * color->blue));
 
     gtk_css_provider_load_from_data (cp, css, strlen (css), 0);
     g_free (css);
     gdk_rgba_free (color);
 
     gtk_style_context_add_provider (sc, GTK_STYLE_PROVIDER (cp),
-				    GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+                                    GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
     g_object_unref (cp);
   }
@@ -156,18 +156,18 @@ __draw (GtkWidget *w, cairo_t   *cr)
   /* Draw the horizontal handle */
   if (vpos > 0 && vpos < 1.0)
     gtk_render_handle (sc, cr,
-		       width * hpos - HANDLE_LENGTH / 2,
-		       height * vpos - HANDLE_WIDTH / 2,
-		       HANDLE_LENGTH,
-		       HANDLE_WIDTH);
+                       width * hpos - HANDLE_LENGTH / 2,
+                       height * vpos - HANDLE_WIDTH / 2,
+                       HANDLE_LENGTH,
+                       HANDLE_WIDTH);
 
   /* Draw the vertical handle */
   if (hpos > 0 && hpos < 1.0)
     gtk_render_handle (sc, cr,
-		       width * hpos - HANDLE_WIDTH / 2,
-		       height * vpos - HANDLE_LENGTH / 2,
-		       HANDLE_WIDTH,
-		       HANDLE_LENGTH);
+                       width * hpos - HANDLE_WIDTH / 2,
+                       height * vpos - HANDLE_LENGTH / 2,
+                       HANDLE_WIDTH,
+                       HANDLE_LENGTH);
 
   return FALSE;
 }
@@ -193,48 +193,48 @@ __size_allocate (GtkWidget *widget, GtkAllocation *allocation)
         continue;
 
       {
-	gint minimum;
-	gtk_widget_get_preferred_width (child, &minimum, NULL);
+        gint minimum;
+        gtk_widget_get_preferred_width (child, &minimum, NULL);
 
 
-	if (ssw_child->left == (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL))
-	  {
-	    alloc.x = allocation->x;
-	    alloc.width = allocation->width * hpos;
-	  }
-	else
-	  {
-	    alloc.x = allocation->x + allocation->width * hpos;
-	    if (hpos > 0 && hpos < 1)
-	      alloc.x += HANDLE_WIDTH / 2;
-	    alloc.width = allocation->width * (1.0 - hpos);
-	  }
-	if (hpos > 0 && hpos < 1)
-	  alloc.width -= HANDLE_WIDTH / 2;
-	if (alloc.width < minimum)
-	  alloc.width = minimum;
+        if (ssw_child->left == (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL))
+          {
+            alloc.x = allocation->x;
+            alloc.width = allocation->width * hpos;
+          }
+        else
+          {
+            alloc.x = allocation->x + allocation->width * hpos;
+            if (hpos > 0 && hpos < 1)
+              alloc.x += HANDLE_WIDTH / 2;
+            alloc.width = allocation->width * (1.0 - hpos);
+          }
+        if (hpos > 0 && hpos < 1)
+          alloc.width -= HANDLE_WIDTH / 2;
+        if (alloc.width < minimum)
+          alloc.width = minimum;
 
       }
       {
-	gint minimum;
-	gtk_widget_get_preferred_height (child, &minimum, NULL);
-	if (ssw_child->top == 0)
-	  {
-	    alloc.y = allocation->y;
-	    alloc.height = allocation->height * vpos;
-	  }
-	else
-	  {
-	    alloc.y = allocation->y + allocation->height * vpos;
-	    if (vpos > 0 && vpos < 1)
-	      alloc.y += HANDLE_WIDTH / 2;
-	    alloc.height = allocation->height * (1.0 - vpos);
-	  }
-	if (vpos > 0 && vpos < 1)
-	  alloc.height -= HANDLE_WIDTH / 2;
+        gint minimum;
+        gtk_widget_get_preferred_height (child, &minimum, NULL);
+        if (ssw_child->top == 0)
+          {
+            alloc.y = allocation->y;
+            alloc.height = allocation->height * vpos;
+          }
+        else
+          {
+            alloc.y = allocation->y + allocation->height * vpos;
+            if (vpos > 0 && vpos < 1)
+              alloc.y += HANDLE_WIDTH / 2;
+            alloc.height = allocation->height * (1.0 - vpos);
+          }
+        if (vpos > 0 && vpos < 1)
+          alloc.height -= HANDLE_WIDTH / 2;
 
-	if (alloc.height < minimum)
-	  alloc.height = minimum;
+        if (alloc.height < minimum)
+          alloc.height = minimum;
       }
 
       gtk_widget_size_allocate (child, &alloc);
@@ -254,8 +254,8 @@ __size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 
 static void
 __get_preferred_width (GtkWidget       *widget,
-		       gint            *minimum_width,
-		       gint            *natural_width)
+                       gint            *minimum_width,
+                       gint            *natural_width)
 {
   SswXpaned *xpaned = SSW_XPANED (widget);
 
@@ -274,36 +274,36 @@ __get_preferred_width (GtkWidget       *widget,
       gtk_widget_get_preferred_width (child, &quadm, &quadn);
 
       if (ssw_child->left == 0)
-	{
-	  left_half_min = MAX (left_half_min, quadm);
-	  left_half_nat = MAX (left_half_nat, quadm);
-	}
+        {
+          left_half_min = MAX (left_half_min, quadm);
+          left_half_nat = MAX (left_half_nat, quadm);
+        }
       else
-	{
-	  right_half_min = MAX (right_half_min, quadn);
-	  right_half_nat = MAX (right_half_nat, quadn);
-	}
+        {
+          right_half_min = MAX (right_half_min, quadn);
+          right_half_nat = MAX (right_half_nat, quadn);
+        }
     }
 
   if (minimum_width)
     {
       *minimum_width = left_half_min + right_half_min;
       if (left_half_min > 0 && right_half_min > 0)
-	*minimum_width += HANDLE_WIDTH;
+        *minimum_width += HANDLE_WIDTH;
     }
 
   if (natural_width)
     {
       *natural_width = left_half_nat + right_half_nat;
       if (left_half_nat > 0 && right_half_nat > 0)
-	*natural_width += HANDLE_WIDTH;
+        *natural_width += HANDLE_WIDTH;
     }
 }
 
 static void
 __get_preferred_height (GtkWidget       *widget,
-			gint            *minimum_height,
-			gint            *natural_height)
+                        gint            *minimum_height,
+                        gint            *natural_height)
 {
   SswXpaned *xpaned = SSW_XPANED (widget);
 
@@ -322,36 +322,36 @@ __get_preferred_height (GtkWidget       *widget,
       gtk_widget_get_preferred_height (child, &quadm, &quadn);
 
       if (ssw_child->top == 0)
-	{
-	  top_half_min = MAX (top_half_min, quadm);
-	  top_half_nat = MAX (top_half_nat, quadm);
-	}
+        {
+          top_half_min = MAX (top_half_min, quadm);
+          top_half_nat = MAX (top_half_nat, quadm);
+        }
       else
-	{
-	  bottom_half_min = MAX (bottom_half_min, quadn);
-	  bottom_half_nat = MAX (bottom_half_nat, quadn);
-	}
+        {
+          bottom_half_min = MAX (bottom_half_min, quadn);
+          bottom_half_nat = MAX (bottom_half_nat, quadn);
+        }
     }
 
   if (minimum_height)
     {
       *minimum_height = top_half_min + bottom_half_min;
       if (top_half_min > 0 && bottom_half_min > 0)
-	*minimum_height += HANDLE_WIDTH;
+        *minimum_height += HANDLE_WIDTH;
     }
 
   if (natural_height)
     {
       *natural_height = top_half_nat + bottom_half_nat;
       if (top_half_nat > 0 && bottom_half_nat > 0)
-	*natural_height += HANDLE_WIDTH;
+        *natural_height += HANDLE_WIDTH;
     }
 }
 
 
 static gboolean
 __button_event (GtkWidget *widget,
-		GdkEventButton  *event)
+                GdkEventButton  *event)
 {
   SswXpaned *xpaned = SSW_XPANED (widget);
 
@@ -455,7 +455,7 @@ __child_type (GtkContainer   *container)
 
 static GtkWidgetPath *
 __get_path_for_child (GtkContainer *container,
-		      GtkWidget    *child)
+                      GtkWidget    *child)
 
 {
   g_print ("%s:%d %s\n", __FILE__, __LINE__, __FUNCTION__);
@@ -464,20 +464,20 @@ __get_path_for_child (GtkContainer *container,
 
 enum
   {
-    CHILD_PROP_0,
-    CHILD_PROP_LEFT_ATTACH,
-    CHILD_PROP_TOP_ATTACH,
-    N_CHILD_PROPERTIES
+   CHILD_PROP_0,
+   CHILD_PROP_LEFT_ATTACH,
+   CHILD_PROP_TOP_ATTACH,
+   N_CHILD_PROPERTIES
   };
 
 static GParamSpec *child_properties[N_CHILD_PROPERTIES] = { NULL, };
 
 static void
 __get_child_property (GtkContainer *container,
-		      GtkWidget    *child,
-		      guint         property_id,
-		      GValue       *value,
-		      GParamSpec   *pspec)
+                      GtkWidget    *child,
+                      guint         property_id,
+                      GValue       *value,
+                      GParamSpec   *pspec)
 {
   SswXpaned *xpaned = SSW_XPANED (container);
   SswXpanedChild *xpaned_child = find_xpaned_child (xpaned, child);
@@ -506,10 +506,10 @@ __get_child_property (GtkContainer *container,
 
 static void
 __set_child_property (GtkContainer *container,
-		      GtkWidget    *child,
-		      guint         property_id,
-		      const GValue *value,
-		      GParamSpec   *pspec)
+                      GtkWidget    *child,
+                      guint         property_id,
+                      const GValue *value,
+                      GParamSpec   *pspec)
 {
   SswXpaned *xpaned = SSW_XPANED (container);
   SswXpanedChild *xpaned_child = find_xpaned_child (xpaned, child);
@@ -545,7 +545,7 @@ __set_child_property (GtkContainer *container,
 
 static gboolean
 __motion_notify_event (GtkWidget *widget,
-		       GdkEventMotion  *e)
+                       GdkEventMotion  *e)
 {
   SswXpaned *xpaned = SSW_XPANED (widget);
 
@@ -559,8 +559,8 @@ __motion_notify_event (GtkWidget *widget,
     return FALSE;
 
   gdk_window_coords_to_parent (xpaned->handle,
-			       e->x, e->y,
-			       &x, &y);
+                               e->x, e->y,
+                               &x, &y);
 
   GtkAllocation allocation;
   gtk_widget_get_allocation (widget, &allocation);
@@ -576,27 +576,27 @@ __motion_notify_event (GtkWidget *widget,
       gtk_widget_get_preferred_height (child, &hmin, NULL);
 
       if (ssw_child->left ==
-	  (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL))
-	{
-	  if (x < wmin + allocation.x )
-	    x = wmin + allocation.x;
-	}
+          (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL))
+        {
+          if (x < wmin + allocation.x )
+            x = wmin + allocation.x;
+        }
       else
-	{
-	  if (x > allocation.x + allocation.width - wmin)
-	    x = allocation.x + allocation.width - wmin;
-	}
+        {
+          if (x > allocation.x + allocation.width - wmin)
+            x = allocation.x + allocation.width - wmin;
+        }
 
       if (ssw_child->top == 0)
-	{
-	  if (y < hmin + allocation.y)
-	    y = hmin + allocation.y;
-	}
+        {
+          if (y < hmin + allocation.y)
+            y = hmin + allocation.y;
+        }
       else
-	{
-	  if (y > allocation.y + allocation.height - hmin)
-	    y = allocation.y + allocation.height - hmin;
-	}
+        {
+          if (y > allocation.y + allocation.height - hmin)
+            y = allocation.y + allocation.height - hmin;
+        }
     }
 
   xpaned->hpos = (x - allocation.x) / (gfloat) allocation.width;
@@ -634,16 +634,16 @@ __realize (GtkWidget *widget)
   attributes.height = HANDLE_WIDTH;
   attributes.event_mask = gtk_widget_get_events (widget);
   attributes.event_mask |= (GDK_BUTTON_PRESS_MASK |
-			    GDK_BUTTON_RELEASE_MASK |
-			    GDK_ENTER_NOTIFY_MASK |
-			    GDK_LEAVE_NOTIFY_MASK |
-			    GDK_POINTER_MOTION_MASK);
+                            GDK_BUTTON_RELEASE_MASK |
+                            GDK_ENTER_NOTIFY_MASK |
+                            GDK_LEAVE_NOTIFY_MASK |
+                            GDK_POINTER_MOTION_MASK);
   xpaned->handle = gdk_window_new (window,
-				   &attributes, attributes_mask);
+                                   &attributes, attributes_mask);
   gtk_widget_register_window (widget, xpaned->handle);
 
   xpaned->cursor = gdk_cursor_new_from_name (gtk_widget_get_display (widget),
-					     "move");
+                                             "move");
 
   gdk_window_set_cursor (xpaned->handle, xpaned->cursor);
 
@@ -674,17 +674,17 @@ ssw_xpaned_class_init (SswXpanedClass *class)
 
   child_properties[CHILD_PROP_LEFT_ATTACH] =
     g_param_spec_int ("left-attach",
-		      P_("Left attachment"),
-		      P_("The column number to which the left side of the child should be attached"),
-		      0, 1, 0,
-		      G_PARAM_READWRITE);
+                      P_("Left attachment"),
+                      P_("The column number to which the left side of the child should be attached"),
+                      0, 1, 0,
+                      G_PARAM_READWRITE);
 
   child_properties[CHILD_PROP_TOP_ATTACH] =
     g_param_spec_int ("top-attach",
-		      P_("Top attachment"),
-		      P_("The column number to which the top side of the child should be attached"),
-		      0, 1, 0,
-		      G_PARAM_READWRITE);
+                      P_("Top attachment"),
+                      P_("The column number to which the top side of the child should be attached"),
+                      0, 1, 0,
+                      G_PARAM_READWRITE);
 
 
 
@@ -714,8 +714,8 @@ ssw_xpaned_class_init (SswXpanedClass *class)
 
   //  g_object_class_install_properties (object_class, LAST_PROP, props);
   gtk_container_class_install_child_properties (container_class,
-						N_CHILD_PROPERTIES,
-						child_properties);
+                                                N_CHILD_PROPERTIES,
+                                                child_properties);
 
   gtk_widget_class_set_accessible_role (widget_class, ATK_ROLE_FILLER);
 #if GTK_CHECK_VERSION (3,20,0)

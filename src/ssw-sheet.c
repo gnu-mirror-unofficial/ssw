@@ -33,19 +33,19 @@ G_DEFINE_TYPE (SswSheet, ssw_sheet, GTK_TYPE_BIN)
 
 #define DIM 2
 
-enum  {ROW_HEADER_CLICKED,
-       ROW_HEADER_DOUBLE_CLICKED,
-       COLUMN_HEADER_CLICKED,
-       COLUMN_HEADER_DOUBLE_CLICKED,
-       ROW_HEADER_PRESSED,
-       ROW_HEADER_RELEASED,
-       COLUMN_HEADER_PRESSED,
-       COLUMN_HEADER_RELEASED,
-       SELECTION_CHANGED,
-       VALUE_CHANGED,
-       ROW_MOVED,
-       COLUMN_MOVED,
-       n_SIGNALS};
+  enum  {ROW_HEADER_CLICKED,
+         ROW_HEADER_DOUBLE_CLICKED,
+         COLUMN_HEADER_CLICKED,
+         COLUMN_HEADER_DOUBLE_CLICKED,
+         ROW_HEADER_PRESSED,
+         ROW_HEADER_RELEASED,
+         COLUMN_HEADER_PRESSED,
+         COLUMN_HEADER_RELEASED,
+         SELECTION_CHANGED,
+         VALUE_CHANGED,
+         ROW_MOVED,
+         COLUMN_MOVED,
+         n_SIGNALS};
 
 static guint signals [n_SIGNALS];
 
@@ -83,25 +83,25 @@ __unrealize (GtkWidget *w)
 
 enum
   {
-    PROP_0,
-    PROP_SPLITTER,
-    PROP_VMODEL,
-    PROP_HMODEL,
-    PROP_DATA_MODEL,
-    PROP_SPLIT,
-    PROP_GRIDLINES,
-    PROP_EDITABLE,
-    PROP_HORIZONTAL_DRAGGABLE,
-    PROP_VERTICAL_DRAGGABLE,
-    PROP_RENDERER_FUNC,
-    PROP_RENDERER_FUNC_DATUM,
-    PROP_CONVERT_FWD_FUNC,
-    PROP_CONVERT_REV_FUNC
+   PROP_0,
+   PROP_SPLITTER,
+   PROP_VMODEL,
+   PROP_HMODEL,
+   PROP_DATA_MODEL,
+   PROP_SPLIT,
+   PROP_GRIDLINES,
+   PROP_EDITABLE,
+   PROP_HORIZONTAL_DRAGGABLE,
+   PROP_VERTICAL_DRAGGABLE,
+   PROP_RENDERER_FUNC,
+   PROP_RENDERER_FUNC_DATUM,
+   PROP_CONVERT_FWD_FUNC,
+   PROP_CONVERT_REV_FUNC
   };
 
 static void
 on_header_button_pressed (SswSheetAxis *axis, gint id, guint button, guint state,
-			  gpointer user_data)
+                          gpointer user_data)
 {
   SswSheet *sheet = SSW_SHEET (user_data);
 
@@ -116,7 +116,7 @@ on_header_button_pressed (SswSheetAxis *axis, gint id, guint button, guint state
 
 static void
 on_header_button_released (SswSheetAxis *axis, gint id, guint button, guint state,
-			   gpointer user_data)
+                           gpointer user_data)
 {
   SswSheet *sheet = SSW_SHEET (user_data);
 
@@ -164,12 +164,12 @@ arrange (SswSheet *sheet)
   for (i = 0; i < DIM; ++i)
     {
       if (sheet->vmodel)
-	ssw_sheet_axis_set_model (SSW_SHEET_AXIS (sheet->vertical_axis[i]),
-				  sheet->vmodel);
+        ssw_sheet_axis_set_model (SSW_SHEET_AXIS (sheet->vertical_axis[i]),
+                                  sheet->vmodel);
 
       if (sheet->hmodel)
-	ssw_sheet_axis_set_model (SSW_SHEET_AXIS (sheet->horizontal_axis[i]),
-				  sheet->hmodel);
+        ssw_sheet_axis_set_model (SSW_SHEET_AXIS (sheet->horizontal_axis[i]),
+                                  sheet->hmodel);
     }
 }
 
@@ -232,98 +232,98 @@ __set_property (GObject *object,
     {
     case PROP_SPLITTER:
       {
-	GType t = g_value_get_gtype (value);
+        GType t = g_value_get_gtype (value);
 
-	if (t == GTK_TYPE_CONTAINER)
-	  t = SSW_TYPE_XPANED;
+        if (t == GTK_TYPE_CONTAINER)
+          t = SSW_TYPE_XPANED;
 
-	GtkWidget *splitter = g_object_new (t, NULL);
-	gtk_container_add (GTK_CONTAINER (sheet), splitter);
+        GtkWidget *splitter = g_object_new (t, NULL);
+        gtk_container_add (GTK_CONTAINER (sheet), splitter);
 
-	for (i = 0; i < DIM * DIM ; ++i)
-	  {
-	    gtk_container_add_with_properties (GTK_CONTAINER (splitter),
-					       sheet->sw[i],
-					       "left-attach", i%DIM,
-					       "top-attach", i/DIM,
-					       NULL);
-	  }
+        for (i = 0; i < DIM * DIM ; ++i)
+          {
+            gtk_container_add_with_properties (GTK_CONTAINER (splitter),
+                                               sheet->sw[i],
+                                               "left-attach", i%DIM,
+                                               "top-attach", i/DIM,
+                                               NULL);
+          }
       }
       break;
     case PROP_GRIDLINES:
       {
-	gboolean lines = g_value_get_boolean (value);
+        gboolean lines = g_value_get_boolean (value);
 
-	for (i = 0; i < DIM * DIM ; ++i)
-	  {
-	    g_object_set (SSW_SHEET_SINGLE (sheet->sheet[i])->body, "gridlines", lines, NULL);
-	  }
-	sheet->gridlines = lines;
+        for (i = 0; i < DIM * DIM ; ++i)
+          {
+            g_object_set (SSW_SHEET_SINGLE (sheet->sheet[i])->body, "gridlines", lines, NULL);
+          }
+        sheet->gridlines = lines;
       }
       break;
     case PROP_EDITABLE:
       {
-	gboolean editable = g_value_get_boolean (value);
+        gboolean editable = g_value_get_boolean (value);
 
-	for (i = 0; i < DIM * DIM ; ++i)
-	  {
-	    g_object_set (SSW_SHEET_SINGLE (sheet->sheet[i])->body, "editable", editable, NULL);
-	  }
-	sheet->editable = editable;
+        for (i = 0; i < DIM * DIM ; ++i)
+          {
+            g_object_set (SSW_SHEET_SINGLE (sheet->sheet[i])->body, "editable", editable, NULL);
+          }
+        sheet->editable = editable;
       }
       break;
 
     case PROP_HORIZONTAL_DRAGGABLE:
-	for (i = 0; i < DIM; ++i)
-	  g_object_set (SSW_SHEET_AXIS (sheet->horizontal_axis[i]),
-			"draggable",  g_value_get_boolean (value), NULL);
-	break;
+      for (i = 0; i < DIM; ++i)
+        g_object_set (SSW_SHEET_AXIS (sheet->horizontal_axis[i]),
+                      "draggable",  g_value_get_boolean (value), NULL);
+      break;
 
     case PROP_VERTICAL_DRAGGABLE:
-	for (i = 0; i < DIM; ++i)
-	  g_object_set (SSW_SHEET_AXIS (sheet->vertical_axis[i]),
-			"draggable",  g_value_get_boolean (value), NULL);
-	break;
+      for (i = 0; i < DIM; ++i)
+        g_object_set (SSW_SHEET_AXIS (sheet->vertical_axis[i]),
+                      "draggable",  g_value_get_boolean (value), NULL);
+      break;
 
     case PROP_CONVERT_FWD_FUNC:
       {
-	gpointer p = g_value_get_pointer (value);
+        gpointer p = g_value_get_pointer (value);
 
-	if (p)
-	  for (i = 0; i < DIM * DIM ; ++i)
-	    {
-	      g_object_set (SSW_SHEET_SINGLE (sheet->sheet[i])->body,
-			    "forward-conversion", p,
-			    NULL);
-	    }
+        if (p)
+          for (i = 0; i < DIM * DIM ; ++i)
+            {
+              g_object_set (SSW_SHEET_SINGLE (sheet->sheet[i])->body,
+                            "forward-conversion", p,
+                            NULL);
+            }
       }
       break;
 
-      case PROP_CONVERT_REV_FUNC:
+    case PROP_CONVERT_REV_FUNC:
       {
-	gpointer p = g_value_get_pointer (value);
+        gpointer p = g_value_get_pointer (value);
 
-	if (p)
-	  for (i = 0; i < DIM * DIM ; ++i)
-	    {
-	      g_object_set (SSW_SHEET_SINGLE (sheet->sheet[i])->body,
-			    "reverse-conversion", p,
-			    NULL);
-	    }
+        if (p)
+          for (i = 0; i < DIM * DIM ; ++i)
+            {
+              g_object_set (SSW_SHEET_SINGLE (sheet->sheet[i])->body,
+                            "reverse-conversion", p,
+                            NULL);
+            }
       }
       break;
 
-      case PROP_RENDERER_FUNC:
+    case PROP_RENDERER_FUNC:
       {
-	gpointer select_renderer_func = g_value_get_pointer (value);
+        gpointer select_renderer_func = g_value_get_pointer (value);
 
-	for (i = 0; i < DIM * DIM ; ++i)
-	  {
-	    g_object_set (SSW_SHEET_SINGLE (sheet->sheet[i])->body,
-			  "select-renderer-func", select_renderer_func,
-			  NULL);
-	  }
-	//	sheet->select_renderer_func = select_renderer_func;
+        for (i = 0; i < DIM * DIM ; ++i)
+          {
+            g_object_set (SSW_SHEET_SINGLE (sheet->sheet[i])->body,
+                          "select-renderer-func", select_renderer_func,
+                          NULL);
+          }
+        //    sheet->select_renderer_func = select_renderer_func;
       }
       break;
 
@@ -333,41 +333,41 @@ __set_property (GObject *object,
 
     case PROP_SPLIT:
       {
-	gboolean split = g_value_get_boolean (value);
+        gboolean split = g_value_get_boolean (value);
 
-	for (i = 0; i < DIM * DIM ; ++i)
-	  {
-	    gtk_widget_hide (sheet->sw[i]);
-	    g_object_set (sheet->sw[i], "no-show-all", TRUE, NULL);
-	  }
+        for (i = 0; i < DIM * DIM ; ++i)
+          {
+            gtk_widget_hide (sheet->sw[i]);
+            g_object_set (sheet->sw[i], "no-show-all", TRUE, NULL);
+          }
 
-	const int dimens = (split ? 2 : 1);
-	for (i = 0; i < dimens * dimens; ++i)
-	  {
-	    g_object_set (sheet->sw[i],  "vscrollbar-policy",
-			  ((i%dimens) == dimens - 1) ? GTK_POLICY_ALWAYS : GTK_POLICY_NEVER,
-			  NULL);
+        const int dimens = (split ? 2 : 1);
+        for (i = 0; i < dimens * dimens; ++i)
+          {
+            g_object_set (sheet->sw[i],  "vscrollbar-policy",
+                          ((i%dimens) == dimens - 1) ? GTK_POLICY_ALWAYS : GTK_POLICY_NEVER,
+                          NULL);
 
-	    g_object_set (sheet->sw[i], "hscrollbar-policy",
-			  ((i/dimens) == dimens - 1) ? GTK_POLICY_ALWAYS : GTK_POLICY_NEVER,
-			  NULL);
+            g_object_set (sheet->sw[i], "hscrollbar-policy",
+                          ((i/dimens) == dimens - 1) ? GTK_POLICY_ALWAYS : GTK_POLICY_NEVER,
+                          NULL);
 
-	    g_object_set (sheet->sw[i], "no-show-all", FALSE, NULL);
-	    gtk_widget_show_all (GTK_WIDGET (sheet->sw[i]));
-	  }
+            g_object_set (sheet->sw[i], "no-show-all", FALSE, NULL);
+            gtk_widget_show_all (GTK_WIDGET (sheet->sw[i]));
+          }
 
-	sheet->split = split;
+        sheet->split = split;
       }
       break;
     case PROP_VMODEL:
       if (sheet->vmodel)
-	g_object_unref (sheet->vmodel);
+        g_object_unref (sheet->vmodel);
       sheet->vmodel = g_value_dup_object (value);
       arrange (sheet);
       break;
     case PROP_HMODEL:
       if (sheet->hmodel)
-	g_object_unref (sheet->hmodel);
+        g_object_unref (sheet->hmodel);
       sheet->hmodel = g_value_dup_object (value);
       arrange (sheet);
       break;
@@ -375,39 +375,39 @@ __set_property (GObject *object,
       sheet->data_model = g_value_get_object (value);
 
       GtkTreeModelFlags flags =
-	gtk_tree_model_get_flags (GTK_TREE_MODEL (sheet->data_model));
+        gtk_tree_model_get_flags (GTK_TREE_MODEL (sheet->data_model));
 
       if (!(flags & GTK_TREE_MODEL_LIST_ONLY))
-	g_warning ("SswSheet can interpret list models only. Child nodes will be ignored.");
+        g_warning ("SswSheet can interpret list models only. Child nodes will be ignored.");
 
       if (sheet->vmodel == NULL)
-	sheet->vmodel = g_object_new (SSW_TYPE_AXIS_MODEL, NULL);
+        sheet->vmodel = g_object_new (SSW_TYPE_AXIS_MODEL, NULL);
 
       if (sheet->hmodel == NULL)
-	sheet->hmodel = g_object_new (SSW_TYPE_AXIS_MODEL,  NULL);
+        sheet->hmodel = g_object_new (SSW_TYPE_AXIS_MODEL,  NULL);
 
       if (SSW_IS_AXIS_MODEL (sheet->vmodel))
-	{
-	  int n_rows = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (sheet->data_model), NULL);
-	  g_object_set (sheet->vmodel, "size", n_rows, NULL);
-	  g_signal_connect_object (sheet->data_model, "items-changed",
-				   G_CALLBACK (resize_vmodel), sheet->vmodel, 0);
-	}
+        {
+          int n_rows = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (sheet->data_model), NULL);
+          g_object_set (sheet->vmodel, "size", n_rows, NULL);
+          g_signal_connect_object (sheet->data_model, "items-changed",
+                                   G_CALLBACK (resize_vmodel), sheet->vmodel, 0);
+        }
 
       if (SSW_IS_AXIS_MODEL (sheet->hmodel))
-	{
-	  int n_cols = gtk_tree_model_get_n_columns (GTK_TREE_MODEL (sheet->data_model));
-	  g_object_set (sheet->hmodel, "size", n_cols, NULL);
-	  g_signal_connect_object (sheet->data_model, "items-changed",
-				   G_CALLBACK (resize_hmodel), sheet->hmodel, 0);
-	}
+        {
+          int n_cols = gtk_tree_model_get_n_columns (GTK_TREE_MODEL (sheet->data_model));
+          g_object_set (sheet->hmodel, "size", n_cols, NULL);
+          g_signal_connect_object (sheet->data_model, "items-changed",
+                                   G_CALLBACK (resize_hmodel), sheet->hmodel, 0);
+        }
 
       arrange (sheet);
 
       for (i = 0; i < DIM * DIM; ++i)
-	{
-	  g_object_set (sheet->sheet[i], "data-model", sheet->data_model, NULL);
-	}
+        {
+          g_object_set (sheet->sheet[i], "data-model", sheet->data_model, NULL);
+        }
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -457,90 +457,90 @@ ssw_sheet_class_init (SswSheetClass *class)
 
   GParamSpec *convert_fwd_spec =
     g_param_spec_pointer ("forward-conversion",
-			  P_("Forward conversion function"),
-			  P_("A function to convert a cell datum to a string"),
-			  G_PARAM_WRITABLE);
+                          P_("Forward conversion function"),
+                          P_("A function to convert a cell datum to a string"),
+                          G_PARAM_WRITABLE);
 
   GParamSpec *convert_rev_spec =
     g_param_spec_pointer ("reverse-conversion",
-			  P_("Reverse conversion function"),
-			  P_("A function to convert a string to a cell datum"),
-			  G_PARAM_WRITABLE);
+                          P_("Reverse conversion function"),
+                          P_("A function to convert a string to a cell datum"),
+                          G_PARAM_WRITABLE);
 
   GParamSpec *splitter_spec =
     g_param_spec_gtype ("splitter",
-			P_("Splitter Container Type"),
-			P_("The type of container widget to handle splits"),
-			GTK_TYPE_CONTAINER,
-			G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
+                        P_("Splitter Container Type"),
+                        P_("The type of container widget to handle splits"),
+                        GTK_TYPE_CONTAINER,
+                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
 
   GParamSpec *vmodel_spec =
     g_param_spec_object ("vmodel",
-			 P_("Vertical Model"),
-			 P_("The model describing the rows"),
-			 G_TYPE_LIST_MODEL,
-			 G_PARAM_READWRITE);
+                         P_("Vertical Model"),
+                         P_("The model describing the rows"),
+                         G_TYPE_LIST_MODEL,
+                         G_PARAM_READWRITE);
 
   GParamSpec *hmodel_spec =
     g_param_spec_object ("hmodel",
-			 P_("Horizontal Model"),
-			 P_("The model describing the columns"),
-			 G_TYPE_LIST_MODEL,
-			 G_PARAM_READWRITE);
+                         P_("Horizontal Model"),
+                         P_("The model describing the columns"),
+                         G_TYPE_LIST_MODEL,
+                         G_PARAM_READWRITE);
 
   GParamSpec *data_model_spec =
     g_param_spec_object ("data-model",
-			 P_("Data Model"),
-			 P_("The model describing the contents of the data"),
-			 GTK_TYPE_TREE_MODEL,
-			 G_PARAM_READWRITE);
+                         P_("Data Model"),
+                         P_("The model describing the contents of the data"),
+                         GTK_TYPE_TREE_MODEL,
+                         G_PARAM_READWRITE);
 
   GParamSpec *split_spec =
     g_param_spec_boolean ("split",
-			  P_("Split View"),
-			  P_("If TRUE the sheet view is split four ways"),
-			  FALSE,
-			  G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+                          P_("Split View"),
+                          P_("If TRUE the sheet view is split four ways"),
+                          FALSE,
+                          G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
   GParamSpec *horizontal_draggable_spec =
     g_param_spec_boolean ("horizontal-draggable",
-			  P_("Horizontal_Draggable"),
-			  P_("If TRUE, items in the horizontal axis can be dragged."),
-			  FALSE,
-			  G_PARAM_WRITABLE | G_PARAM_CONSTRUCT);
+                          P_("Horizontal_Draggable"),
+                          P_("If TRUE, items in the horizontal axis can be dragged."),
+                          FALSE,
+                          G_PARAM_WRITABLE | G_PARAM_CONSTRUCT);
 
   GParamSpec *vertical_draggable_spec =
     g_param_spec_boolean ("vertical-draggable",
-			  P_("Vertical_Draggable"),
-			  P_("If TRUE, items in the vertical axis can be dragged."),
-			  FALSE,
-			  G_PARAM_WRITABLE | G_PARAM_CONSTRUCT);
+                          P_("Vertical_Draggable"),
+                          P_("If TRUE, items in the vertical axis can be dragged."),
+                          FALSE,
+                          G_PARAM_WRITABLE | G_PARAM_CONSTRUCT);
 
   GParamSpec *gridlines_spec =
     g_param_spec_boolean ("gridlines",
-			  P_("Show Gridlines"),
-			  P_("True if gridlines should be shown"),
-			  TRUE,
-			  G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+                          P_("Show Gridlines"),
+                          P_("True if gridlines should be shown"),
+                          TRUE,
+                          G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
   GParamSpec *editable_spec =
     g_param_spec_boolean ("editable",
-			  P_("Editable"),
-			  P_("True if the sheet is editable"),
-			  FALSE,
-			  G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+                          P_("Editable"),
+                          P_("True if the sheet is editable"),
+                          FALSE,
+                          G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
   GParamSpec *renderer_func_spec =
     g_param_spec_pointer ("select-renderer-func",
-			  P_("Select Renderer Function"),
-			  P_("Function returning the renderer to use for a cell"),
-			  G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+                          P_("Select Renderer Function"),
+                          P_("Function returning the renderer to use for a cell"),
+                          G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
   GParamSpec *renderer_func_datum_spec =
     g_param_spec_pointer ("select-renderer-datum",
-			  P_("Select Renderer Function Datum"),
-			  P_("The Datum to be passed to the \"select-renderer-func\" property"),
-			  G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+                          P_("Select Renderer Function Datum"),
+                          P_("The Datum to be passed to the \"select-renderer-func\" property"),
+                          G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
   object_class->set_property = __set_property;
   object_class->get_property = __get_property;
@@ -603,150 +603,150 @@ ssw_sheet_class_init (SswSheetClass *class)
 
   signals [ROW_HEADER_CLICKED] =
     g_signal_new ("row-header-clicked",
-		  G_TYPE_FROM_CLASS (class),
-		  G_SIGNAL_RUN_FIRST,
-		  0,
-		  NULL, NULL,
-		  g_cclosure_marshal_VOID__INT,
-		  G_TYPE_NONE,
-		  1,
-		  G_TYPE_INT);
+                  G_TYPE_FROM_CLASS (class),
+                  G_SIGNAL_RUN_FIRST,
+                  0,
+                  NULL, NULL,
+                  g_cclosure_marshal_VOID__INT,
+                  G_TYPE_NONE,
+                  1,
+                  G_TYPE_INT);
 
   signals [ROW_HEADER_DOUBLE_CLICKED] =
     g_signal_new ("row-header-double-clicked",
-		  G_TYPE_FROM_CLASS (class),
-		  G_SIGNAL_RUN_FIRST,
-		  0,
-		  NULL, NULL,
-		  g_cclosure_marshal_VOID__INT,
-		  G_TYPE_NONE,
-		  1,
-		  G_TYPE_INT);
+                  G_TYPE_FROM_CLASS (class),
+                  G_SIGNAL_RUN_FIRST,
+                  0,
+                  NULL, NULL,
+                  g_cclosure_marshal_VOID__INT,
+                  G_TYPE_NONE,
+                  1,
+                  G_TYPE_INT);
 
   signals [COLUMN_HEADER_CLICKED] =
     g_signal_new ("column-header-clicked",
-		  G_TYPE_FROM_CLASS (class),
-		  G_SIGNAL_RUN_FIRST,
-		  0,
-		  NULL, NULL,
-		  g_cclosure_marshal_VOID__INT,
-		  G_TYPE_NONE,
-		  1,
-		  G_TYPE_INT);
+                  G_TYPE_FROM_CLASS (class),
+                  G_SIGNAL_RUN_FIRST,
+                  0,
+                  NULL, NULL,
+                  g_cclosure_marshal_VOID__INT,
+                  G_TYPE_NONE,
+                  1,
+                  G_TYPE_INT);
 
   signals [COLUMN_HEADER_DOUBLE_CLICKED] =
     g_signal_new ("column-header-double-clicked",
-		  G_TYPE_FROM_CLASS (class),
-		  G_SIGNAL_RUN_FIRST,
-		  0,
-		  NULL, NULL,
-		  g_cclosure_marshal_VOID__INT,
-		  G_TYPE_NONE,
-		  1,
-		  G_TYPE_INT);
+                  G_TYPE_FROM_CLASS (class),
+                  G_SIGNAL_RUN_FIRST,
+                  0,
+                  NULL, NULL,
+                  g_cclosure_marshal_VOID__INT,
+                  G_TYPE_NONE,
+                  1,
+                  G_TYPE_INT);
 
 
   signals [ROW_HEADER_PRESSED] =
     g_signal_new ("row-header-pressed",
-		  G_TYPE_FROM_CLASS (class),
-		  G_SIGNAL_RUN_FIRST,
-		  0,
-		  NULL, NULL,
-		  ssw_cclosure_marshal_VOID__INT_UINT_UINT,
-		  G_TYPE_NONE,
-		  3,
-		  G_TYPE_INT,
-		  G_TYPE_UINT,
-		  G_TYPE_UINT);
+                  G_TYPE_FROM_CLASS (class),
+                  G_SIGNAL_RUN_FIRST,
+                  0,
+                  NULL, NULL,
+                  ssw_cclosure_marshal_VOID__INT_UINT_UINT,
+                  G_TYPE_NONE,
+                  3,
+                  G_TYPE_INT,
+                  G_TYPE_UINT,
+                  G_TYPE_UINT);
 
   signals [ROW_HEADER_RELEASED] =
     g_signal_new ("row-header-released",
-		  G_TYPE_FROM_CLASS (class),
-		  G_SIGNAL_RUN_FIRST,
-		  0,
-		  NULL, NULL,
-		  ssw_cclosure_marshal_VOID__INT_UINT_UINT,
-		  G_TYPE_NONE,
-		  3,
-		  G_TYPE_INT,
-		  G_TYPE_UINT,
-		  G_TYPE_UINT);
+                  G_TYPE_FROM_CLASS (class),
+                  G_SIGNAL_RUN_FIRST,
+                  0,
+                  NULL, NULL,
+                  ssw_cclosure_marshal_VOID__INT_UINT_UINT,
+                  G_TYPE_NONE,
+                  3,
+                  G_TYPE_INT,
+                  G_TYPE_UINT,
+                  G_TYPE_UINT);
 
   signals [COLUMN_HEADER_PRESSED] =
     g_signal_new ("column-header-pressed",
-		  G_TYPE_FROM_CLASS (class),
-		  G_SIGNAL_RUN_FIRST,
-		  0,
-		  NULL, NULL,
-		  ssw_cclosure_marshal_VOID__INT_UINT_UINT,
-		  G_TYPE_NONE,
-		  3,
-		  G_TYPE_INT,
-		  G_TYPE_UINT,
-		  G_TYPE_UINT);
+                  G_TYPE_FROM_CLASS (class),
+                  G_SIGNAL_RUN_FIRST,
+                  0,
+                  NULL, NULL,
+                  ssw_cclosure_marshal_VOID__INT_UINT_UINT,
+                  G_TYPE_NONE,
+                  3,
+                  G_TYPE_INT,
+                  G_TYPE_UINT,
+                  G_TYPE_UINT);
 
   signals [COLUMN_HEADER_RELEASED] =
     g_signal_new ("column-header-released",
-		  G_TYPE_FROM_CLASS (class),
-		  G_SIGNAL_RUN_FIRST,
-		  0,
-		  NULL, NULL,
-		  ssw_cclosure_marshal_VOID__INT_UINT_UINT,
-		  G_TYPE_NONE,
-		  3,
-		  G_TYPE_INT,
-		  G_TYPE_UINT,
-		  G_TYPE_UINT);
+                  G_TYPE_FROM_CLASS (class),
+                  G_SIGNAL_RUN_FIRST,
+                  0,
+                  NULL, NULL,
+                  ssw_cclosure_marshal_VOID__INT_UINT_UINT,
+                  G_TYPE_NONE,
+                  3,
+                  G_TYPE_INT,
+                  G_TYPE_UINT,
+                  G_TYPE_UINT);
 
 
   signals [SELECTION_CHANGED] =
     g_signal_new ("selection-changed",
-		  G_TYPE_FROM_CLASS (class),
-		  G_SIGNAL_RUN_FIRST,
-		  0,
-		  NULL, NULL,
-		  g_cclosure_marshal_VOID__POINTER,
-		  G_TYPE_NONE,
-		  1,
-		  G_TYPE_POINTER);
+                  G_TYPE_FROM_CLASS (class),
+                  G_SIGNAL_RUN_FIRST,
+                  0,
+                  NULL, NULL,
+                  g_cclosure_marshal_VOID__POINTER,
+                  G_TYPE_NONE,
+                  1,
+                  G_TYPE_POINTER);
 
 
-    signals [VALUE_CHANGED] =
+  signals [VALUE_CHANGED] =
     g_signal_new ("value-changed",
-		  G_TYPE_FROM_CLASS (class),
-		  G_SIGNAL_RUN_FIRST,
-		  0,
-		  NULL, NULL,
-		  ssw_cclosure_marshal_VOID__INT_INT_POINTER,
-		  G_TYPE_NONE,
-		  3,
-		  G_TYPE_INT,
-		  G_TYPE_INT,
-		  G_TYPE_POINTER);
+                  G_TYPE_FROM_CLASS (class),
+                  G_SIGNAL_RUN_FIRST,
+                  0,
+                  NULL, NULL,
+                  ssw_cclosure_marshal_VOID__INT_INT_POINTER,
+                  G_TYPE_NONE,
+                  3,
+                  G_TYPE_INT,
+                  G_TYPE_INT,
+                  G_TYPE_POINTER);
 
-    signals [ROW_MOVED] =
-      g_signal_new ("row-moved",
-		    G_TYPE_FROM_CLASS (class),
-		    G_SIGNAL_RUN_FIRST,
-		    0,
-		    NULL, NULL,
-		    ssw_cclosure_marshal_VOID__INT_INT,
-		    G_TYPE_NONE,
-		    2,
-		    G_TYPE_INT,
-		    G_TYPE_INT);
+  signals [ROW_MOVED] =
+    g_signal_new ("row-moved",
+                  G_TYPE_FROM_CLASS (class),
+                  G_SIGNAL_RUN_FIRST,
+                  0,
+                  NULL, NULL,
+                  ssw_cclosure_marshal_VOID__INT_INT,
+                  G_TYPE_NONE,
+                  2,
+                  G_TYPE_INT,
+                  G_TYPE_INT);
 
-    signals [COLUMN_MOVED] =
-      g_signal_new ("column-moved",
-		    G_TYPE_FROM_CLASS (class),
-		    G_SIGNAL_RUN_FIRST,
-		    0,
-		    NULL, NULL,
-		    ssw_cclosure_marshal_VOID__INT_INT,
-		    G_TYPE_NONE,
-		    2,
-		    G_TYPE_INT,
-		    G_TYPE_INT);
+  signals [COLUMN_MOVED] =
+    g_signal_new ("column-moved",
+                  G_TYPE_FROM_CLASS (class),
+                  G_SIGNAL_RUN_FIRST,
+                  0,
+                  NULL, NULL,
+                  ssw_cclosure_marshal_VOID__INT_INT,
+                  G_TYPE_NONE,
+                  2,
+                  G_TYPE_INT,
+                  G_TYPE_INT);
 }
 
 static void
@@ -767,7 +767,7 @@ forward_selection_signal (SswSheet *sheet, SswRange *sel, gpointer ud)
     {
       GtkWidget *body = SSW_SHEET_SINGLE (sheet->sheet[i])->body;
       if (body == ud)
-	continue;
+        continue;
 
       gtk_widget_queue_draw (body);
     }
@@ -799,35 +799,35 @@ ssw_sheet_init (SswSheet *sheet)
       sheet->hadj[i] = gtk_adjustment_new (0, 0, 0, 0, 0, 0);
 
       sheet->horizontal_axis[i] =
-	ssw_sheet_axis_new (GTK_ORIENTATION_HORIZONTAL);
+        ssw_sheet_axis_new (GTK_ORIENTATION_HORIZONTAL);
 
 
       g_signal_connect (sheet->horizontal_axis[i], "header-clicked",
-			G_CALLBACK (on_header_clicked), sheet);
+                        G_CALLBACK (on_header_clicked), sheet);
 
       g_signal_connect (sheet->horizontal_axis[i], "header-double-clicked",
-			G_CALLBACK (on_header_double_clicked), sheet);
+                        G_CALLBACK (on_header_double_clicked), sheet);
 
       g_signal_connect (sheet->horizontal_axis[i], "header-button-pressed",
-			G_CALLBACK (on_header_button_pressed), sheet);
+                        G_CALLBACK (on_header_button_pressed), sheet);
 
       g_signal_connect (sheet->horizontal_axis[i], "header-button-released",
-			G_CALLBACK (on_header_button_released), sheet);
+                        G_CALLBACK (on_header_button_released), sheet);
 
       sheet->vertical_axis[i] =
-	ssw_sheet_axis_new (GTK_ORIENTATION_VERTICAL);
+        ssw_sheet_axis_new (GTK_ORIENTATION_VERTICAL);
 
       g_signal_connect (sheet->vertical_axis[i], "header-clicked",
-			G_CALLBACK (on_header_clicked), sheet);
+                        G_CALLBACK (on_header_clicked), sheet);
 
       g_signal_connect (sheet->vertical_axis[i], "header-double-clicked",
-			G_CALLBACK (on_header_double_clicked), sheet);
+                        G_CALLBACK (on_header_double_clicked), sheet);
 
       g_signal_connect (sheet->vertical_axis[i], "header-button-pressed",
-			G_CALLBACK (on_header_button_pressed), sheet);
+                        G_CALLBACK (on_header_button_pressed), sheet);
 
       g_signal_connect (sheet->vertical_axis[i], "header-button-released",
-			G_CALLBACK (on_header_button_released), sheet);
+                        G_CALLBACK (on_header_button_released), sheet);
     }
 
   sheet->selection = g_malloc (sizeof *sheet->selection);
@@ -839,32 +839,32 @@ ssw_sheet_init (SswSheet *sheet)
   for (i = 0; i < DIM ; ++i)
     {
       g_signal_connect_swapped (sheet->horizontal_axis[i], "drag-n-dropped",
-				G_CALLBACK (on_drag_n_drop), sheet);
+                                G_CALLBACK (on_drag_n_drop), sheet);
 
       g_signal_connect_swapped (sheet->vertical_axis[i], "drag-n-dropped",
-				G_CALLBACK (on_drag_n_drop), sheet);
+                                G_CALLBACK (on_drag_n_drop), sheet);
     }
 
   for (i = 0; i < DIM * DIM ; ++i)
     {
       sheet->sw[i] = gtk_scrolled_window_new (sheet->hadj[i%DIM],
-					      sheet->vadj[i/DIM]);
+                                              sheet->vadj[i/DIM]);
 
       g_object_set (sheet->sw[i], "shadow-type", GTK_SHADOW_IN, NULL);
 
       sheet->sheet[i] =
-	ssw_sheet_single_new (sheet,
-			      SSW_SHEET_AXIS (sheet->horizontal_axis[i%DIM]),
-			      SSW_SHEET_AXIS (sheet->vertical_axis[i/DIM]),
-			      sheet->selection);
+        ssw_sheet_single_new (sheet,
+                              SSW_SHEET_AXIS (sheet->horizontal_axis[i%DIM]),
+                              SSW_SHEET_AXIS (sheet->vertical_axis[i/DIM]),
+                              sheet->selection);
 
       gtk_container_add (GTK_CONTAINER (sheet->sw[i]), sheet->sheet[i]);
 
       g_signal_connect_swapped (SSW_SHEET_SINGLE (sheet->sheet[i])->body,
-				"selection-changed", G_CALLBACK (forward_selection_signal), sheet);
+                                "selection-changed", G_CALLBACK (forward_selection_signal), sheet);
 
       g_signal_connect_swapped (SSW_SHEET_SINGLE (sheet->sheet[i])->body,
-				"value-changed", G_CALLBACK (forward_signal), sheet);
+                                "value-changed", G_CALLBACK (forward_signal), sheet);
     }
 
   sheet->renderer_func_datum = NULL;
@@ -899,19 +899,19 @@ ssw_sheet_scroll_to (SswSheet *sheet, gint hpos, gint vpos)
 
 void
 ssw_sheet_set_active_cell (SswSheet *sheet,
-			   gint col, gint row, GdkEvent *e)
+                           gint col, gint row, GdkEvent *e)
 {
   ssw_sheet_body_set_active_cell (SSW_SHEET_BODY (sheet->selected_body),
-				  col, row, e);
+                                  col, row, e);
 }
 
 
 gboolean
 ssw_sheet_get_active_cell (SswSheet *sheet,
-			   gint *col, gint *row)
+                           gint *col, gint *row)
 {
   return ssw_sheet_body_get_active_cell (SSW_SHEET_BODY (sheet->selected_body),
-				  col, row);
+                                         col, row);
 }
 
 
@@ -929,8 +929,8 @@ paste_insert_datum (const gchar *x, size_t len, const struct paste_state *t)
   ssw_sheet_reverse_conversion_func rcf;
 
   g_object_get (SSW_SHEET_SINGLE (sheet->sheet[0])->body,
-		"reverse-conversion", &rcf,
-		NULL);
+                "reverse-conversion", &rcf,
+                NULL);
 
   if (rcf (sheet->data_model, col, row, x, &value))
     t->set_cell (sheet->data_model, col, row, &value);
@@ -960,20 +960,20 @@ end_of_paste (struct paste_state *t)
 
 static void
 parse_delimited_data (const gchar *data, int len, const char *delim,
-		      void (*payload)(const gchar *, size_t, struct paste_state *),
-		      void (*endload)(struct paste_state *),
-		      struct paste_state * dw)
+                      void (*payload)(const gchar *, size_t, struct paste_state *),
+                      void (*endload)(struct paste_state *),
+                      struct paste_state * dw)
 {
   while (len > 0)
     {
       const gchar *x = g_strstr_len (data, len, delim);
       if (x == NULL)
-	{
-	  char *f = g_strndup (data, len);
-	  payload (f, len, dw);
-	  g_free (f);
-	  break;
-	}
+        {
+          char *f = g_strndup (data, len);
+          payload (f, len, dw);
+          g_free (f);
+          break;
+        }
       len -= x - data + 1;
 
       gchar *line = g_strndup (data, x - data);
@@ -993,7 +993,7 @@ parseit (const gchar *x, size_t len, struct paste_state *dw)
 
 static void
 utf8_tab_delimited_parse (GtkClipboard *clip, GtkSelectionData *sd,
-			  gpointer user_data)
+                          gpointer user_data)
 {
   struct paste_state *ps = user_data;
   SswSheet *sheet = SSW_SHEET (ps->sheet);
@@ -1015,7 +1015,7 @@ utf8_tab_delimited_parse (GtkClipboard *clip, GtkSelectionData *sd,
 
 static void
 target_marshaller (GtkClipboard *clip, GdkAtom *atoms, gint n_atoms,
-		   gpointer user_data)
+                   gpointer user_data)
 {
   int i;
   struct paste_state *ps = user_data;
@@ -1029,15 +1029,15 @@ target_marshaller (GtkClipboard *clip, GdkAtom *atoms, gint n_atoms,
   for (i = 0; i < n_atoms; ++i)
     {
       if (atoms[i] == gdk_atom_intern_static_string ("text/html"))
-	{
-	  gtk_clipboard_request_contents (clip, atoms[i], html_parse, ps);
-	  break;
-	}
+        {
+          gtk_clipboard_request_contents (clip, atoms[i], html_parse, ps);
+          break;
+        }
       else if (atoms[i] == gdk_atom_intern_static_string ("UTF8_STRING"))
-	{
-	  gtk_clipboard_request_contents (clip, atoms[i], utf8_tab_delimited_parse, ps);
-	  break;
-	}
+        {
+          gtk_clipboard_request_contents (clip, atoms[i], utf8_tab_delimited_parse, ps);
+          break;
+        }
     }
 
   if (i == n_atoms)

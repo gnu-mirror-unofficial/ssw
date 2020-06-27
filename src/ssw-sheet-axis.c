@@ -17,9 +17,9 @@
 */
 
 /*
-   This work is derived from Timm Bäder's original work GD_MODEL_LIST_BOX.
-   Downloaded from https://github.com/baedert/listbox-c
-   His copyright notice is below.
+  This work is derived from Timm Bäder's original work GD_MODEL_LIST_BOX.
+  Downloaded from https://github.com/baedert/listbox-c
+  His copyright notice is below.
 */
 
 /*
@@ -174,30 +174,30 @@ ssw_sheet_axis_rtl (SswSheetAxis *axis)
   PRIV_DECL (axis);
 
   return ((priv->orientation == GTK_ORIENTATION_HORIZONTAL)
-	  &&
-	  (GTK_TEXT_DIR_RTL == gtk_widget_get_direction (GTK_WIDGET (axis))));
+          &&
+          (GTK_TEXT_DIR_RTL == gtk_widget_get_direction (GTK_WIDGET (axis))));
 }
 
 
 #define Foreach_Item {int i; for (i = 0; i < priv->widgets->len; i ++){ \
-  GtkWidget *item \
-  = g_ptr_array_index (priv->widgets, ssw_sheet_axis_rtl (axis) ? \
-		       (priv->widgets->len - i - 1) : i);
+  GtkWidget *item                                                       \
+  = g_ptr_array_index (priv->widgets, ssw_sheet_axis_rtl (axis) ?       \
+                       (priv->widgets->len - i - 1) : i);
 
 
 
 #define Foreach_Item_Fwd {int i; for (i = 0; i < priv->widgets->len; i ++){ \
-  GtkWidget *item \
+  GtkWidget *item                                                       \
   = g_ptr_array_index (priv->widgets, i);
 
 #define EndFor }} while(0)
 
 enum
   {
-    PROP_0,
-    PROP_ADJUSTMENT,
-    PROP_ORIENTATION,
-    PROP_DRAGGABLE
+   PROP_0,
+   PROP_ADJUSTMENT,
+   PROP_ORIENTATION,
+   PROP_DRAGGABLE
   };
 
 
@@ -212,8 +212,8 @@ __axis_set_value (SswSheetAxis *axis, gdouble x)
       gdouble ps = gtk_adjustment_get_page_size (priv->adjustment);
       gtk_adjustment_set_value (priv->adjustment, u - ps - x);
     }
-    else
-      gtk_adjustment_set_value (priv->adjustment, x);
+  else
+    gtk_adjustment_set_value (priv->adjustment, x);
 }
 
 static gdouble
@@ -232,7 +232,7 @@ __axis_get_value (SswSheetAxis *axis)
 }
 
 static void
-stopped (GtkGesture *g,	 gpointer ud)
+stopped (GtkGesture *g,     gpointer ud)
 {
   SswSheetAxis *axis = SSW_SHEET_AXIS (ud);
 
@@ -249,12 +249,12 @@ stopped (GtkGesture *g,	 gpointer ud)
 
   if (priv->n_press == 1 && priv->button == 1)
     g_signal_emit (axis, signals [HEADER_CLICKED], 0,
-		   priv->press_id, priv->state);
+                   priv->press_id, priv->state);
 
 
   if (priv->n_press == 2 && priv->button == 1)
     g_signal_emit (axis, signals [HEADER_DOUBLE_CLICKED], 0,
-		   priv->press_id, priv->state);
+                   priv->press_id, priv->state);
 
   priv->n_press = 0;
   priv->button = 0;
@@ -264,7 +264,7 @@ stopped (GtkGesture *g,	 gpointer ud)
 
 static void
 button_pressed (GtkGesture *g,
-		gint n_press, gdouble x, gdouble y, gpointer ud)
+                gint n_press, gdouble x, gdouble y, gpointer ud)
 {
   SswSheetAxis *axis = SSW_SHEET_AXIS (ud);
 
@@ -288,12 +288,12 @@ button_pressed (GtkGesture *g,
 
 static void
 button_released (GtkGesture *g,
-		 gint n_press, gdouble x, gdouble y, gpointer ud)
+                 gint n_press, gdouble x, gdouble y, gpointer ud)
 {
   SswSheetAxis *axis = SSW_SHEET_AXIS (ud);
   PRIV_DECL (axis);
   const GdkEvent *e = gtk_gesture_get_last_event (g,
-					    gtk_gesture_get_last_updated_sequence (g));
+                                                  gtk_gesture_get_last_updated_sequence (g));
 
   /* This can happen if the gesture is denied for any reason */
   if (!e || e->type != GDK_BUTTON_RELEASE)
@@ -313,7 +313,7 @@ button_released (GtkGesture *g,
   priv->state = ((const GdkEventButton *)e)->state;
 
   g_signal_emit (axis, signals [HEADER_BUTTON_RELEASED], 0,
-		 priv->press_id, priv->button, priv->state);
+                 priv->press_id, priv->button, priv->state);
 }
 
 static GtkWidget *
@@ -334,8 +334,8 @@ get_widget (SswSheetAxis *axis, guint index)
   gtk_widget_set_sensitive (new_widget, index < ssw_sheet_axis_get_size (axis));
   if (index >= ssw_sheet_axis_get_size (axis))
     g_object_set (new_widget,
-		  "has-tooltip", FALSE,
-		  NULL);
+                  "has-tooltip", FALSE,
+                  NULL);
 
   /* Check if the size of this item has been specifically overridden
      by the user.  If it has set the size request accordingly. */
@@ -343,9 +343,9 @@ get_widget (SswSheetAxis *axis, guint index)
   if (size)
     {
       if (priv->orientation == GTK_ORIENTATION_HORIZONTAL)
-       gtk_widget_set_size_request (new_widget, GPOINTER_TO_INT (size), -1);
+        gtk_widget_set_size_request (new_widget, GPOINTER_TO_INT (size), -1);
       else
-       gtk_widget_set_size_request (new_widget, -1, GPOINTER_TO_INT (size));
+        gtk_widget_set_size_request (new_widget, -1, GPOINTER_TO_INT (size));
     }
 
   if (g_object_is_floating (new_widget))
@@ -416,7 +416,7 @@ position_children (SswSheetAxis *axis)
   if (axis->cell_limits)
     g_ptr_array_free (axis->cell_limits, TRUE);
   axis->cell_limits = g_ptr_array_new_full (priv->widgets->len,
-					    free_limit);
+                                            free_limit);
 
   axis->last_cell = priv->model_to;
   axis->first_cell = priv->model_from;
@@ -425,7 +425,7 @@ position_children (SswSheetAxis *axis)
     gint size;
 
   priv->get_preferred_p_for_q (item, priv->get_q_size (&alloc),
-			       &size, NULL);
+                               &size, NULL);
   priv->set_p_offset (&child_alloc, offset);
   priv->set_p_size (&child_alloc, size);
   gtk_widget_size_allocate (item, &child_alloc);
@@ -442,7 +442,7 @@ position_children (SswSheetAxis *axis)
     gint size;
 
   priv->get_preferred_p_for_q (item, priv->get_q_size (&alloc),
-			       &size, NULL);
+                               &size, NULL);
 
   SswGeometry *geom = g_slice_new (SswGeometry);
   geom->position = offset + bin_start (axis);
@@ -463,8 +463,8 @@ item_size (SswSheetAxis *axis, GtkWidget *w)
   PRIV_DECL (axis);
   gint min, nat;
   priv->get_preferred_p_for_q (w,
-			       priv->get_allocated_q_size (GTK_WIDGET(axis)),
-			       &min, &nat);
+                               priv->get_allocated_q_size (GTK_WIDGET(axis)),
+                               &min, &nat);
 
   return nat;
 }
@@ -574,30 +574,30 @@ update_bin_window (SswSheetAxis *axis)
   if (priv->orientation == GTK_ORIENTATION_VERTICAL)
     {
       if (size != gdk_window_get_height (priv->bin_window) ||
-	  alloc.width != gdk_window_get_width (priv->bin_window))
-	{
-	  gdk_window_move_resize (priv->bin_window,
-				  0, bin_start (axis), alloc.width, size);
-	}
+          alloc.width != gdk_window_get_width (priv->bin_window))
+        {
+          gdk_window_move_resize (priv->bin_window,
+                                  0, bin_start (axis), alloc.width, size);
+        }
       else
-	gdk_window_move (priv->bin_window, 0, bin_start (axis));
+        gdk_window_move (priv->bin_window, 0, bin_start (axis));
     }
   else if (priv->orientation == GTK_ORIENTATION_HORIZONTAL)
     {
       gint xoffset = ssw_sheet_axis_rtl (axis)
-	? (alloc.width - bin_start (axis) -
-	   priv->get_window_p_size (priv->bin_window))
-	: bin_start (axis);
+        ? (alloc.width - bin_start (axis) -
+           priv->get_window_p_size (priv->bin_window))
+        : bin_start (axis);
 
       if (size != gdk_window_get_width (priv->bin_window) ||
-	  alloc.height != gdk_window_get_height (priv->bin_window))
-	{
-	  gdk_window_move_resize (priv->bin_window,
-				  xoffset,
-				  0, size, alloc.height);
-	}
+          alloc.height != gdk_window_get_height (priv->bin_window))
+        {
+          gdk_window_move_resize (priv->bin_window,
+                                  xoffset,
+                                  0, size, alloc.height);
+        }
       else
-	gdk_window_move (priv->bin_window, xoffset, 0);
+        gdk_window_move (priv->bin_window, xoffset, 0);
     }
 }
 
@@ -810,7 +810,7 @@ ensure_visible_widgets (SswSheetAxis *axis, gboolean force_reload)
 
     axis_debug ("%p Setting value to %f - %d", priv, priv->bin_start_diff, bin_window_y);
     __axis_set_value (axis,
-                              priv->bin_start_diff - bin_window_y);
+                      priv->bin_start_diff - bin_window_y);
     if (__axis_get_value (axis) < priv->bin_start_diff)
       {
         __axis_set_value (axis, priv->bin_start_diff);
@@ -1086,11 +1086,11 @@ __set_orientation (GObject *object)
 
 static gboolean
 on_drag_drop (GtkWidget      *widget,
-	      GdkDragContext *context,
-	      gint            x_,
-	      gint            y_,
-	      guint           time,
-	      gpointer        user_data)
+              GdkDragContext *context,
+              gint            x_,
+              gint            y_,
+              guint           time,
+              gpointer        user_data)
 {
   /* For reasons I don't understand, the x_ and y_ parameters of this
      function are wrong when the target is beyond the size of the axis.
@@ -1116,10 +1116,10 @@ on_drag_drop (GtkWidget      *widget,
     }
 
   gint to = ssw_sheet_axis_find_cell (SSW_SHEET_AXIS (widget),  posn,
-					 NULL, NULL);
+                                      NULL, NULL);
 
   gint from = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (widget),
-						  "from"));
+                                                  "from"));
 
   if (to >= ssw_sheet_axis_get_size (SSW_SHEET_AXIS (widget)))
     to = ssw_sheet_axis_get_size (SSW_SHEET_AXIS (widget));
@@ -1164,9 +1164,9 @@ setup_drag_operation (GtkGesture *g, gdouble x_, gdouble y_, gpointer ud)
       const GdkEvent *ev = gtk_gesture_get_last_event (g, seq);
       GdkEvent *e =  gdk_event_copy (ev);
       gtk_drag_begin_with_coordinates (GTK_WIDGET (axis),
-					 priv->drag_target_list,
-					 GDK_ACTION_MOVE, 1,
-					 e, x, y);
+                                       priv->drag_target_list,
+                                       GDK_ACTION_MOVE, 1,
+                                       e, x, y);
       g_object_set_data (G_OBJECT (axis), "from", GINT_TO_POINTER (which));
       gdk_event_free (e);
     }
@@ -1177,8 +1177,8 @@ __set_pq_adjustments (GObject *object)
 {
   if (PRIV (object)->adjustment)
     g_signal_connect (G_OBJECT (PRIV (object)->adjustment),
-		      "value-changed", G_CALLBACK (value_changed_cb),
-		      object);
+                      "value-changed", G_CALLBACK (value_changed_cb),
+                      object);
 }
 
 /* GObject vfuncs {{{ */
@@ -1201,23 +1201,23 @@ __set_property (GObject *object,
       break;
     case PROP_DRAGGABLE:
       if (g_value_get_boolean (value))
-	{
-	  GtkTargetEntry te = {"move-axis-item", GTK_TARGET_SAME_APP, 0};
-	  gtk_drag_dest_set (GTK_WIDGET (object), GTK_DEST_DEFAULT_ALL, &te,
-			     1, GDK_ACTION_MOVE);
-	  PRIV (object)->drag_target_list = gtk_target_list_new (&te, 1);
-	  PRIV (object)->drag_handler_id =
-	    g_signal_connect (PRIV (object)->drag_gest, "pressed",
-			      G_CALLBACK (setup_drag_operation), object);
-	}
+        {
+          GtkTargetEntry te = {"move-axis-item", GTK_TARGET_SAME_APP, 0};
+          gtk_drag_dest_set (GTK_WIDGET (object), GTK_DEST_DEFAULT_ALL, &te,
+                             1, GDK_ACTION_MOVE);
+          PRIV (object)->drag_target_list = gtk_target_list_new (&te, 1);
+          PRIV (object)->drag_handler_id =
+            g_signal_connect (PRIV (object)->drag_gest, "pressed",
+                              G_CALLBACK (setup_drag_operation), object);
+        }
       else
-	{
-	  PRIV (object)->drag_target_list = NULL;
-	  if (PRIV (object)->drag_handler_id > 0)
-	    g_signal_handler_disconnect (PRIV (object)->drag_gest,
-					 PRIV (object)->drag_handler_id);
-	  PRIV (object)->drag_handler_id = 0;
-	}
+        {
+          PRIV (object)->drag_target_list = NULL;
+          if (PRIV (object)->drag_handler_id > 0)
+            g_signal_handler_disconnect (PRIV (object)->drag_gest,
+                                         PRIV (object)->drag_handler_id);
+          PRIV (object)->drag_handler_id = 0;
+        }
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -1290,8 +1290,8 @@ GtkWidget *
 ssw_sheet_axis_new (GtkOrientation orientation)
 {
   return GTK_WIDGET (g_object_new (SSW_TYPE_SHEET_AXIS,
-				   "orientation", orientation,
-				   NULL));
+                                   "orientation", orientation,
+                                   NULL));
 }
 
 void
@@ -1306,7 +1306,7 @@ ssw_sheet_axis_set_model (SswSheetAxis *axis, GListModel *model)
   if (model != NULL)
     {
       g_signal_connect_object (G_OBJECT (model), "items-changed",
-			       G_CALLBACK (items_changed_cb), axis, 0);
+                               G_CALLBACK (items_changed_cb), axis, 0);
       g_object_ref (model);
     }
 
@@ -1348,17 +1348,17 @@ ssw_sheet_axis_class_init (SswSheetAxisClass *class)
 
   GParamSpec *adjust_spec =
     g_param_spec_object ("adjustment",
-			 P_("Adjustment"),
-			 P_("The Adjustment"),
-			 GTK_TYPE_ADJUSTMENT,
-			 G_PARAM_READWRITE);
+                         P_("Adjustment"),
+                         P_("The Adjustment"),
+                         GTK_TYPE_ADJUSTMENT,
+                         G_PARAM_READWRITE);
 
   GParamSpec *draggable_spec =
     g_param_spec_boolean ("draggable",
-			  P_("Draggable"),
-			  P_("Whether items in the axis can be reordered using drag and drop"),
-			  FALSE,
-			  G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+                          P_("Draggable"),
+                          P_("Whether items in the axis can be reordered using drag and drop"),
+                          FALSE,
+                          G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
   object_class->set_property = __set_property;
   object_class->get_property = __get_property;
@@ -1380,77 +1380,77 @@ ssw_sheet_axis_class_init (SswSheetAxisClass *class)
 
   signals [CHANGED] =
     g_signal_new ("changed",
-		  G_TYPE_FROM_CLASS (class),
-		  G_SIGNAL_RUN_FIRST,
-		  0,
-		  NULL, NULL,
-		  g_cclosure_marshal_VOID__VOID,
-		  G_TYPE_NONE,
-		  0);
+                  G_TYPE_FROM_CLASS (class),
+                  G_SIGNAL_RUN_FIRST,
+                  0,
+                  NULL, NULL,
+                  g_cclosure_marshal_VOID__VOID,
+                  G_TYPE_NONE,
+                  0);
 
 
   signals [HEADER_CLICKED] =
     g_signal_new ("header-clicked",
-		  G_TYPE_FROM_CLASS (class),
-		  G_SIGNAL_RUN_FIRST,
-		  0,
-		  NULL, NULL,
-		  ssw_cclosure_marshal_VOID__INT_UINT,
-		  G_TYPE_NONE,
-		  2,
-		  G_TYPE_INT,
-		  G_TYPE_UINT);
+                  G_TYPE_FROM_CLASS (class),
+                  G_SIGNAL_RUN_FIRST,
+                  0,
+                  NULL, NULL,
+                  ssw_cclosure_marshal_VOID__INT_UINT,
+                  G_TYPE_NONE,
+                  2,
+                  G_TYPE_INT,
+                  G_TYPE_UINT);
 
   signals [HEADER_DOUBLE_CLICKED] =
     g_signal_new ("header-double-clicked",
-		  G_TYPE_FROM_CLASS (class),
-		  G_SIGNAL_RUN_FIRST,
-		  0,
-		  NULL, NULL,
-		  ssw_cclosure_marshal_VOID__INT_UINT,
-		  G_TYPE_NONE,
-		  2,
-		  G_TYPE_INT,
-		  G_TYPE_UINT);
+                  G_TYPE_FROM_CLASS (class),
+                  G_SIGNAL_RUN_FIRST,
+                  0,
+                  NULL, NULL,
+                  ssw_cclosure_marshal_VOID__INT_UINT,
+                  G_TYPE_NONE,
+                  2,
+                  G_TYPE_INT,
+                  G_TYPE_UINT);
 
   signals [HEADER_BUTTON_PRESSED] =
     g_signal_new ("header-button-pressed",
-		  G_TYPE_FROM_CLASS (class),
-		  G_SIGNAL_RUN_FIRST,
-		  0,
-		  NULL, NULL,
-		  ssw_cclosure_marshal_VOID__INT_UINT_UINT,
-		  G_TYPE_NONE,
-		  3,
-		  G_TYPE_INT,
-		  G_TYPE_UINT,
-		  G_TYPE_UINT);
+                  G_TYPE_FROM_CLASS (class),
+                  G_SIGNAL_RUN_FIRST,
+                  0,
+                  NULL, NULL,
+                  ssw_cclosure_marshal_VOID__INT_UINT_UINT,
+                  G_TYPE_NONE,
+                  3,
+                  G_TYPE_INT,
+                  G_TYPE_UINT,
+                  G_TYPE_UINT);
 
   signals [HEADER_BUTTON_RELEASED] =
     g_signal_new ("header-button-released",
-		  G_TYPE_FROM_CLASS (class),
-		  G_SIGNAL_RUN_FIRST,
-		  0,
-		  NULL, NULL,
-		  ssw_cclosure_marshal_VOID__INT_UINT_UINT,
-		  G_TYPE_NONE,
-		  3,
-		  G_TYPE_INT,
-		  G_TYPE_UINT,
-		  G_TYPE_UINT);
+                  G_TYPE_FROM_CLASS (class),
+                  G_SIGNAL_RUN_FIRST,
+                  0,
+                  NULL, NULL,
+                  ssw_cclosure_marshal_VOID__INT_UINT_UINT,
+                  G_TYPE_NONE,
+                  3,
+                  G_TYPE_INT,
+                  G_TYPE_UINT,
+                  G_TYPE_UINT);
 
 
   signals [DRAG_N_DROP] =
     g_signal_new ("drag-n-dropped",
-		  G_TYPE_FROM_CLASS (class),
-		  G_SIGNAL_RUN_FIRST,
-		  0,
-		  NULL, NULL,
-		  ssw_cclosure_marshal_VOID__INT_INT,
-		  G_TYPE_NONE,
-		  2,
-		  G_TYPE_INT,
-		  G_TYPE_INT);
+                  G_TYPE_FROM_CLASS (class),
+                  G_SIGNAL_RUN_FIRST,
+                  0,
+                  NULL, NULL,
+                  ssw_cclosure_marshal_VOID__INT_INT,
+                  G_TYPE_NONE,
+                  2,
+                  G_TYPE_INT,
+                  G_TYPE_INT);
 
 
   g_object_class_install_property (object_class,
@@ -1566,8 +1566,8 @@ on_multi_press_begin (GtkGesture *g, GdkEventSequence *seq, gpointer ud)
 /* Note: This is a GtkWidget handler, NOT a GtkGesture handler */
 static void
 update_pointer (GtkWidget      *widget,
-               GdkDragContext *context,
-               gpointer        user_data)
+                GdkDragContext *context,
+                gpointer        user_data)
 {
   /* This forces the pointer to move.  For some reason, without it,
      Dnd icon stays at 0,0 until the user moves the mouse. */
@@ -1612,7 +1612,7 @@ ssw_sheet_axis_init (SswSheetAxis *axis)
   gtk_gesture_single_set_button (GTK_GESTURE_SINGLE (priv->button_gest), 0);
 
   gtk_event_controller_set_propagation_phase (GTK_EVENT_CONTROLLER (priv->button_gest),
-  					      GTK_PHASE_CAPTURE);
+                                              GTK_PHASE_CAPTURE);
 
   g_signal_connect (priv->button_gest, "begin", G_CALLBACK (on_multi_press_begin), axis);
   g_signal_connect (priv->button_gest, "released", G_CALLBACK (button_released), axis);
@@ -1623,11 +1623,11 @@ ssw_sheet_axis_init (SswSheetAxis *axis)
 
 
   gtk_event_controller_set_propagation_phase (GTK_EVENT_CONTROLLER (priv->resize_gest),
-  					      GTK_PHASE_CAPTURE);
+                                              GTK_PHASE_CAPTURE);
 
   g_signal_connect (priv->resize_gest, "begin", G_CALLBACK (on_resize_begin), axis);
   g_signal_connect (priv->resize_gest, "drag-begin", G_CALLBACK (on_resize_drag_begin),
-		    axis);
+                    axis);
 
   g_signal_connect (priv->resize_gest, "drag-end", G_CALLBACK (on_resize_end), axis);
 
@@ -1659,16 +1659,16 @@ ssw_sheet_axis_override_size (SswSheetAxis *axis, gint pos, gint size)
     return;
 
   g_hash_table_insert (priv->size_override,
-		       GINT_TO_POINTER (pos),
-		       GINT_TO_POINTER (size));
+                       GINT_TO_POINTER (pos),
+                       GINT_TO_POINTER (size));
 
   guint width = gtk_widget_get_allocated_width (GTK_WIDGET (axis));
 
   gint loc;
   gint start_cell =
     ssw_sheet_axis_find_cell (axis,
-			      ssw_sheet_axis_rtl (axis) ? width : 0,
-			      &loc, NULL);
+                              ssw_sheet_axis_rtl (axis) ? width : 0,
+                              &loc, NULL);
 
   ensure_visible_widgets (axis, TRUE);
 
@@ -1680,9 +1680,9 @@ ssw_sheet_axis_override_size (SswSheetAxis *axis, gint pos, gint size)
 
 
 /*
-   Find the row/column at POS.
-   This is linear in the number of visible items.
-   Returns -1 id there is no row/column at POS.
+  Find the row/column at POS.
+  This is linear in the number of visible items.
+  Returns -1 id there is no row/column at POS.
 */
 gint
 ssw_sheet_axis_find_cell (SswSheetAxis *axis,  gdouble pos, gint *location, gint *size)
@@ -1698,21 +1698,21 @@ ssw_sheet_axis_find_cell (SswSheetAxis *axis,  gdouble pos, gint *location, gint
   for (i = axis->cell_limits->len - 1; i >= 0; --i)
     {
       const SswGeometry *geom = g_ptr_array_index (axis->cell_limits,
-						   ssw_sheet_axis_rtl (axis)? axis->cell_limits->len - 1 - i: i);
+                                                   ssw_sheet_axis_rtl (axis)? axis->cell_limits->len - 1 - i: i);
       const gint end = geom->position;
 
       /* This list should be monotonically decreasing.
-	 If it isn't, then something has gone wrong */
+         If it isn't, then something has gone wrong */
       g_return_val_if_fail (end < prev, -1);
       x -= step;
       if (pos >= end)
-	{
-	  if (location)
-	    *location = end;
-	  if (size)
-	    *size = geom->size;
-	  break;
-	}
+        {
+          if (location)
+            *location = end;
+          if (size)
+            *size = geom->size;
+          break;
+        }
       prev = end;
     }
 
@@ -1730,7 +1730,7 @@ ssw_sheet_axis_find_cell (SswSheetAxis *axis,  gdouble pos, gint *location, gint
 */
 gint
 ssw_sheet_axis_find_boundary (SswSheetAxis *axis,  gint pos,
-			      gint *location, gint *size)
+                              gint *location, gint *size)
 {
   if (pos >= axis->last_cell)
     return +1;
@@ -1815,12 +1815,12 @@ ssw_sheet_axis_get_first (SswSheetAxis *axis)
   if (ssw_sheet_axis_rtl (axis))
     {
       if (position + size > widget_size)
-	cell++;
+        cell++;
     }
   else
     {
       if (position < 0)
-	cell++;
+        cell++;
     }
 
   return cell;
@@ -1841,12 +1841,12 @@ ssw_sheet_axis_get_last (SswSheetAxis *axis)
   if (ssw_sheet_axis_rtl (axis))
     {
       if (position < 0)
-	cell--;
+        cell--;
     }
   else
     {
       if (position + size > widget_size)
-	cell--;
+        cell--;
     }
 
   return cell;
@@ -1880,13 +1880,13 @@ adj_end (gint widget_size, gint location, gint extent)
 }
 
 /*
-   Adjusts the scroll position to point to WHERETO.
-   INIT_LOCATION and INIT_EXTENT are the initial
-   values of WHERETO's geometry.
- */
+  Adjusts the scroll position to point to WHERETO.
+  INIT_LOCATION and INIT_EXTENT are the initial
+  values of WHERETO's geometry.
+*/
 static void
 fine_adjust (SswSheetAxis *axis, gint whereto, gint init_location,
-	     gint init_extent,  gint (*adj) (gint, gint, gint), gint offs)
+             gint init_extent,  gint (*adj) (gint, gint, gint), gint offs)
 {
   PRIV_DECL (axis);
   gint widget_size = priv->get_allocated_p_size (GTK_WIDGET (axis));
@@ -1900,18 +1900,18 @@ fine_adjust (SswSheetAxis *axis, gint whereto, gint init_location,
       gint location, extent;
       gdouble v = __axis_get_value (axis);
       if (ssw_sheet_axis_rtl (axis))
-	delta = - delta;
+        delta = - delta;
       __axis_set_value (axis, v - delta);
       ssw_sheet_axis_find_boundary (axis,  whereto, &location, &extent);
       delta = adj (widget_size, location, extent) + offs;
       if (delta == old_delta && old_v == v)
-	{
-	  /* Should never happen ... */
-	  g_warning ("%s %p: Cannot seek to item %d.\n",
-		     G_OBJECT_TYPE_NAME (axis), axis, whereto);
-	  /* ... but avoid an infinite loop if something goes wrong */
-	  break;
-	}
+        {
+          /* Should never happen ... */
+          g_warning ("%s %p: Cannot seek to item %d.\n",
+                     G_OBJECT_TYPE_NAME (axis), axis, whereto);
+          /* ... but avoid an infinite loop if something goes wrong */
+          break;
+        }
       old_delta = delta;
       old_v = v;
     }
@@ -1924,7 +1924,7 @@ fine_adjust (SswSheetAxis *axis, gint whereto, gint init_location,
    As a side effect, the LOCATION and EXTENT are populated
    with the location and extent of the WHERETO.
    This function is bounded by O(log n) in the number of items.
- */
+*/
 static void
 course_adjust (SswSheetAxis *axis, gint whereto, gint *location, gint *extent)
 {
@@ -1937,16 +1937,16 @@ course_adjust (SswSheetAxis *axis, gint whereto, gint *location, gint *extent)
   do
     {
       direction = ssw_sheet_axis_find_boundary (axis,  whereto,
-						location, extent);
+                                                location, extent);
       gdouble v = __axis_get_value (axis);
       gdouble ps = gtk_adjustment_get_page_size (priv->adjustment);
       gdouble u = gtk_adjustment_get_upper (priv->adjustment);
       if (v + ps * k * direction > u - ps)
-	gtk_adjustment_set_upper (priv->adjustment, u + ps);
+        gtk_adjustment_set_upper (priv->adjustment, u + ps);
 
       __axis_set_value (axis, v + ps * k * direction);
       if (old_direction == -direction)
-	k /= 2.0;
+        k /= 2.0;
       old_direction = direction;
     }
   while (direction != 0);
@@ -1964,12 +1964,12 @@ ssw_sheet_axis_jump_end_with_offset (SswSheetAxis *axis, gint whereto, gint offs
   gdouble page_size = gtk_adjustment_get_page_size (priv->adjustment);
 
   __axis_set_value (axis,   (upper - page_size) * (whereto + 1)
-			    / (gdouble) ssw_sheet_axis_get_extent (axis));
+                    / (gdouble) ssw_sheet_axis_get_extent (axis));
 
   gint location, extent;
   course_adjust (axis, whereto, &location, &extent);
   fine_adjust (axis, whereto, location, extent,
-	       ssw_sheet_axis_rtl (axis) ? adj_start : adj_end, offs);
+               ssw_sheet_axis_rtl (axis) ? adj_start : adj_end, offs);
 }
 
 
@@ -1984,12 +1984,12 @@ ssw_sheet_axis_jump_start_with_offset (SswSheetAxis *axis, gint whereto, gint of
   gdouble page_size = gtk_adjustment_get_page_size (priv->adjustment);
 
   __axis_set_value (axis, (upper - page_size) * (whereto)
-			    / (gdouble) ssw_sheet_axis_get_extent (axis));
+                    / (gdouble) ssw_sheet_axis_get_extent (axis));
 
   gint location, extent;
   course_adjust (axis, whereto, &location, &extent);
   fine_adjust (axis, whereto, location, extent,
-	       ssw_sheet_axis_rtl (axis) ? adj_end : adj_start, offs);
+               ssw_sheet_axis_rtl (axis) ? adj_end : adj_start, offs);
 }
 
 
@@ -2005,7 +2005,7 @@ ssw_sheet_axis_jump_center (SswSheetAxis *axis, gint whereto)
   gdouble page_size = gtk_adjustment_get_page_size (priv->adjustment);
 
   __axis_set_value (axis, (upper - page_size) * (whereto)
-			    / (gdouble) ssw_sheet_axis_get_extent (axis));
+                    / (gdouble) ssw_sheet_axis_get_extent (axis));
 
   gint location, extent;
   course_adjust (axis, whereto, &location, &extent);
