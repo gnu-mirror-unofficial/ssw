@@ -626,7 +626,6 @@ __realize (GtkWidget *widget)
 
   window = gtk_widget_get_parent_window (widget);
   gtk_widget_set_window (widget, window);
-  g_object_ref (window);
 
   attributes.window_type = GDK_WINDOW_CHILD;
   attributes.wclass = GDK_INPUT_ONLY;
