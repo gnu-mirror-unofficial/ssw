@@ -360,15 +360,11 @@ __set_property (GObject *object,
       }
       break;
     case PROP_VMODEL:
-      if (sheet->vmodel)
-        g_object_unref (sheet->vmodel);
-      sheet->vmodel = g_value_dup_object (value);
+      g_set_object (&sheet->vmodel, g_value_get_object (value));
       arrange (sheet);
       break;
     case PROP_HMODEL:
-      if (sheet->hmodel)
-        g_object_unref (sheet->hmodel);
-      sheet->hmodel = g_value_dup_object (value);
+      g_set_object (&sheet->hmodel, g_value_get_object (value));
       arrange (sheet);
       break;
     case PROP_DATA_MODEL:

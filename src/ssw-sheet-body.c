@@ -1277,9 +1277,7 @@ __set_property (GObject *object,
       priv->selection = g_value_get_pointer (value);
       break;
     case PROP_DATA_MODEL:
-      if (priv->data_model)
-        g_object_unref (priv->data_model);
-      priv->data_model = g_value_dup_object (value);
+      g_set_object (&priv->data_model, g_value_get_object (value));
       g_signal_connect_object (priv->data_model, "items-changed",
                                G_CALLBACK (on_data_change), body, 0);
       break;

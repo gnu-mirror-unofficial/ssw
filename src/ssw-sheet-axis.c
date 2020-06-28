@@ -1189,9 +1189,7 @@ __set_property (GObject *object,
   switch (prop_id)
     {
     case PROP_ADJUSTMENT:
-      if (PRIV (object)->adjustment)
-        g_object_unref (PRIV (object)->adjustment);
-      PRIV (object)->adjustment = g_value_dup_object (value);
+      g_set_object (&PRIV (object)->adjustment, g_value_get_object (value));
       __set_pq_adjustments (object);
       break;
     case PROP_ORIENTATION:
