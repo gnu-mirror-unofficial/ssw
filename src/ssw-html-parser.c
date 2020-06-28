@@ -73,7 +73,7 @@ end_element (GMarkupParseContext *context,
 }
 
 static void
-text (GMarkupParseContext *context,
+text_i (GMarkupParseContext *context,
       const gchar *text,
       gsize text_len,
       gpointer user_data,
@@ -92,7 +92,7 @@ static const GMarkupParser my_parser =
   {
    start_element,
    end_element,
-   text,
+   text_i,
    0
   };
 
