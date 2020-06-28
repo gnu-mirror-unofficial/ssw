@@ -151,8 +151,6 @@ __arrange_properties (GObject *object)
   if (sheet->vertical_axis)
     g_object_set (sheet->vertical_axis, "adjustment", sheet->vadj, NULL);
 
-
-
   /* Only show the button if both axes belong to "us".
      Or to put it another way:  Don't show the button if either
      axis is "borrowed" from another sheet. */
@@ -194,11 +192,11 @@ __set_property (GObject *object,
                     SSW_SHEET_SINGLE (object)->data_model, NULL);
       break;
     case PROP_HADJUSTMENT:
-      SSW_SHEET_SINGLE (object)->hadj = g_value_get_object (value);
+      g_set_object (&SSW_SHEET_SINGLE (object)->hadj, g_value_get_object (value));
       __arrange_properties (object);
       break;
     case PROP_VADJUSTMENT:
-      SSW_SHEET_SINGLE (object)->vadj = g_value_get_object (value);
+      g_set_object (&SSW_SHEET_SINGLE (object)->vadj, g_value_get_object (value));
       __arrange_properties (object);
       break;
     case PROP_VSCROLL_POLICY:
@@ -251,6 +249,12 @@ __dispose (GObject *object)
     return;
 
   sheet->dispose_has_run = TRUE;
+
+  if (SSW_SHEET_SINGLE (object)->hadj)
+    g_object_unref (SSW_SHEET_SINGLE (object)->hadj);
+
+  if (SSW_SHEET_SINGLE (object)->vadj)
+    g_object_unref (SSW_SHEET_SINGLE (object)->vadj);
 
   G_OBJECT_CLASS (ssw_sheet_single_parent_class)->dispose (object);
 }
