@@ -1249,7 +1249,6 @@ __dispose (GObject *obj)
 {
   SswSheetAxis *axis = SSW_SHEET_AXIS (obj);
   PRIV_DECL (obj);
-
   if (priv->dispose_has_run)
     return;
 
@@ -1258,7 +1257,8 @@ __dispose (GObject *obj)
   g_object_unref (priv->button_gest);
   g_object_unref (priv->resize_gest);
   g_object_unref (priv->drag_gest);
-  g_object_unref (priv->adjustment);
+  if (priv->adjustment)
+    g_object_unref (priv->adjustment);
 
   if (priv->drag_target_list)
     gtk_target_list_unref (priv->drag_target_list);
