@@ -724,12 +724,14 @@ start_editing (SswSheetBody *body, GdkEvent *e)
                                          GTK_CELL_RENDERER_SELECTED);
 
       /* We use this property with a slightly different nuance:
-         It is rather a "started" flag than a canceled flag. That is
+         It is rather a "not-started" flag than a canceled flag. That is
          to say, it is TRUE  by default and becomes FALSE, once an
          edit has commenced */
       g_object_set (ce, "editing-canceled", TRUE, NULL);
     }
 }
+
+static void on_editing_done (GtkCellEditable *e, SswSheetBody *body);
 
 
 static gboolean
@@ -746,12 +748,14 @@ __button_press_event (GtkWidget *w, GdkEventButton *e)
   gint old_row = -1, old_col = -1;
   get_active_cell (body, &old_col, &old_row);
 
-
   gint col  = ssw_sheet_axis_find_cell (priv->haxis, eb->x, NULL, NULL);
   gint row  = ssw_sheet_axis_find_cell (priv->vaxis, eb->y, NULL, NULL);
 
   if (trim_to_model_limits (body, old_col, old_row, &col, &row))
     return FALSE;
+
+  if (priv->editor)
+    on_editing_done (GTK_CELL_EDITABLE (priv->editor), body);
 
   if (priv->sheet->selected_body != GTK_WIDGET (body))
     {
@@ -2151,9 +2155,8 @@ choose_renderer (SswSheetBody *body, gint col, gint row)
 }
 
 static void
-on_editing_done (GtkCellEditable *e, gpointer ud)
+on_editing_done (GtkCellEditable *e, SswSheetBody *body)
 {
-  SswSheetBody *body = SSW_SHEET_BODY (ud);
   PRIV_DECL (body);
 
   gint row = -1, col = -1;
