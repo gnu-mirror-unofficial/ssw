@@ -96,6 +96,8 @@ typedef void (*ssw_sheet_set_cell) (GtkTreeModel *store, gint col, gint row,
 
 void ssw_sheet_paste (SswSheet *sheet, GtkClipboard *clip, ssw_sheet_set_cell sc);
 
+/* Check if an editable is focused. If yes, cut to clipboard and return TRUE */
+gboolean ssw_sheet_try_cut (SswSheet *sheet);
 
 /* Scroll the sheet so that the cell HPOS,VPOS is approximately in the center.
    Either HPOS or VPOS may be -1, in which case that position is unchanged. */

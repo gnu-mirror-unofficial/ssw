@@ -49,6 +49,11 @@ void ssw_sheet_body_set_active_cell (SswSheetBody *body,
 gboolean ssw_sheet_body_get_active_cell (SswSheetBody *body,
                                          gint *col, gint *row);
 
+/* Check if the editable is focused. If yes paste into the
+   editable. Return False if the editable is not focused */
+gboolean ssw_sheet_body_paste_editable (SswSheetBody *body);
 
+/* Check if editable is focused. If yes do the clipboard cut and return TRUE */
+gboolean ssw_sheet_body_cut_editable (SswSheetBody *body);
 
 #endif

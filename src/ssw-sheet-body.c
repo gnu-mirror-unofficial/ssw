@@ -1845,6 +1845,14 @@ ssw_sheet_body_set_clip (SswSheetBody *body, GtkClipboard *clip)
   if (body == NULL)
     return;
 
+  if (priv->editor &&
+      GTK_IS_EDITABLE (priv->editor) &&
+      gtk_widget_is_focus (priv->editor))
+    {
+      gtk_editable_copy_clipboard (GTK_EDITABLE(priv->editor));
+      return;
+    }
+
   SswRange *source_range = g_object_get_data (G_OBJECT (clip), "source-range");
   g_free (source_range);
   source_range = g_malloc (sizeof (*source_range));
@@ -2381,4 +2389,34 @@ text_editing_started (GtkCellRenderer *cell,
     }
 
   gtk_widget_show_all (priv->active_cell_holder);
+}
+
+gboolean
+ssw_sheet_body_paste_editable (SswSheetBody *body)
+{
+  PRIV_DECL (body);
+  if (body &&
+      priv->editor &&
+      GTK_IS_EDITABLE (priv->editor) &&
+      gtk_widget_is_focus (priv->editor))
+    {
+      gtk_editable_paste_clipboard (GTK_EDITABLE (priv->editor));
+      return TRUE;
+    }
+  return FALSE;
+}
+
+gboolean
+ssw_sheet_body_cut_editable (SswSheetBody *body)
+{
+  PRIV_DECL (body);
+  if (body &&
+      priv->editor &&
+      GTK_IS_ENTRY (priv->editor) &&
+      gtk_widget_is_focus (priv->editor))
+    {
+      gtk_editable_cut_clipboard ( GTK_EDITABLE (priv->editor));
+      return TRUE;
+    }
+  return FALSE;
 }

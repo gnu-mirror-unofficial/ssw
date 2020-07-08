@@ -1043,7 +1043,13 @@ target_marshaller (GtkClipboard *clip, GdkAtom *atoms, gint n_atoms,
 void
 ssw_sheet_paste (SswSheet *sheet, GtkClipboard *clip, ssw_sheet_set_cell sc)
 {
+  g_return_if_fail (sheet);
+
   gint col, row;
+
+  if (ssw_sheet_body_paste_editable (SSW_SHEET_BODY (sheet->selected_body)))
+    return;
+
   if (ssw_sheet_get_active_cell (sheet, &col, &row))
     {
       struct paste_state *ps = g_malloc (sizeof *ps);
@@ -1057,6 +1063,13 @@ ssw_sheet_paste (SswSheet *sheet, GtkClipboard *clip, ssw_sheet_set_cell sc)
     }
 }
 
+gboolean
+ssw_sheet_try_cut (SswSheet *sheet)
+{
+  g_return_val_if_fail (sheet, FALSE);
+
+  return ssw_sheet_body_cut_editable (SSW_SHEET_BODY (sheet->selected_body));
+}
 
 
 
