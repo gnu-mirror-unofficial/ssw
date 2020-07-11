@@ -1752,7 +1752,8 @@ clipit_ascii (SswSheetBody *body, GString *output, SswRange *source_range)
                 g_string_append (output, "\t");
             }
         }
-      g_string_append (output, "\n");
+      if (row < source_range->end_y)
+        g_string_append (output, "\n");
     }
 }
 
@@ -1781,7 +1782,8 @@ clipit_utf8 (SswSheetBody *body, GString *output, SswRange *source_range)
                 g_string_append_c (output, '\t');
             }
         }
-      g_string_append (output, "\n");
+      if (row < source_range->end_y)
+        g_string_append (output, "\n");
     }
 }
 
