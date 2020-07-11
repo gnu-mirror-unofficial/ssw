@@ -1816,7 +1816,7 @@ get_func (GtkClipboard *clipboard,
       clipit_html (body, stuff, source_range);
       break;
     default:
-      g_print ("Request for unknown target %d\n", info);
+      g_warning ("Request for unknown target %d\n", info);
       return ;
       break;
     }
@@ -1852,7 +1852,7 @@ ssw_sheet_body_set_clip (SswSheetBody *body, GtkClipboard *clip)
   if (!gtk_clipboard_set_with_owner (clip, targets, N_TARGETS,
                                      get_func, clear_func, G_OBJECT (body)))
     {
-      g_print ("Clip failed\n");
+      g_warning ("Clip failed\n");
     }
 }
 
