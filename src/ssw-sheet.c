@@ -267,7 +267,9 @@ __set_property (GObject *object,
 
         for (i = 0; i < DIM * DIM ; ++i)
           {
-            g_object_set (SSW_SHEET_SINGLE (sheet->sheet[i])->body, "editable", editable, NULL);
+            g_object_set (SSW_SHEET_SINGLE (sheet->sheet[i])->body,
+                          "editable", editable,
+                          NULL);
           }
         sheet->editable = editable;
       }
@@ -433,7 +435,7 @@ __get_property (GObject *object,
       g_value_set_boolean (value, SSW_SHEET (object)->gridlines);
       break;
     case PROP_EDITABLE:
-      g_value_set_boolean (value, SSW_SHEET (object)->gridlines);
+      g_value_set_boolean (value, SSW_SHEET (object)->editable);
       break;
     case PROP_RENDERER_FUNC_DATUM:
       g_value_set_pointer (value, SSW_SHEET (object)->renderer_func_datum);

@@ -404,27 +404,29 @@ __draw (GtkWidget *widget, cairo_t *cr)
 
   GtkCssProvider *cp = gtk_css_provider_new ();
 
-  gint yy = ssw_sheet_axis_find_boundary (priv->vaxis, active_row, NULL, NULL);
-  gint xx = ssw_sheet_axis_find_boundary (priv->haxis, active_col, NULL, NULL);
-
-  if (yy == 0 && xx == 0 && priv->editor == NULL)
-    start_editing (body, NULL);
-
-  if ((gtk_widget_is_focus (widget) ||
-       (priv->editor && gtk_widget_is_focus (priv->editor))))
-    gtk_css_provider_load_from_data (cp, focused_border, strlen (focused_border), 0);
-  else
-    gtk_css_provider_load_from_data (cp, unfocused_border,
-                                     strlen (unfocused_border), 0);
-
-  gtk_style_context_add_provider (sc, GTK_STYLE_PROVIDER (cp),
-                                  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-
   GtkBorder border;
-  gtk_style_context_get_border (sc,
-                                gtk_widget_get_state_flags (widget),
-                                &border);
+  if (priv->editable)
+    {
+      gint yy = ssw_sheet_axis_find_boundary (priv->vaxis, active_row, NULL, NULL);
+      gint xx = ssw_sheet_axis_find_boundary (priv->haxis, active_col, NULL, NULL);
 
+      if (yy == 0 && xx == 0 && priv->editor == NULL)
+        start_editing (body, NULL);
+
+      if ((gtk_widget_is_focus (widget) ||
+           (priv->editor && gtk_widget_is_focus (priv->editor))))
+        gtk_css_provider_load_from_data (cp, focused_border, strlen (focused_border), 0);
+      else
+        gtk_css_provider_load_from_data (cp, unfocused_border,
+                                         strlen (unfocused_border), 0);
+
+      gtk_style_context_add_provider (sc, GTK_STYLE_PROVIDER (cp),
+                                      GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+
+      gtk_style_context_get_border (sc,
+                                    gtk_widget_get_state_flags (widget),
+                                    &border);
+    }
 
   int row = priv->vaxis->last_cell;
   gint y;
@@ -463,7 +465,8 @@ __draw (GtkWidget *widget, cairo_t *cr)
           rect.height = vgeom->size;
 
           --col;
-          if (col == active_col && row == active_row)
+
+          if (priv->editable && col == active_col && row == active_row)
             {
               /* Draw frame */
               gtk_render_frame (sc, cr,
@@ -483,12 +486,12 @@ __draw (GtkWidget *widget, cairo_t *cr)
                   char *cell_text = NULL;
 
                   if (col != active_col || row != active_row ||
+                      ! priv->editable ||
                       (priv->sheet->selected_body != GTK_WIDGET (body)))
                     {
                       /* Don't render the active cell.
                          It is already rendered by the cell_editable widget
                          and rendering twice looks unaesthetic */
-
                       GValue value = G_VALUE_INIT;
                       gtk_tree_model_get_value (priv->data_model, &iter, col, &value);
                       cell_text = priv->cf (priv->sheet, priv->data_model, col, row, &value);
@@ -501,7 +504,6 @@ __draw (GtkWidget *widget, cairo_t *cr)
 
                   g_free (cell_text);
                 }
-
 
 
               gtk_cell_renderer_render (renderer, cr, widget,
@@ -765,13 +767,15 @@ __button_press_event (GtkWidget *w, GdkEventButton *e)
   GdkWindow *win = gtk_widget_get_window (GTK_WIDGET (body));
 
   if (gdk_window_get_cursor (win) != priv->hc
+      && priv->editable
       && gdk_window_get_cursor (win) != priv->vc)
     set_active_cell (body, col, row);
 
   priv->sheet->selected_body = GTK_WIDGET (body);
   gtk_widget_grab_focus (w);
 
-  start_editing (body, (GdkEvent *) e);
+  if (priv->editable)
+    start_editing (body, (GdkEvent *) e);
 
   return GTK_WIDGET_CLASS (ssw_sheet_body_parent_class)->button_press_event (w, e);
 }
@@ -847,6 +851,9 @@ ssw_sheet_body_set_active_cell (SswSheetBody *body,
                                 gint col, gint row, GdkEvent *e)
 {
   PRIV_DECL (body);
+
+  if (!priv->editable)
+    return;
 
   if (priv->editor && (GTK_WIDGET (body) == priv->sheet->selected_body))
     gtk_cell_editable_editing_done (GTK_CELL_EDITABLE (priv->editor));
