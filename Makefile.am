@@ -57,7 +57,6 @@ libspread_sheet_widget_la_SOURCES = \
 	src/ssw-sheet-body.h \
 	src/ssw-sheet-single.h \
 	src/ssw-constraint.h \
-	src/ssw-virtual-model.h \
 	src/ssw-cell.h \
 	src/ssw-xpaned.h
 
@@ -65,6 +64,7 @@ libspread_sheet_widget_la_SOURCES = \
 include_HEADERS = \
 	src/ssw-sheet.h \
 	src/ssw-sheet-axis.h \
+	src/ssw-virtual-model.h \
 	src/ssw-axis-model.h
 
 
