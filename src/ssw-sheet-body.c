@@ -1239,6 +1239,7 @@ on_data_change (GtkTreeModel *tm, guint posn, guint rm, guint add, gpointer p)
       set_editor_widget_value (body, &value, GTK_EDITABLE (priv->editor));
       g_value_unset (&value);
     }
+  gtk_widget_queue_draw (GTK_WIDGET (body));
 }
 
 static void
