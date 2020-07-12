@@ -239,6 +239,7 @@ __set_property (GObject *object,
 
         GtkWidget *splitter = g_object_new (t, NULL);
         gtk_container_add (GTK_CONTAINER (sheet), splitter);
+        gtk_widget_show (splitter);
 
         for (i = 0; i < DIM * DIM ; ++i)
           {
@@ -339,9 +340,11 @@ __set_property (GObject *object,
 
         for (i = 0; i < DIM * DIM ; ++i)
           {
-            gtk_widget_hide (sheet->sw[i]);
-            g_object_set (sheet->sw[i], "no-show-all", TRUE, NULL);
+            g_object_set (sheet->sw[i], "no-show-all", !split, NULL);
+            gtk_widget_set_visible (sheet->sw[i], split);
           }
+        g_object_set (sheet->sw[0], "no-show-all", FALSE, NULL);
+        gtk_widget_show (sheet->sw[0]);
 
         const int dimens = (split ? 2 : 1);
         for (i = 0; i < dimens * dimens; ++i)
@@ -353,9 +356,6 @@ __set_property (GObject *object,
             g_object_set (sheet->sw[i], "hscrollbar-policy",
                           ((i/dimens) == dimens - 1) ? GTK_POLICY_ALWAYS : GTK_POLICY_NEVER,
                           NULL);
-
-            g_object_set (sheet->sw[i], "no-show-all", FALSE, NULL);
-            gtk_widget_show_all (GTK_WIDGET (sheet->sw[i]));
           }
 
         sheet->split = split;
@@ -855,6 +855,8 @@ ssw_sheet_init (SswSheet *sheet)
                               SSW_SHEET_AXIS (sheet->horizontal_axis[i%DIM]),
                               SSW_SHEET_AXIS (sheet->vertical_axis[i/DIM]),
                               sheet->selection);
+
+      gtk_widget_show_all (sheet->sheet[i]);
 
       gtk_container_add (GTK_CONTAINER (sheet->sw[i]), sheet->sheet[i]);
 
