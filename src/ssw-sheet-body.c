@@ -1220,10 +1220,8 @@ set_editor_widget_value (SswSheetBody *body, GValue *value, GtkEditable *editabl
 }
 
 static void
-on_data_change (GtkTreeModel *tm, guint posn, guint rm, guint add, gpointer p)
+update_editable (SswSheetBody *body)
 {
-  /* Set the "editor widget" (typically a GtkEntry) to reflect the new value */
-  SswSheetBody *body = SSW_SHEET_BODY (p);
   PRIV_DECL (body);
 
   gint row = -1, col = -1;
@@ -1239,7 +1237,15 @@ on_data_change (GtkTreeModel *tm, guint posn, guint rm, guint add, gpointer p)
       set_editor_widget_value (body, &value, GTK_EDITABLE (priv->editor));
       g_value_unset (&value);
     }
+}
+
+static void
+on_data_change (GtkTreeModel *tm, guint posn, guint rm, guint add, gpointer p)
+{
+  /* Set the "editor widget" (typically a GtkEntry) to reflect the new value */
+  SswSheetBody *body = SSW_SHEET_BODY (p);
   gtk_widget_queue_draw (GTK_WIDGET (body));
+  update_editable (body);
 }
 
 static void
@@ -1281,6 +1287,7 @@ __set_property (GObject *object,
     case PROP_CONVERT_FWD_FUNC:
       priv->cf = g_value_get_pointer (value);
       gtk_widget_queue_draw (GTK_WIDGET (body));
+      update_editable (body);
       break;
     case PROP_CONVERT_REV_FUNC:
       priv->revf = g_value_get_pointer (value);
