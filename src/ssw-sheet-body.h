@@ -34,7 +34,7 @@ struct _SswSheetBodyClass
 
 G_DECLARE_DERIVABLE_TYPE (SswSheetBody, ssw_sheet_body, SSW, SHEET_BODY, GtkLayout)
 
-  GtkWidget * ssw_sheet_body_new (SswSheet *sheet);
+GtkWidget * ssw_sheet_body_new (SswSheet *sheet);
 
 void ssw_sheet_body_set_clip (SswSheetBody *body, GtkClipboard *clip);
 
