@@ -84,6 +84,7 @@ __unrealize (GtkWidget *w)
 enum
   {
    PROP_0,
+   PROP_SELECTION,
    PROP_SPLITTER,
    PROP_VMODEL,
    PROP_HMODEL,
@@ -288,6 +289,22 @@ __set_property (GObject *object,
                       "draggable",  g_value_get_boolean (value), NULL);
       break;
 
+    case PROP_SELECTION:
+      {
+        gpointer p = g_value_get_pointer (value);
+        if (p)
+          {
+            SswRange *r = p;
+            *sheet->selection = *r;
+
+            for (i = 0; i < DIM * DIM ; ++i)
+              gtk_widget_queue_draw (SSW_SHEET_SINGLE (sheet->sheet[i])->body);
+
+            g_signal_emit (sheet, signals [SELECTION_CHANGED], 0, sheet->selection);
+          }
+      }
+      break;
+
     case PROP_CONVERT_FWD_FUNC:
       {
         gpointer p = g_value_get_pointer (value);
@@ -434,6 +451,9 @@ __get_property (GObject *object,
     case PROP_GRIDLINES:
       g_value_set_boolean (value, SSW_SHEET (object)->gridlines);
       break;
+    case PROP_SELECTION:
+      g_value_set_pointer (value, SSW_SHEET (object)->selection);
+      break;
     case PROP_EDITABLE:
       g_value_set_boolean (value, SSW_SHEET (object)->editable);
       break;
@@ -464,6 +484,13 @@ ssw_sheet_class_init (SswSheetClass *class)
                           P_("Reverse conversion function"),
                           P_("A function to convert a string to a cell datum"),
                           G_PARAM_WRITABLE);
+
+
+  GParamSpec *selection_spec =
+    g_param_spec_pointer ("selection",
+                          P_("The selection"),
+                          P_("A pointer to the current selection"),
+                          G_PARAM_READWRITE);
 
   GParamSpec *splitter_spec =
     g_param_spec_gtype ("splitter",
@@ -566,6 +593,10 @@ ssw_sheet_class_init (SswSheetClass *class)
   g_object_class_install_property (object_class,
                                    PROP_SPLITTER,
                                    splitter_spec);
+
+  g_object_class_install_property (object_class,
+                                   PROP_SELECTION,
+                                   selection_spec);
 
   g_object_class_install_property (object_class,
                                    PROP_VMODEL,
