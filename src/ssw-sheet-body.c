@@ -2332,11 +2332,13 @@ text_editing_started (GtkCellRenderer *cell,
 
   priv->editor = GTK_WIDGET (editable);
 
+#if GTK_CHECK_VERSION (3, 22, 20)
   /* Don't show the stupid "Insert Emoji" in the popup menu.  */
   if (GTK_IS_ENTRY (priv->editor))
     g_object_set (priv->editor,
                   "input-hints", GTK_INPUT_HINT_NO_EMOJI,
                   NULL);
+#endif
 
   g_signal_connect (editable, "remove-widget",
                     G_CALLBACK (on_remove_widget), body);
