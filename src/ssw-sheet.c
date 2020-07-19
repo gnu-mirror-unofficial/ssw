@@ -1030,7 +1030,7 @@ utf8_tab_delimited_parse (GtkClipboard *clip, GtkSelectionData *sd,
 {
   struct paste_state *ps = user_data;
   SswSheet *sheet = SSW_SHEET (ps->sheet);
-  const guchar *data = gtk_selection_data_get_data (sd);
+  const gchar *data = (const gchar *) gtk_selection_data_get_data (sd);
   gint len = gtk_selection_data_get_length (sd);
 
   if (len < 0)
