@@ -33,9 +33,12 @@ struct paste_state
   gboolean cell_element;
 };
 
-void paste_insert_datum (const gchar *x, size_t len, const struct paste_state *t);
+/* A function which populates the cell indicated by PS with the value
+   indicated by STR and the current reverse conversion function.  */
+void ssw_sheet_paste_insert_datum (const gchar *x, size_t len, const struct paste_state *ps);
 
-void html_parse (GtkClipboard *clip, GtkSelectionData *sd, gpointer user_data);
-
+/* A GtkClipboardReceived callback function, which parses
+   the selection data SD as HTML, and sets PASTE_STATE accordingly.  */
+void ssw_html_parse (GtkClipboard *clip, GtkSelectionData *sd, gpointer paste_state);
 
 #endif

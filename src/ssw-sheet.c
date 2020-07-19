@@ -947,15 +947,17 @@ ssw_sheet_get_active_cell (SswSheet *sheet,
 
 
 
+/* A callback function which populates the cell indicated by PS with the value
+   indicated by STR and the current reverse conversion function.  */
 void
-paste_insert_datum (const gchar *x, size_t len, const struct paste_state *t)
+ssw_sheet_paste_insert_datum (const gchar *str, size_t len, const struct paste_state *ps)
 {
-  SswSheet *sheet = t->sheet;
+  SswSheet *sheet = ps->sheet;
 
   GValue value = G_VALUE_INIT;
 
-  gint col = t->col + t->col0;
-  gint row = t->row + t->row0;
+  gint col = ps->col + ps->col0;
+  gint row = ps->row + ps->row0;
 
   ssw_sheet_reverse_conversion_func rcf;
 
@@ -963,15 +965,15 @@ paste_insert_datum (const gchar *x, size_t len, const struct paste_state *t)
                 "reverse-conversion", &rcf,
                 NULL);
 
-  if (rcf (sheet->data_model, col, row, x, &value))
-    t->set_cell (sheet->data_model, col, row, &value);
+  if (rcf (sheet->data_model, col, row, str, &value))
+    ps->set_cell (sheet->data_model, col, row, &value);
   g_value_unset (&value);
 }
 
 static void
 paste_datum (const gchar *x, size_t len, struct paste_state *t)
 {
-  paste_insert_datum (x, len, t);
+  ssw_sheet_paste_insert_datum (x, len, t);
   t->col ++;
 }
 
@@ -1061,7 +1063,7 @@ target_marshaller (GtkClipboard *clip, GdkAtom *atoms, gint n_atoms,
     {
       if (atoms[i] == gdk_atom_intern_static_string ("text/html"))
         {
-          gtk_clipboard_request_contents (clip, atoms[i], html_parse, ps);
+          gtk_clipboard_request_contents (clip, atoms[i], ssw_html_parse, ps);
           break;
         }
       else if (atoms[i] == gdk_atom_intern_static_string ("UTF8_STRING"))

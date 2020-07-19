@@ -83,7 +83,7 @@ text_i (GMarkupParseContext *context,
   if (state->cell_element)
     {
       GString *str = g_string_new_len (text, text_len);
-      paste_insert_datum (str->str, str->len, state);
+      ssw_sheet_paste_insert_datum (str->str, str->len, state);
       g_string_free (str, TRUE);
     }
 }
@@ -97,10 +97,12 @@ static const GMarkupParser my_parser =
   };
 
 
+/* A GtkClipboardReceived callback function, which parses
+   the selection data SD as HTML, and sets PASTE_STATE accordingly.  */
 void
-html_parse (GtkClipboard *clip, GtkSelectionData *sd, gpointer user_data)
+ssw_html_parse (GtkClipboard *clip, GtkSelectionData *sd, gpointer paste_state)
 {
-  struct paste_state *ps = user_data;
+  struct paste_state *ps = paste_state;
   SswSheet *sheet = SSW_SHEET (ps->sheet);
   const guchar *text = gtk_selection_data_get_data (sd);
   gint len = gtk_selection_data_get_length (sd);
