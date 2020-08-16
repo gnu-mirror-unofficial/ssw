@@ -42,6 +42,7 @@ ACLOCAL_AMFLAGS = -I aclocal-aux ${ACLOCAL_FLAGS}
 
 lib_LTLIBRARIES = libspread-sheet-widget.la
 libspread_sheet_widget_la_CFLAGS = $(GTK3_CFLAGS) $(GLIB2_CFLAGS) -I ${top_builddir}/src
+libspread_sheet_widget_la_LIBADD = $(GTK3_LIBS) $(GLIB2_LIBS)
 libspread_sheet_widget_la_SOURCES = \
 	src/ssw-html-parser.c \
 	src/ssw-paste.h \
