@@ -28,7 +28,7 @@
 #include "ssw-sheet-body.h"
 #include "custom-axis.h"
 
-static CustomAxisModel *ca;
+static GObject *ca;
 
 
 static void

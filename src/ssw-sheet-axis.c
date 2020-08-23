@@ -697,8 +697,6 @@ ensure_visible_widgets (SswSheetAxis *axis, gboolean force_reload)
           priv->bin_start_diff = start_widget_index * avg_widget_size;
         }
 
-      g_assert (priv->model_from >= 0);
-      g_assert (priv->model_to >= 0);
       g_assert (priv->model_from <= ssw_sheet_axis_get_extent (axis));
       g_assert (priv->model_to <= ssw_sheet_axis_get_extent (axis));
 

@@ -93,7 +93,7 @@ static const GMarkupParser my_parser =
    start_element,
    end_element,
    text_i,
-   0
+   NULL, NULL
   };
 
 
