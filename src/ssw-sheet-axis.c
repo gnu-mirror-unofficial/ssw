@@ -365,6 +365,8 @@ insert_child_ginternal (SswSheetAxis *axis, GtkWidget *widget, guint index)
 {
   PRIV_DECL (axis);
 
+  g_assert (gtk_widget_get_realized (GTK_WIDGET (axis)));
+
   g_object_ref (widget);
 
   gtk_widget_set_parent_window (widget, priv->bin_window);
@@ -959,7 +961,6 @@ __realize (GtkWidget *w)
   GdkWindow *window;
 
   gtk_widget_get_allocation (w, &allocation);
-  gtk_widget_set_realized (w, TRUE);
 
   attributes.x = allocation.x;
   attributes.y = allocation.y;
@@ -970,11 +971,11 @@ __realize (GtkWidget *w)
     GDK_ALL_EVENTS_MASK;
   attributes.wclass = GDK_INPUT_OUTPUT;
 
-  window = gdk_window_new (gtk_widget_get_parent_window (w),
+  GdkWindow *pwin = gtk_widget_get_parent_window (w);
+  window = gdk_window_new (pwin,
                            &attributes, GDK_WA_X | GDK_WA_Y);
-  gdk_window_set_user_data (window, w);
+  gtk_widget_register_window (w, window);
   gtk_widget_set_window (w, window);
-
 
   priv->bin_window =
     gdk_window_new (window, &attributes, GDK_WA_X | GDK_WA_Y);
@@ -991,6 +992,7 @@ __realize (GtkWidget *w)
     priv->resize_cursor = gdk_cursor_new_for_display (display, GDK_SB_V_DOUBLE_ARROW);
   else
     priv->resize_cursor = gdk_cursor_new_for_display (display, GDK_SB_H_DOUBLE_ARROW);
+  gtk_widget_set_realized (w, TRUE);
 }
 
 static void
@@ -1006,6 +1008,8 @@ __unrealize (GtkWidget *widget)
       gdk_window_destroy (priv->bin_window);
       priv->bin_window = NULL;
     }
+
+  gtk_widget_set_realized (widget, FALSE);
 
   GTK_WIDGET_CLASS (ssw_sheet_axis_parent_class)->unrealize (widget);
 }
@@ -1578,6 +1582,9 @@ static void
 ssw_sheet_axis_init (SswSheetAxis *axis)
 {
   PRIV_DECL (axis);
+
+  gtk_widget_set_has_window (GTK_WIDGET (axis), TRUE);
+
   GtkStyleContext *context = gtk_widget_get_style_context (GTK_WIDGET (axis));
 
   priv->adjustment = NULL;
