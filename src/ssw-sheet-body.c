@@ -2044,12 +2044,13 @@ drag_end_resize_vertical (GtkGestureDrag *gesture,
   ssw_sheet_axis_override_size (priv->vaxis, nearest, new_size);
 }
 
-
-
 static void
 ssw_sheet_body_init (SswSheetBody *body)
 {
   PRIV_DECL (body);
+
+  /* This is derived from GtkLayout.  So it has its own window.  */
+  gtk_widget_set_has_window (GTK_WIDGET (body), TRUE);
   GdkDisplay *display = gtk_widget_get_display (GTK_WIDGET (body));
   GtkStyleContext *context = gtk_widget_get_style_context (GTK_WIDGET (body));
 

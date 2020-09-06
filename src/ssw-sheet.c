@@ -818,6 +818,7 @@ on_drag_n_drop (SswSheet *sheet, gint from, gint to, GtkOrientable *axis)
 static void
 ssw_sheet_init (SswSheet *sheet)
 {
+  gtk_widget_set_has_window (GTK_WIDGET (sheet), FALSE);
   sheet->vmodel = g_object_new (SSW_TYPE_AXIS_MODEL, NULL);
   sheet->hmodel = g_object_new (SSW_TYPE_AXIS_MODEL, NULL);
 

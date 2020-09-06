@@ -348,6 +348,8 @@ ssw_sheet_single_class_init (SswSheetSingleClass * class)
 static void
 ssw_sheet_single_init (SswSheetSingle *sheet)
 {
+  gtk_widget_set_has_window (GTK_WIDGET (sheet), FALSE);
+
   sheet->vadj = NULL;
   sheet->hadj = NULL;
   sheet->horizontal_axis = NULL;
