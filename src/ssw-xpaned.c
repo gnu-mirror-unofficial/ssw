@@ -661,6 +661,7 @@ __unrealize (GtkWidget *widget)
 
   gtk_widget_unregister_window (GTK_WIDGET (xpaned), xpaned->handle);
   gdk_window_destroy (xpaned->handle);
+  xpaned->handle = NULL;
 }
 
 
