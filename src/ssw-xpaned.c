@@ -624,6 +624,8 @@ __realize (GtkWidget *widget)
   GdkWindowAttr attributes;
   gint attributes_mask = 0;
 
+  GTK_WIDGET_CLASS (ssw_xpaned_parent_class)->realize (widget);
+
   window = gtk_widget_get_parent_window (widget);
   gtk_widget_set_window (widget, window);
 
@@ -656,6 +658,8 @@ static void
 __unrealize (GtkWidget *widget)
 {
   SswXpaned *xpaned = SSW_XPANED (widget);
+
+  GTK_WIDGET_CLASS (ssw_xpaned_parent_class)->unrealize (widget);
 
   g_object_unref (xpaned->cursor);
 
