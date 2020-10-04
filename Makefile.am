@@ -105,7 +105,7 @@ DISTCLEANFILES=$(BUILT_SOURCES)
 dist-hook:
 	if test -d $(top_srcdir)/.git; then                     \
 		git -C $(top_srcdir)/.git log --date=short --pretty='%cd %an <%ae>%n%n        %s%n%n' > $(distdir)/cl-t || exit 1;                                        \
-		cp $(distdir)/cl-t $(distdir)/ChangeLog;          \
+		mv $(distdir)/cl-t $(distdir)/ChangeLog;          \
 		cat $(top_srcdir)/ChangeLog >> $(distdir)/ChangeLog; \
         fi
 
