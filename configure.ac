@@ -14,7 +14,7 @@ dnl GNU General Public License for more details.
 dnl You should have received a copy of the GNU General Public License
 dnl along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-AC_INIT([spread-sheet-widget], [0.7])
+AC_INIT([spread-sheet-widget], [0.8])
 
 AM_INIT_AUTOMAKE()
 AC_CONFIG_MACRO_DIR([aclocal-aux])
